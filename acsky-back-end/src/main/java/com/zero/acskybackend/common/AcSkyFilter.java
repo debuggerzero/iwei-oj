@@ -1,6 +1,7 @@
 package com.zero.acskybackend.common;
 
 import com.zero.acskybackend.exception.AssertionException;
+import com.zero.acskybackend.model.common.GlobalExceptionEnum;
 import com.zero.acskybackend.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.subject.Subject;
@@ -49,7 +50,7 @@ public class AcSkyFilter extends AuthorizationFilter {
         PrintWriter writer = servletResponse.getWriter();
         String jsonString;
         if (Objects.isNull(subject)) {
-            AssertionException exception = new AssertionException(500005, "账号未登录，无权限访问");
+            AssertionException exception = new AssertionException(GlobalExceptionEnum.NO_LOG_IN_EXCEPTION);
             log.info("global exception handle, code: {}, message: {} ", exception.getCode(), exception.getMessage());
             jsonString = JsonUtil.toJsonString(new LinkedHashMap<String, Object>() {{
                 put("code", exception.getCode());
@@ -57,7 +58,7 @@ public class AcSkyFilter extends AuthorizationFilter {
             }});
         }
         else {
-            AssertionException exception = new AssertionException(500005, "无访问权限");
+            AssertionException exception = new AssertionException(GlobalExceptionEnum.NO_PERMISSION_EXCEPTION);
             log.info("global exception handle, code: {}, message: {}", exception.getCode(), exception.getMessage());
             jsonString = JsonUtil.toJsonString(new LinkedHashMap<String, Object>() {{
                 put("code", exception.getCode());

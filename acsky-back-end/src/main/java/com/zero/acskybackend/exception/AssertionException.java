@@ -1,5 +1,6 @@
 package com.zero.acskybackend.exception;
 
+import com.zero.acskybackend.model.common.GlobalExceptionEnum;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
@@ -52,6 +53,17 @@ public class AssertionException extends RuntimeException {
         this.code = code;
         this.httpStatus = 500;
         this.message = message;
+    }
+
+    /**
+     * 异常 默认返回 500 http 状态码
+     * @param exception 异常枚举类
+     */
+    public AssertionException(GlobalExceptionEnum exception) {
+        super(exception.getMessage());
+        this.code = exception.getCode();
+        this.httpStatus = 500;
+        this.message = exception.getMessage();
     }
 
     @Override
