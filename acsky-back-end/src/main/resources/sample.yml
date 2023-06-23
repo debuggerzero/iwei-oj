@@ -14,3 +14,11 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
   mapper-locations: classpath:com/zero/acskybackend/mapper/**/*.xml
+
+  cos:
+    secretId:
+    secretKey:
+    reginName:
+    bucketName:
+    url:
+    prefix:
