@@ -21,7 +21,22 @@ public enum GlobalExceptionEnum {
     /**
      * 未登录，无权限访问
      */
-    NO_LOG_IN_EXCEPTION(500003, "未登录，无权限访问");
+    NO_LOG_IN_EXCEPTION(500003, "未登录，无权限访问"),
+
+    /**
+     * 文件上传失败
+     */
+    FILE_UPLOAD_FAIL_EXCEPTION(500004, "文件上传失败"),
+
+    /**
+     * 文件获取失败
+     */
+    FILE_QUERY_FAIL_EXCEPTION(500005, "文件获取失败"),
+
+    /**
+     * 文章删除失败
+     */
+    FILE_DELETE_FAIL_EXCEPTION(500006, "文章删除失败");
 
     /**
      * 信息码

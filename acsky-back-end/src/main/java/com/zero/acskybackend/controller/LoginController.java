@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * LoginController
+ * 账号密码登录
  *
  * @author ZERO
  * @date 2023/6/19
