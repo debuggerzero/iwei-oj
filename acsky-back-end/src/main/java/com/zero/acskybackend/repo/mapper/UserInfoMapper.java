@@ -19,4 +19,11 @@ public interface UserInfoMapper {
      */
     UserInfo queryUserInfo(String account);
 
+    /**
+     * 更新用户信息
+     * @param userInfo 用户信息
+     * @return 操作成功的函数
+     */
+    Integer updateUserInfo(UserInfo userInfo);
+
 }

@@ -28,6 +28,13 @@ class AcskyBackEndApplicationTests {
         System.out.println(userInfoMapper.queryUserInfo("123456"));
     }
 
+    @Test
+    void testUpdateUserInfo() {
+        UserInfo userInfo = userInfoMapper.queryUserInfo("123456");
+        userInfo.setName("zero");
+        System.out.println(userInfoMapper.updateUserInfo(userInfo));
+    }
+
     @Resource
     public SystemResourceMapper systemResourceMapper;
 

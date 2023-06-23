@@ -3,7 +3,6 @@ package com.zero.acskybackend.service;
 import com.zero.acskybackend.exception.AssertionException;
 import com.zero.acskybackend.model.command.LoginCommand;
 import com.zero.acskybackend.model.common.GlobalExceptionEnum;
-import com.zero.acskybackend.model.converter.ToUserInfoVoConverter;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +35,15 @@ public class UserInfoService {
         }
         UserInfo userInfo = (UserInfo) subject.getPrincipal();
         userInfo.setAvatar(cosService.getImageUrl(userInfo.getAvatar()));
-        return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
+        return new UserInfoVO (
+                userInfo.getId(),
+                userInfo.getName(),
+                userInfo.getAccount(),
+                userInfo.getEmail(),
+                userInfo.getPhone(),
+                userInfo.getProfile(),
+                userInfo.getAvatar(),
+                userInfo.getCreateDate()
+        );
     }
 }
