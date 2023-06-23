@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserInfoService {
 
+    private final CosService cosService;
+
     public UserInfoVO login(LoginCommand loginCommand) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(loginCommand.getAccount(), loginCommand.getPassword());
@@ -33,6 +35,7 @@ public class UserInfoService {
             throw new AssertionException(GlobalExceptionEnum.ACCOUNT_OR_PASSWORD_EXCEPTION);
         }
         UserInfo userInfo = (UserInfo) subject.getPrincipal();
+        userInfo.setAvatar(cosService.getImageUrl(userInfo.getAvatar()));
         return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
     }
 }
