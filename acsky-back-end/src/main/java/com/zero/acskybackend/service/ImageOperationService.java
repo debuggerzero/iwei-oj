@@ -60,7 +60,7 @@ public class ImageOperationService {
             InputStream inputStream,
             long contentLength
     ) {
-        String key = id + "/assets/" + name;
+        String key = "/" + id + "/assets/" + name;
         UserInfo userInfo = new UserInfo();
         userInfo.setId(id);
         Integer length = insertImage(
