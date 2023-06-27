@@ -1,6 +1,5 @@
 package com.zero.acskybackend;
 
-import com.zero.acskybackend.model.po.ImageInfo;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.config.CosConfig;
 import com.zero.acskybackend.repo.SystemRoleRepo;
@@ -8,6 +7,7 @@ import com.zero.acskybackend.repo.mapper.ImageInfoMapper;
 import com.zero.acskybackend.repo.mapper.SystemResourceMapper;
 import com.zero.acskybackend.repo.mapper.SystemRoleMapper;
 import com.zero.acskybackend.repo.mapper.UserInfoMapper;
+import com.zero.acskybackend.utils.StringUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,6 +26,18 @@ class AcskyBackEndApplicationTests {
     @Test
     void textQueryUserInfo() {
         System.out.println(userInfoMapper.queryUserInfo("123456"));
+    }
+
+    @Test
+    void testUpdateUserInfo() {
+        UserInfo userInfo = userInfoMapper.queryUserInfo("123456");
+        userInfo.setName("zero");
+        System.out.println(userInfoMapper.updateUserInfo(userInfo));
+    }
+
+    @Test
+    void testUpdateUserPassword() {
+        System.out.println(userInfoMapper.updateUserPassword("123456", StringUtil.md5("hwc20021123L")));
     }
 
     @Resource

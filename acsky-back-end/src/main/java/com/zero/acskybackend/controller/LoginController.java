@@ -9,6 +9,8 @@ import com.zero.acskybackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 /**
  * 账号密码登录
  *
@@ -29,6 +31,9 @@ public class LoginController {
      */
     @PostMapping("/password")
     public UserInfoVO login(@RequestBody LoginCommand loginCommand) {
+        if (Objects.isNull(loginCommand)) {
+            throw new AssertionException(GlobalExceptionEnum.ACCOUNT_OR_PASSWORD_EXCEPTION);
+        }
         String account = loginCommand.getAccount();
         String password = loginCommand.getPassword();
         if (StringUtil.isEmpty(account) || StringUtil.isEmpty(password)) {

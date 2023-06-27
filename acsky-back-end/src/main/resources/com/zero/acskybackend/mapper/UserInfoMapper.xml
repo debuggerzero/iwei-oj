@@ -4,6 +4,24 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zero.acskybackend.repo.mapper.UserInfoMapper">
 
+    <update id="updateUserInfo">
+        update
+        user_info
+        set
+        name=#{name}, email=#{email}, phone=#{phone},
+        profile=#{profile}, update_date=current_time
+        where account=#{account}
+    </update>
+
+    <update id="updateUserPassword">
+        update
+        user_info
+        set
+        password=#{password}
+        where
+        account=#{account}
+    </update>
+
     <select id="queryUserInfo" resultType="com.zero.acskybackend.model.po.UserInfo">
         select
         id, name, account, password, email, phone, profile, avatar,
@@ -11,7 +29,7 @@
         from
         user_info
         where
-        is_delete = 0 and account = #{account}
+        is_delete=0 and account=#{account}
     </select>
 
 </mapper>
