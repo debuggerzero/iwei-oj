@@ -22,4 +22,14 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     public UserInfo queryUserInfo(String account) {
         return userInfoMapper.queryUserInfo(account);
     }
+
+    @Override
+    public Integer updateUserInfo(UserInfo userInfo) {
+        return userInfoMapper.updateUserInfo(userInfo);
+    }
+
+    @Override
+    public Integer updateUserPassword(String account, String password) {
+        return userInfoMapper.updateUserPassword(account, password);
+    }
 }

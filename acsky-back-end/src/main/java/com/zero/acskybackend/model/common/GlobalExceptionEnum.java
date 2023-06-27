@@ -36,7 +36,27 @@ public enum GlobalExceptionEnum {
     /**
      * 文章删除失败
      */
-    FILE_DELETE_FAIL_EXCEPTION(500006, "文章删除失败");
+    FILE_DELETE_FAIL_EXCEPTION(500006, "文章删除失败"),
+
+    /**
+     * 信息更新失败
+     */
+    INFO_UPDATE_FAIL_EXCEPTION(500007, "信息更新失败"),
+
+    /**
+     * 输入格式错误
+     */
+    INPUT_FORMAT_EXCEPTION(500008, "输入格式错误"),
+
+    /**
+     * 密码输入错误
+     */
+    PASSWORD_INPUT_EXCEPTION(500009, "密码输入错误"),
+
+    /**
+     * 新的密码与旧的密码相同
+     */
+    OLD_NEW_PASSWORD_SAME_EXCEPTION(500010, "新的密码与旧的密码相同");
 
     /**
      * 信息码

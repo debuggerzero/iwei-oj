@@ -8,9 +8,18 @@
         update
         user_info
         set
-        name = #{name}, account=#{account}, email=#{email},
-        phone = #{phone}, profile=#{profile}, update_date=current_time
-        where id = #{id}
+        name=#{name}, email=#{email}, phone=#{phone},
+        profile=#{profile}, update_date=current_time
+        where account=#{account}
+    </update>
+
+    <update id="updateUserPassword">
+        update
+        user_info
+        set
+        password=#{password}
+        where
+        account=#{account}
     </update>
 
     <select id="queryUserInfo" resultType="com.zero.acskybackend.model.po.UserInfo">
@@ -20,7 +29,7 @@
         from
         user_info
         where
-        is_delete = 0 and account = #{account}
+        is_delete=0 and account=#{account}
     </select>
 
 </mapper>
