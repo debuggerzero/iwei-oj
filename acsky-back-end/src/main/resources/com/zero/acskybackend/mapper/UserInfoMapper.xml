@@ -4,6 +4,19 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zero.acskybackend.repo.mapper.UserInfoMapper">
 
+    <insert id="insertOneUserInfo">
+        insert into user_info(`name`, `account`, `password`, `create_date`, `update_date`)
+        values(#{name}, #{account}, #{password}, current_time, current_time);
+    </insert>
+
+    <insert id="insertUserInfoList" parameterType="java.util.List">
+        insert into user_info(`name`, `account`, `password`, `create_date`, `update_date`)
+        values
+        <foreach collection="list" item="model" index="index" separator=",">
+            (#{model.name}, #{model.account}, #{model.password}, current_time, current_time)
+        </foreach>
+    </insert>
+
     <update id="updateUserInfo">
         update
         user_info

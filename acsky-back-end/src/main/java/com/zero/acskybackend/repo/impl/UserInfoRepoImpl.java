@@ -6,6 +6,8 @@ import com.zero.acskybackend.repo.mapper.UserInfoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * UserInfoRepoImpl
  *
@@ -31,5 +33,15 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     @Override
     public Integer updateUserPassword(String account, String password) {
         return userInfoMapper.updateUserPassword(account, password);
+    }
+
+    @Override
+    public Integer insertOneUserInfo(UserInfo userInfo) {
+        return userInfoMapper.insertOneUserInfo(userInfo);
+    }
+
+    @Override
+    public Integer insertUserInfoList(List<UserInfo> list) {
+        return userInfoMapper.insertUserInfoList(list);
     }
 }
