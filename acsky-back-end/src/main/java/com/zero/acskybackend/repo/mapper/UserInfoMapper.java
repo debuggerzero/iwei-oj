@@ -1,7 +1,10 @@
 package com.zero.acskybackend.repo.mapper;
 
 import com.zero.acskybackend.model.po.UserInfo;
+import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * UserInfoMapper
@@ -33,5 +36,19 @@ public interface UserInfoMapper {
      * @return 受影响的行数
      */
     Integer updateUserPassword(String account, String password);
+
+    /**
+     * 添加单个用户信息
+     * @param userInfo 用户信息
+     * @return 受影响的行数
+     */
+    Integer insertOneUserInfo(UserInfo userInfo);
+
+    /**
+     * 批量添加多个用户
+     * @param list 用户信息
+     * @return 受影响的行数
+     */
+    Integer insertUserInfoList(List<UserInfo> list);
 
 }

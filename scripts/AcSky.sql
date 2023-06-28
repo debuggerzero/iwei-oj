@@ -8,21 +8,24 @@ create table user_info
 (
     `id`          int auto_increment comment '用户 Id',
     `name`        varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci comment '用户名',
-    `account`     varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci   not null comment '账号',
-    `password`    varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci   not null comment '密码',
+    `account`     varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci unique not null comment '账号',
+    `password`    varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci        not null comment '密码',
     `email`       varchar(64) character set utf8mb4 collate utf8mb4_0900_ai_ci comment '邮箱',
     `phone`       varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci comment '电话',
     `profile`     text character set utf8mb4 collate utf8mb4_0900_ai_ci comment '个人简介',
-    `avatar`      varchar(1024) character set utf8mb4 collate utf8mb4_0900_ai_ci not null default 'default.png',
-    `create_date` datetime                                                       null comment '创建时间',
-    `update_date` datetime                                                       null comment '修改时间',
-    `is_delete`   tinyint                                                        not null default 0 comment '是否删除',
+    `avatar`      varchar(1024) character set utf8mb4 collate utf8mb4_0900_ai_ci      not null default '/assets/default.png',
+    `create_date` datetime                                                            null comment '创建时间',
+    `update_date` datetime                                                            null comment '修改时间',
+    `is_delete`   tinyint                                                             not null default 0 comment '是否删除',
     primary key (`id`)
 )
     ENGINE = InnoDB
     AUTO_INCREMENT = 1001
     CHARACTER SET = utf8mb4
     COLLATE utf8mb4_0900_ai_ci comment '用户信息表';
+
+insert into user_info (name, account, password, email, phone, profile, create_date, update_date)
+values ('root', '123456', md5(md5('123456')), 'debuggerzero@gmail.com', '123456', 'hhhh', current_time, current_time);
 
 drop table if exists storage_image;
 create table storage_image
@@ -33,7 +36,7 @@ create table storage_image
     `image_path`  varchar(255) character set utf8mb4 collate utf8mb4_0900_ai_ci not null comment '图片路径',
     `image_hash`  varchar(255) character set utf8mb4 collate utf8mb4_0900_ai_ci not null comment '图片哈希值',
     `create_user` int                                                           not null comment '创建用户',
-    `create_time` varchar(64) character set utf8mb4 collate utf8mb4_0900_ai_ci  not null comment '创建时间'
+    `create_date` datetime                                                      not null comment '创建时间'
 )
     ENGINE = InnoDB
     AUTO_INCREMENT = 1001
@@ -58,6 +61,13 @@ create table system_resource
     COLLATE utf8mb4_0900_ai_ci
     COMMENT '系统资源表';
 
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('账号密码登录', '/login/password', 'anon', 'POST', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('上传图片', '/file/upload/image/*', 'anon', 'POST', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('修改信息', '/user/modify/info', 'anon', 'POST', current_time, current_time);
+
 drop table if exists system_role;
 create table system_role
 (
@@ -77,6 +87,11 @@ create table system_role
     COLLATE utf8mb4_0900_ai_ci
     COMMENT '系统角色表';
 
+insert into system_role (`name`, `describe`, create_date, create_person, update_date, update_person, remark)
+values ('none', '匿名用户', 20230406, 1001, 20230406, 1001, '无'),
+       ('common', '普通角色', 20230406, 1001, 20230406, 1001, '无'),
+       ('admin', '管理员', 20230406, 1001, 20230406, 1001, '无');
+
 drop table if exists user_role;
 create table user_role
 (
@@ -90,3 +105,6 @@ create table user_role
     CHARACTER SET = utf8mb4
     COLLATE utf8mb4_0900_ai_ci
     COMMENT '用户角色关系表';
+
+insert into user_role(user_id, role_id)
+values (1001, 1003);

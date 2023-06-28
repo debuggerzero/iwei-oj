@@ -2,6 +2,8 @@ package com.zero.acskybackend.repo;
 
 import com.zero.acskybackend.model.po.UserInfo;
 
+import java.util.List;
+
 /**
  * UserInfoRepo
  *
@@ -31,5 +33,19 @@ public interface UserInfoRepo {
      * @return 受影响的行数
      */
     Integer updateUserPassword(String account, String password);
+
+    /**
+     * 添加一个用户信息
+     * @param userInfo 用户信息
+     * @return 受影响的行数
+     */
+    Integer insertOneUserInfo(UserInfo userInfo);
+
+    /**
+     * 批量添加用户信息
+     * @param list 用户信息列表
+     * @return 受影响的行数
+     */
+    Integer insertUserInfoList(List<UserInfo> list);
 
 }
