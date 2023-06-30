@@ -56,7 +56,22 @@ public enum GlobalExceptionEnum {
     /**
      * 新的密码与旧的密码相同
      */
-    OLD_NEW_PASSWORD_SAME_EXCEPTION(500010, "新的密码与旧的密码相同");
+    OLD_NEW_PASSWORD_SAME_EXCEPTION(500010, "新的密码与旧的密码相同"),
+
+    /**
+     * 用户增加失败
+     */
+    INFO_ADD_FAIL_EXCEPTION(500011, "用户增加失败"),
+
+    /**
+     * 文件类型错误
+     */
+    FILE_TYPE_ERROR(500012, "文件类型错误"),
+
+    /**
+     * 用户信息删除失败
+     */
+    DELETE_USER_EXCEPTION(500013, "用户信息删除失败");
 
     /**
      * 信息码

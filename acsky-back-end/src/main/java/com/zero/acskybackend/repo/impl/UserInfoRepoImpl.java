@@ -1,5 +1,6 @@
 package com.zero.acskybackend.repo.impl;
 
+import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.repo.UserInfoRepo;
 import com.zero.acskybackend.repo.mapper.UserInfoMapper;
@@ -19,6 +20,11 @@ import java.util.List;
 public class UserInfoRepoImpl implements UserInfoRepo {
 
     private final UserInfoMapper userInfoMapper;
+
+    @Override
+    public List<UserInfo> queryUserInfoList(Page page) {
+        return userInfoMapper.queryUserInfoList(page);
+    }
 
     @Override
     public UserInfo queryUserInfo(String account) {
@@ -43,5 +49,10 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     @Override
     public Integer insertUserInfoList(List<UserInfo> list) {
         return userInfoMapper.insertUserInfoList(list);
+    }
+
+    @Override
+    public Integer deleteUserInfo(Integer id) {
+        return userInfoMapper.deleteUserInfo(id);
     }
 }

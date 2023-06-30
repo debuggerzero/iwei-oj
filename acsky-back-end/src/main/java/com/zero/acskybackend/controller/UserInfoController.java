@@ -1,17 +1,18 @@
 package com.zero.acskybackend.controller;
 
 import com.zero.acskybackend.exception.AssertionException;
+import com.zero.acskybackend.model.command.InsertUserCommand;
 import com.zero.acskybackend.model.command.ModifyPasswordCommand;
 import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import com.zero.acskybackend.service.UserInfoService;
 import com.zero.acskybackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,12 +29,21 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
 
     /**
+     * 获取用户列表
+     * @return 用户信息列表
+     */
+    @GetMapping("/query/list/{pageNum}/{pageSize}")
+    public List<UserInfoVO> queryUserInfoList(@PathVariable Long pageNum, @PathVariable Long pageSize) {
+        return userInfoService.queryUserInfoList(new Page(pageNum, pageSize));
+    }
+
+    /**
      * 修改用户信息
      *
      * @param userInfoVO 用户信息可视层
      * @return 用户信息可视对象
      */
-    @PostMapping("/modify/info")
+    @PutMapping("/modify/info")
     public UserInfoVO modifyInfo(@RequestBody UserInfoVO userInfoVO) {
         if (Objects.isNull(userInfoVO) || Objects.isNull(userInfoVO.getId())) {
             throw new AssertionException(GlobalExceptionEnum.INFO_UPDATE_FAIL_EXCEPTION);
@@ -56,7 +66,7 @@ public class UserInfoController {
      * @param modifyPasswordCommand modifyPasswordCommand
      * @return 受影响的行数
      */
-    @PostMapping("/modify/password")
+    @PutMapping("/modify/password")
     public Integer modifyUserPassword(@RequestBody ModifyPasswordCommand modifyPasswordCommand) {
 
         if (Objects.isNull(modifyPasswordCommand)) {
@@ -69,6 +79,50 @@ public class UserInfoController {
         }
 
         return userInfoService.modifyUserPassword(modifyPasswordCommand);
+    }
+
+    /**
+     * 添加一条用户信息
+     * @param insertUserCommand insertUserCommand
+     * @return 受影响的行数
+     */
+    @PostMapping("/insert/userinfo")
+    public Integer insertOneUserInfo(@RequestBody InsertUserCommand insertUserCommand) {
+        if (Objects.isNull(insertUserCommand)) {
+            throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
+        }
+        if (StringUtil.isEmpty(insertUserCommand.getName()) ||
+                StringUtil.isEmpty(insertUserCommand.getAccount())) {
+            throw new AssertionException(GlobalExceptionEnum.INPUT_FORMAT_EXCEPTION);
+        }
+        return userInfoService.insertOneUserInfo(insertUserCommand);
+    }
+
+    /**
+     * 批量添加用户
+     * @param file 文件
+     * @return 受影响的行数
+     */
+    @PostMapping("/insert/list/userinfo")
+    public Integer insertUserInfoList(@RequestPart(value = "file") MultipartFile file) {
+        if (Objects.isNull(file)) {
+            throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
+        }
+        String xlsx = "xlsx";
+        if (Objects.equals(file.getContentType(), xlsx)) {
+            throw new AssertionException(GlobalExceptionEnum.FILE_TYPE_ERROR);
+        }
+        return userInfoService.insertUserInfoList(file);
+    }
+
+    /**
+     * 删除用户信息
+     * @param id 用户 Id
+     * @return 返回受影响的行数
+     */
+    @DeleteMapping("/delete/userinfo/{id}")
+    public Integer deleteUserInfoList(@PathVariable Integer id) {
+        return userInfoService.deleteUserInfo(id);
     }
 
 }

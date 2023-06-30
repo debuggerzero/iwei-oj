@@ -6,7 +6,7 @@
 
     <insert id="insertOneUserInfo">
         insert into user_info(`name`, `account`, `password`, `create_date`, `update_date`)
-        values(#{name}, #{account}, #{password}, current_time, current_time);
+        values (#{name}, #{account}, #{password}, current_time, current_time);
     </insert>
 
     <insert id="insertUserInfoList" parameterType="java.util.List">
@@ -35,14 +35,36 @@
         account=#{account}
     </update>
 
-    <select id="queryUserInfo" resultType="com.zero.acskybackend.model.po.UserInfo">
+    <delete id="deleteUserInfo">
+        update
+        user_info
+        set
+        is_delete=1
+        where
+        id=#{id}
+    </delete>
+
+    <sql id="queryUserInfo">
         select
         id, name, account, password, email, phone, profile, avatar,
         create_date, update_date
         from
         user_info
-        where
-        is_delete=0 and account=#{account}
+    </sql>
+
+    <select id="queryUserInfo" resultType="com.zero.acskybackend.model.po.UserInfo">
+        <include refid="queryUserInfo" />
+        <where>
+            is_delete=0 and account=#{account}
+        </where>
+    </select>
+
+    <select id="queryUserInfoList" resultType="com.zero.acskybackend.model.po.UserInfo">
+        <include refid="queryUserInfo" />
+        <where>
+            is_delete=0
+        </where>
+        limit #{pageNumber}, #{pageSize}
     </select>
 
 </mapper>

@@ -1,5 +1,6 @@
 package com.zero.acskybackend.repo;
 
+import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
 
 import java.util.List;
@@ -11,6 +12,12 @@ import java.util.List;
  * @date 2023/6/15
  */
 public interface UserInfoRepo {
+
+    /**
+     * 查询用户列表
+     * @return 用户列表
+     */
+    List<UserInfo> queryUserInfoList(Page page);
 
     /**
      * 通过账号查询用户信息
@@ -47,5 +54,12 @@ public interface UserInfoRepo {
      * @return 受影响的行数
      */
     Integer insertUserInfoList(List<UserInfo> list);
+
+    /**
+     * 删除用户信息
+     * @param id 用户 Id
+     * @return 受影响的行数
+     */
+    Integer deleteUserInfo(Integer id);
 
 }
