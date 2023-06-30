@@ -1,9 +1,11 @@
 package com.zero.acskybackend.service;
 
 import com.zero.acskybackend.exception.AssertionException;
+import com.zero.acskybackend.model.command.InsertUserCommand;
 import com.zero.acskybackend.model.command.LoginCommand;
 import com.zero.acskybackend.model.command.ModifyPasswordCommand;
 import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.converter.ToUserInfoVoConverter;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.model.vo.UserInfoVO;
@@ -17,9 +19,14 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * UserInfoService
@@ -33,6 +40,8 @@ import java.util.Objects;
 public class UserInfoService {
 
     private final CosService cosService;
+
+    private final PoiService poiService;
 
     @Resource(name = "userInfoRepoImpl")
     private final UserInfoRepo userInfoRepo;
@@ -48,6 +57,17 @@ public class UserInfoService {
         UserInfo userInfo = (UserInfo) subject.getPrincipal();
         userInfo.setAvatar(cosService.getImageUrl(userInfo.getAvatar()));
         return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
+    }
+
+    public List<UserInfoVO> queryUserInfoList(Page page) {
+        page.setPageNumber((page.getPageNumber() - 1) * page.getPageSize());
+        if (page.getPageNumber() < 0 || page.getPageSize() <= 0) {
+            throw new AssertionException(GlobalExceptionEnum.INPUT_FORMAT_EXCEPTION);
+        }
+        return userInfoRepo.queryUserInfoList(page)
+                .stream()
+                .map(ToUserInfoVoConverter.CONVERTER::toUserInfoVO)
+                .collect(Collectors.toList());
     }
 
     public UserInfoVO modifyInfo(UserInfoVO userInfoVO) {
@@ -66,7 +86,7 @@ public class UserInfoService {
             throw new AssertionException(GlobalExceptionEnum.INFO_UPDATE_FAIL_EXCEPTION);
         }
 
-        return userInfoVO;
+        return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfoRepo.queryUserInfo(userInfoVO.getAccount()));
     }
 
     public Integer modifyUserPassword(ModifyPasswordCommand modifyPasswordCommand) {
@@ -83,6 +103,43 @@ public class UserInfoService {
             throw new AssertionException(GlobalExceptionEnum.OLD_NEW_PASSWORD_SAME_EXCEPTION);
         }
 
-        return userInfoRepo.updateUserPassword(account, StringUtil.md5(newPassword));
+        Integer result = userInfoRepo.updateUserPassword(account, StringUtil.md5(newPassword));
+        if (result == 0) {
+            throw new AssertionException(GlobalExceptionEnum.INFO_UPDATE_FAIL_EXCEPTION);
+        }
+        return result;
+    }
+
+    public Integer insertOneUserInfo(InsertUserCommand insertUserCommand) {
+        UserInfo userInfo = new UserInfo();
+        userInfo.setAccount(insertUserCommand.getAccount());
+        userInfo.setName(insertUserCommand.getName());
+        userInfo.setPassword(StringUtil.md5(StringUtil.md5("123456")));
+        Integer result = userInfoRepo.insertOneUserInfo(userInfo);
+        if (result == 0) {
+            throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
+        }
+        return result;
+    }
+
+    public Integer insertUserInfoList(MultipartFile file) {
+        try {
+            List<UserInfo> userInfoList = poiService.getUserInfoList(file.getInputStream());
+            Integer result = userInfoRepo.insertUserInfoList(userInfoList);
+            if (result < userInfoList.size()) {
+                throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
+            }
+            return result;
+        } catch (IOException ex) {
+            throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
+        }
+    }
+
+    public Integer deleteUserInfo(Integer id) {
+        Integer result = userInfoRepo.deleteUserInfo(id);
+        if (result == 0) {
+            throw new AssertionException(GlobalExceptionEnum.DELETE_USER_EXCEPTION);
+        }
+        return result;
     }
 }

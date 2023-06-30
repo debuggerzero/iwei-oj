@@ -1,7 +1,7 @@
 package com.zero.acskybackend.repo.mapper;
 
+import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
-import org.apache.catalina.User;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,6 +14,13 @@ import java.util.List;
  */
 @Mapper
 public interface UserInfoMapper {
+
+    /**
+     * 获取用户信息列表
+     * @param page 分页
+     * @return List<UserInfo>
+     */
+    List<UserInfo> queryUserInfoList(Page page);
 
     /**
      * 通过账号获取用户信息
@@ -50,5 +57,12 @@ public interface UserInfoMapper {
      * @return 受影响的行数
      */
     Integer insertUserInfoList(List<UserInfo> list);
+
+    /**
+     * 删除用户 id
+     * @param id 用户 id
+     * @return 受影响的行数
+     */
+    Integer deleteUserInfo(Integer id);
 
 }
