@@ -29,6 +29,15 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
 
     /**
+     * 查询总记录
+     * @return 条数
+     */
+    @GetMapping("/query/total")
+    public Long queryTotalRecord() {
+        return userInfoService.queryTotalRecord();
+    }
+
+    /**
      * 获取用户列表
      * @return 用户信息列表
      */

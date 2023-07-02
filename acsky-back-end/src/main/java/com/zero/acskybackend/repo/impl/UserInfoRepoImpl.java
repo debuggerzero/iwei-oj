@@ -22,6 +22,11 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     private final UserInfoMapper userInfoMapper;
 
     @Override
+    public Long queryTotalRecord() {
+        return userInfoMapper.queryTotalRecord();
+    }
+
+    @Override
     public List<UserInfo> queryUserInfoList(Page page) {
         return userInfoMapper.queryUserInfoList(page);
     }

@@ -67,4 +67,9 @@ public class UserInfo {
      */
     private Date updateDate;
 
+    /**
+     * 用户权限
+     */
+    private Level level;
+
 }

@@ -14,6 +14,12 @@ import java.util.List;
 public interface UserInfoRepo {
 
     /**
+     * 查询总记录
+     * @return 条数
+     */
+    Long queryTotalRecord();
+
+    /**
      * 查询用户列表
      * @return 用户列表
      */

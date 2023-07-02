@@ -44,27 +44,59 @@
         id=#{id}
     </delete>
 
+    <resultMap id="queryUserInfo" type="com.zero.acskybackend.model.po.UserInfo">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="account" property="account" />
+        <result column="password" property="password" />
+        <result column="email" property="email" />
+        <result column="phone" property="phone" />
+        <result column="profile" property="profile" />
+        <result column="avatar" property="avatar" />
+        <result column="create_date" property="createDate" />
+        <result column="update_date" property="updateDate" />
+        <association property="level">
+            <id column="role_id" property="id" />
+            <result column="describe" property="name" />
+        </association>
+    </resultMap>
+
     <sql id="queryUserInfo">
         select
-        id, name, account, password, email, phone, profile, avatar,
-        create_date, update_date
+        user_info.id, user_info.name, user_info.account, user_info.password,
+        user_info.email, user_info.phone, user_info.profile, user_info.avatar,
+        user_info.create_date, user_info.update_date, role_id,
+        system_role.describe
         from
-        user_info
+        user_info, user_role, system_role
     </sql>
 
-    <select id="queryUserInfo" resultType="com.zero.acskybackend.model.po.UserInfo">
+    <select id="queryUserInfo" resultMap="queryUserInfo">
         <include refid="queryUserInfo" />
         <where>
-            is_delete=0 and account=#{account}
+            user_info.id = user_role.user_id
+            and user_role.role_id = system_role.id
+            and is_delete=0
+            and account=#{account}
         </where>
     </select>
 
-    <select id="queryUserInfoList" resultType="com.zero.acskybackend.model.po.UserInfo">
+    <select id="queryUserInfoList" resultMap="queryUserInfo">
         <include refid="queryUserInfo" />
+        <where>
+            user_info.id = user_role.user_id
+            and user_role.role_id = system_role.id
+            and is_delete=0
+        </where>
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="queryTotalRecord" resultType="java.lang.Long">
+        select count(*)
+        from user_info
         <where>
             is_delete=0
         </where>
-        limit #{pageNumber}, #{pageSize}
     </select>
 
 </mapper>
