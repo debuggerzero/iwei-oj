@@ -13,7 +13,7 @@ create table user_info
     `email`       varchar(64) character set utf8mb4 collate utf8mb4_0900_ai_ci comment '邮箱',
     `phone`       varchar(32) character set utf8mb4 collate utf8mb4_0900_ai_ci comment '电话',
     `profile`     text character set utf8mb4 collate utf8mb4_0900_ai_ci comment '个人简介',
-    `avatar`      varchar(1024) character set utf8mb4 collate utf8mb4_0900_ai_ci      not null default '/assets/default.png',
+    `avatar`      varchar(1024) character set utf8mb4 collate utf8mb4_0900_ai_ci      not null default '/assets/default.png' comment '头像',
     `create_date` datetime                                                            null comment '创建时间',
     `update_date` datetime                                                            null comment '修改时间',
     `is_delete`   tinyint                                                             not null default 0 comment '是否删除',
