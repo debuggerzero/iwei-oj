@@ -64,9 +64,21 @@ create table system_resource
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('账号密码登录', '/login/password', 'anon', 'POST', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
-values ('上传图片', '/file/upload/image/*', 'anon', 'POST', current_time, current_time);
+values ('上传图片', '/file/upload/image/*', 'perms[common,admin]', 'POST', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
-values ('修改信息', '/user/modify/info', 'anon', 'POST', current_time, current_time);
+values ('获取用户列表', '/user/query/list/*/*', 'perms[admin]', 'GET', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('查询用户总数', '/user/query/total', 'perms[admin]', 'GET', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('修改用户信息', '/user/modify/info', 'perms[common,admin]', 'PUT', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('修改用户密码', '/user/modify/password', 'perms[common,admin]', 'PUT', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('添加用户信息', '/user/insert/userinfo', 'perms[admin]', 'POST', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('批量添加用户', '/user/insert/list/userinfo', 'perms[admin]', 'POST', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('删除用户信息', '/user/delete/userinfo/*', 'perms[admin]', 'DELETE', current_time, current_time);
 
 drop table if exists system_role;
 create table system_role
