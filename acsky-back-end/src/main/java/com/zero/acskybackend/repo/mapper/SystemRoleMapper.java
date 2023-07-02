@@ -3,6 +3,8 @@ package com.zero.acskybackend.repo.mapper;
 import com.zero.acskybackend.model.po.SystemRole;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  * SystemRoleMapper
  *
@@ -18,4 +20,10 @@ public interface SystemRoleMapper {
      * @return 角色
      */
     SystemRole querySystemRole(String account);
+
+    /**
+     * 查询所有系统角色
+     * @return 角色
+     */
+    List<SystemRole> queryAllSystemRole();
 }

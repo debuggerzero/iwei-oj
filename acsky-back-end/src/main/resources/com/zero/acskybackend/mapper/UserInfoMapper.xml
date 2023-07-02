@@ -21,9 +21,31 @@
         update
         user_info
         set
-        name=#{name}, email=#{email}, phone=#{phone},
-        profile=#{profile}, update_date=current_time
-        where account=#{account}
+        <if test="name">
+            name=#{name},
+        </if>
+        <if test="email != null">
+            email=#{email},
+        </if>
+        <if test="phone != null">
+            phone=#{phone},
+        </if>
+        <if test="profile != null">
+            profile=#{profile},
+        </if>
+        <if test="avatar != null">
+            avatar=#{avatar},
+        </if>
+        update_date=current_time
+        where account=#{account};
+
+        <if test="level != null">
+            update
+            user_role
+            set
+            role_id=#{level.id}
+            where user_id=#{id}
+        </if>
     </update>
 
     <update id="updateUserPassword">

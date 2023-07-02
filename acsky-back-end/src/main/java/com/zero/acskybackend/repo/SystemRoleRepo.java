@@ -2,6 +2,8 @@ package com.zero.acskybackend.repo;
 
 import com.zero.acskybackend.model.po.SystemRole;
 
+import java.util.List;
+
 /**
  * SystemRoleRepo
  *
@@ -16,4 +18,10 @@ public interface SystemRoleRepo {
      * @return 用户角色
      */
     SystemRole querySystemRole(String account);
+
+    /**
+     * 查询所有系统角色
+     * @return 系统角色
+     */
+    List<SystemRole> queryAllSystemRole();
 }
