@@ -46,6 +46,10 @@ public class UserInfoService {
     @Resource(name = "userInfoRepoImpl")
     private final UserInfoRepo userInfoRepo;
 
+    public Long queryTotalRecord() {
+        return userInfoRepo.queryTotalRecord();
+    }
+
     public UserInfoVO login(LoginCommand loginCommand) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(loginCommand.getAccount(), loginCommand.getPassword());

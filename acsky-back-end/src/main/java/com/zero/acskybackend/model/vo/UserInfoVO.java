@@ -1,6 +1,7 @@
 package com.zero.acskybackend.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zero.acskybackend.model.po.Level;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -58,5 +59,10 @@ public class UserInfoVO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
+
+    /**
+     * 权限
+     */
+    private Level level;
 
 }

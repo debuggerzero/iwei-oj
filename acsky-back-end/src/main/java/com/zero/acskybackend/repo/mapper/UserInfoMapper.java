@@ -16,6 +16,12 @@ import java.util.List;
 public interface UserInfoMapper {
 
     /**
+     * 查询总记录
+     * @return 条数
+     */
+    Long queryTotalRecord();
+
+    /**
      * 获取用户信息列表
      * @param page 分页
      * @return List<UserInfo>
