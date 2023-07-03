@@ -71,7 +71,12 @@ public enum GlobalExceptionEnum {
     /**
      * 用户信息删除失败
      */
-    DELETE_USER_EXCEPTION(500013, "用户信息删除失败");
+    DELETE_USER_EXCEPTION(500013, "用户信息删除失败"),
+
+    /**
+     * 服务器错误
+     */
+    SERVER_ERROR(500014, "服务器出错啦~ 稍后再试");
 
     /**
      * 信息码
