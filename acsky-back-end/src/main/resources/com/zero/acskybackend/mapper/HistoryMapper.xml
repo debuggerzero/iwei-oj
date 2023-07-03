@@ -10,7 +10,14 @@
     </insert>
 
     <select id="queryHistoryList" resultType="com.zero.acskybackend.model.po.History">
-        select * from history where uid = #{uid};
+        select
+        *
+        from
+        history
+        where
+        uid = #{uid}
+        order by
+        pro_time desc
     </select>
 
 </mapper>

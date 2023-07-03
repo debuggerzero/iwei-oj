@@ -7,11 +7,12 @@ import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.common.StatusEnum;
 import com.zero.acskybackend.model.converter.ToHistoryConverter;
 import com.zero.acskybackend.model.converter.ToProbInfoVOConverter;
-import com.zero.acskybackend.model.po.History;
+import com.zero.acskybackend.model.converter.ToQuestionVOConverter;
 import com.zero.acskybackend.model.po.ProbInfo;
 import com.zero.acskybackend.model.po.Sample;
 import com.zero.acskybackend.model.vo.Answer;
 import com.zero.acskybackend.model.vo.ProbInfoVO;
+import com.zero.acskybackend.model.vo.QuestionVO;
 import com.zero.acskybackend.repo.ProbInfoRepo;
 import com.zero.acskybackend.utils.TaskUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,49 @@ public class ProbInfoService {
                 .skip((page.getPageNumber() - 1) * page.getPageSize())
                 .limit(page.getPageSize())
                 .collect(Collectors.toList());
+    }
+
+    public QuestionVO queryOneQuestionVO(Integer probId) {
+        ProbInfo probInfo = probInfoRepo.queryOne(probId);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(probInfo.getDescription());
+        builder.append("\n");
+        if (probInfo.getInputDesc() != null) {
+            builder.append("**输入描述：**\n- ");
+            builder.append(probInfo.getInputDesc());
+            builder.append("\n\n");
+        }
+        if (probInfo.getInputDesc() != null) {
+            builder.append("**输出描述：**\n- ");
+            builder.append(probInfo.getOutputDesc());
+            builder.append("\n\n");
+        }
+        for (int i = 0; i < probInfo.getSamples().size(); i++) {
+            Sample sample = probInfo.getSamples().get(i);
+
+            if (sample.getInput() != null) {
+                builder.append("**输入样例：**\n");
+                builder.append("```cpp\n");
+                builder.append(sample.getInput());
+                builder.append("\n```\n");
+            }
+            if (sample.getOutput() != null) {
+                builder.append("**输出样例：**\n");
+                builder.append("```cpp\n");
+                builder.append(sample.getOutput());
+                builder.append("\n```\n");
+            }
+        }
+        if (probInfo.getHint() != null) {
+            builder.append("**提示：**\n");
+            builder.append(probInfo.getHint());
+            builder.append("\n");
+        }
+
+        QuestionVO questionVO = ToQuestionVOConverter.CONVERTER.toQuestionVO(probInfo);
+        questionVO.setContext(builder.toString());
+        return questionVO;
     }
 
     public ProbInfo queryOneProbInfo(Integer probId) {

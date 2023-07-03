@@ -17,8 +17,8 @@
         <result property="submitCnt" column="submit_cnt"/>
         <result property="passCnt" column="pass_cnt"/>
         <collection property="samples" ofType="com.zero.acskybackend.model.po.Sample">
-            <result property="input" column="input" />
-            <result property="output" column="output" />
+            <result property="input" column="input"/>
+            <result property="output" column="output"/>
         </collection>
     </resultMap>
 
@@ -38,12 +38,14 @@
         pass_cnt
         from prob_info,
         test_data,
-        (select ifnull(0, count(*)) submit_cnt,
-        count(case when history.status = 1 then 1 end) pass_cnt
+        (select prob_info.id pid,
+        count(pid) submit_cnt,
+        count(case when history.status = 'Accept' then 1 end) pass_cnt
         from prob_info
         left join history on prob_info.id = history.pid
         group by prob_info.id) as history
         where prob_info.id = test_data.pid
+        and history.pid = prob_info.id
         and is_delete = 0
     </sql>
 
@@ -52,7 +54,7 @@
     </select>
 
     <select id="queryOne" resultMap="query_pro_info">
-        <include refid="pro_info" />
+        <include refid="pro_info"/>
         and prob_info.id=#{id}
     </select>
 

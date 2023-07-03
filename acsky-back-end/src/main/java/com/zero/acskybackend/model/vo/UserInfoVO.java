@@ -65,4 +65,14 @@ public class UserInfoVO {
      */
     private Level level;
 
+    /**
+     * 提交数
+     */
+    private Long submitCnt;
+
+    /**
+     * 通过数
+     */
+    private Long passCnt;
+
 }
