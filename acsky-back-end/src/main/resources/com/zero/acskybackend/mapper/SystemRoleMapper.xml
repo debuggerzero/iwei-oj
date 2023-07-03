@@ -27,9 +27,28 @@
         sr.remark as 'remark'
         FROM
         system_role sr, user_info u1, user_info u2, user_info u3, user_role ur
-        WHERE
-        sr.create_person = u1.id AND sr.update_person = u2.id
-        AND u3.id = ur.user_id AND ur.role_id = sr.id AND u3.account = #{account};
+        <where>
+            sr.create_person = u1.id AND sr.update_person = u2.id
+            AND u3.id = ur.user_id AND ur.role_id = sr.id AND u3.account = #{account};
+        </where>
+    </select>
+
+    <select id="queryAllSystemRole" resultMap="systemRole">
+        SELECT sr.id as 'id',
+        sr.name as 'name',
+        sr.describe as 'describe',
+        sr.create_date as 'create_date',
+        u1.name as 'create_person',
+        sr.update_date as 'update_date',
+        u2.name as 'update_person',
+        sr.remark as 'remark'
+        FROM system_role sr,
+        user_info u1,
+        user_info u2
+        <where>
+            sr.create_person = u1.id
+            AND sr.update_person = u2.id
+        </where>
     </select>
 
 </mapper>

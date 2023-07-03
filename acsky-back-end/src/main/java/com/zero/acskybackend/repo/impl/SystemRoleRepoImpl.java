@@ -6,6 +6,8 @@ import com.zero.acskybackend.repo.mapper.SystemRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * SystemRoleRepoImpl
  *
@@ -21,5 +23,10 @@ public class SystemRoleRepoImpl implements SystemRoleRepo {
     @Override
     public SystemRole querySystemRole(String account) {
         return systemRoleMapper.querySystemRole(account);
+    }
+
+    @Override
+    public List<SystemRole> queryAllSystemRole() {
+        return systemRoleMapper.queryAllSystemRole();
     }
 }

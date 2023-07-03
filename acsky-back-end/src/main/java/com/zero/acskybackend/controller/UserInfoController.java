@@ -30,6 +30,7 @@ public class UserInfoController {
 
     /**
      * 查询总记录
+     *
      * @return 条数
      */
     @GetMapping("/query/total")
@@ -39,6 +40,7 @@ public class UserInfoController {
 
     /**
      * 获取用户列表
+     *
      * @return 用户信息列表
      */
     @GetMapping("/query/list/{pageNum}/{pageSize}")
@@ -58,12 +60,8 @@ public class UserInfoController {
             throw new AssertionException(GlobalExceptionEnum.INFO_UPDATE_FAIL_EXCEPTION);
         }
         if (StringUtil.isEmpty(userInfoVO.getAccount()) ||
-                StringUtil.isEmpty(userInfoVO.getName()) ||
-                StringUtil.isEmpty(userInfoVO.getEmail()) ||
-                StringUtil.isEmpty(userInfoVO.getPhone()) ||
-                StringUtil.isEmpty(userInfoVO.getProfile()) ||
-                StringUtil.isEmpty(userInfoVO.getAvatar()) ||
-                !StringUtil.isEmail(userInfoVO.getEmail())) {
+                (!StringUtil.isEmpty(userInfoVO.getEmail()) &&
+                        !StringUtil.isEmail(userInfoVO.getEmail()))) {
             throw new AssertionException(GlobalExceptionEnum.INPUT_FORMAT_EXCEPTION);
         }
         return userInfoService.modifyInfo(userInfoVO);
@@ -92,6 +90,7 @@ public class UserInfoController {
 
     /**
      * 添加一条用户信息
+     *
      * @param insertUserCommand insertUserCommand
      * @return 受影响的行数
      */
@@ -109,6 +108,7 @@ public class UserInfoController {
 
     /**
      * 批量添加用户
+     *
      * @param file 文件
      * @return 受影响的行数
      */
@@ -126,6 +126,7 @@ public class UserInfoController {
 
     /**
      * 删除用户信息
+     *
      * @param id 用户 Id
      * @return 返回受影响的行数
      */

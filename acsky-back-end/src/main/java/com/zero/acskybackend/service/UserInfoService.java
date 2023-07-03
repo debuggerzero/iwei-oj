@@ -6,10 +6,12 @@ import com.zero.acskybackend.model.command.LoginCommand;
 import com.zero.acskybackend.model.command.ModifyPasswordCommand;
 import com.zero.acskybackend.model.common.GlobalExceptionEnum;
 import com.zero.acskybackend.model.common.Page;
+import com.zero.acskybackend.model.converter.ToUserInfoConverter;
 import com.zero.acskybackend.model.converter.ToUserInfoVoConverter;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import com.zero.acskybackend.repo.UserInfoRepo;
+import com.zero.acskybackend.repo.mapper.UserRoleMapper;
 import com.zero.acskybackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
@@ -42,6 +44,8 @@ public class UserInfoService {
     private final CosService cosService;
 
     private final PoiService poiService;
+
+    private final UserRoleMapper userRoleMapper;
 
     @Resource(name = "userInfoRepoImpl")
     private final UserInfoRepo userInfoRepo;
@@ -76,21 +80,16 @@ public class UserInfoService {
 
     public UserInfoVO modifyInfo(UserInfoVO userInfoVO) {
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setId(userInfoVO.getId());
-        userInfo.setName(userInfoVO.getName());
-        userInfo.setEmail(userInfoVO.getEmail());
-        userInfo.setPhone(userInfoVO.getPhone());
-        userInfo.setProfile(userInfoVO.getProfile());
-        userInfo.setAvatar(cosService.getImageKey(userInfoVO.getAvatar()));
-
+        UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
         // 更新用户信息
         Integer result = userInfoRepo.updateUserInfo(userInfo);
         if (result == 0) {
             throw new AssertionException(GlobalExceptionEnum.INFO_UPDATE_FAIL_EXCEPTION);
         }
 
-        return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfoRepo.queryUserInfo(userInfoVO.getAccount()));
+        UserInfo temp = userInfoRepo.queryUserInfo(userInfoVO.getAccount());
+        temp.setAvatar(cosService.getImageUrl(temp.getAvatar()));
+        return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(temp);
     }
 
     public Integer modifyUserPassword(ModifyPasswordCommand modifyPasswordCommand) {
@@ -119,21 +118,23 @@ public class UserInfoService {
         userInfo.setAccount(insertUserCommand.getAccount());
         userInfo.setName(insertUserCommand.getName());
         userInfo.setPassword(StringUtil.md5(StringUtil.md5("123456")));
-        Integer result = userInfoRepo.insertOneUserInfo(userInfo);
-        if (result == 0) {
+        Integer userResult = userInfoRepo.insertOneUserInfo(userInfo);
+        Integer roleResult = userRoleMapper.insertUserRole(userInfo);
+        if (userResult == 0 || roleResult == 0) {
             throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
         }
-        return result;
+        return userResult;
     }
 
     public Integer insertUserInfoList(MultipartFile file) {
         try {
             List<UserInfo> userInfoList = poiService.getUserInfoList(file.getInputStream());
-            Integer result = userInfoRepo.insertUserInfoList(userInfoList);
-            if (result < userInfoList.size()) {
+            Integer userResult = userInfoRepo.insertUserInfoList(userInfoList);
+            Integer roleResult = userRoleMapper.insertUserRoleList(userInfoList);
+            if (userResult < userInfoList.size() || roleResult < userInfoList.size()) {
                 throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
             }
-            return result;
+            return userResult;
         } catch (IOException ex) {
             throw new AssertionException(GlobalExceptionEnum.INFO_ADD_FAIL_EXCEPTION);
         }
