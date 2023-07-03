@@ -8,6 +8,7 @@ import com.zero.acskybackend.model.po.History;
 import com.zero.acskybackend.model.po.ProbInfo;
 import com.zero.acskybackend.model.vo.Answer;
 import com.zero.acskybackend.model.vo.ProbInfoVO;
+import com.zero.acskybackend.model.vo.QuestionVO;
 import com.zero.acskybackend.service.HistoryService;
 import com.zero.acskybackend.service.ProbInfoService;
 import com.zero.acskybackend.utils.StringUtil;
@@ -55,7 +56,7 @@ public class ProblemInfoController {
     }
 
     /**
-     * 获取单个题目详细信息
+     * 获取题目详细信息
      *
      * @param problemId 题号
      * @return 题目信息
@@ -63,6 +64,16 @@ public class ProblemInfoController {
     @GetMapping("/one/{problemId}")
     public ProbInfo queryProbInfo(@PathVariable Integer problemId) {
         return probInfoService.queryOneProbInfo(problemId);
+    }
+
+    /**
+     * 获取题目详细信息(Markdown 生成)
+     * @param problemId 题号
+     * @return 题目信息
+     */
+    @GetMapping("/oneByMd/{problemId}")
+    public QuestionVO queryquestionVO(@PathVariable Integer problemId) {
+        return probInfoService.queryOneQuestionVO(problemId);
     }
 
     /**

@@ -101,7 +101,7 @@ public class UserInfoController {
     }
 
     /**
-     * 添加一条用户信息
+     * 添加用户信息
      *
      * @param insertUserCommand insertUserCommand
      * @return 受影响的行数

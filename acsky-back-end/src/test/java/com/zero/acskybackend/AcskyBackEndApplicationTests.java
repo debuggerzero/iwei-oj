@@ -157,6 +157,7 @@ class AcskyBackEndApplicationTests {
     @Test
     void testProbInfoMapper() {
         // System.out.println(probInfoMapper.queryTotal());
+        // System.out.println(probInfoService.queryOneQuestionVO(1));
     }
 
     @Resource
@@ -164,7 +165,7 @@ class AcskyBackEndApplicationTests {
 
     @Test
     void testProbInfoService() {
-        System.out.println(probInfoService.queryOneProbInfo(1));
+        // System.out.println(probInfoService.queryOneProbInfo(1));
         // ProblemCommand problemCommand = new ProblemCommand();
         // problemCommand.setPid(1);
         // problemCommand.setUid(1001);
@@ -203,7 +204,7 @@ class AcskyBackEndApplicationTests {
 
     @Test
     void testHistoryMapper() {
-        historyMapper.queryHistoryList(1001).forEach(System.out::println);
+        // historyMapper.queryHistoryList(1001).forEach(System.out::println);
     }
 
 }

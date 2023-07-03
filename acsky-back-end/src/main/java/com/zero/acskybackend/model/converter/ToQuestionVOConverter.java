@@ -1,32 +1,34 @@
 package com.zero.acskybackend.model.converter;
 
 import com.zero.acskybackend.model.po.ProbInfo;
-import com.zero.acskybackend.model.vo.ProbInfoVO;
+import com.zero.acskybackend.model.vo.QuestionVO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 /**
- * ToProbInfoVO
+ * ToQuestionVOConverter
  *
  * @author ZERO
- * @date 2023/7/3
+ * @date 2023/7/4
  */
 @Mapper
-public interface ToProbInfoVOConverter {
+public interface ToQuestionVOConverter {
 
-    ToProbInfoVOConverter CONVERTER = Mappers.getMapper(ToProbInfoVOConverter.class);
+    ToQuestionVOConverter CONVERTER = Mappers.getMapper(ToQuestionVOConverter.class);
 
     /**
-     * toProbInfoVO
+     * toQuestionVO
      * @param probInfo probInfo
-     * @return ProbInfoVO
+     * @return QuestionVO
      */
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "difficulty", target = "difficulty")
+    @Mapping(source = "timeLimit", target = "timeLimit")
+    @Mapping(source = "spaceLimit", target = "spaceLimit")
     @Mapping(source = "passCnt", target = "passCnt")
     @Mapping(source = "submitCnt", target = "submitCnt")
-    ProbInfoVO toProbInfoVO(ProbInfo probInfo);
+    QuestionVO toQuestionVO(ProbInfo probInfo);
 
 }
