@@ -1,7 +1,6 @@
 package com.zero.acskybackend;
 
 import com.zero.acskybackend.config.CosConfig;
-import com.zero.acskybackend.model.command.ProblemCommand;
 import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.repo.SystemRoleRepo;
 import com.zero.acskybackend.repo.UserInfoRepo;
@@ -12,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @SpringBootTest
 class AcskyBackEndApplicationTests {

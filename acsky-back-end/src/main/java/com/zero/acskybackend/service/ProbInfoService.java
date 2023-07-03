@@ -123,6 +123,7 @@ public class ProbInfoService {
             answer = taseAndRun(problemCommand);
             if (!answer.getMessage().equals(StatusEnum.SUCCESS.getMessage())) {
                 flag = false;
+                continue;
             }
             if (!sample.getOutput().trim().equals(answer.getStdout().trim())) {
                 answer.setCode(StatusEnum.WRONG_ANSWER.getCode());

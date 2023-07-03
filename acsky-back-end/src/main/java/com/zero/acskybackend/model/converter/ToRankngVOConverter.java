@@ -1,6 +1,5 @@
 package com.zero.acskybackend.model.converter;
 
-import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.model.vo.RankingVO;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import org.mapstruct.Mapper;
