@@ -61,14 +61,19 @@ create table system_resource
     COLLATE utf8mb4_0900_ai_ci
     COMMENT '系统资源表';
 
-insert into system_resource(name, url, identity, request_method, create_date, update_date)
-values ('账号密码登录', '/login/password', 'anon', 'POST', current_time, current_time);
+############
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('上传图片', '/file/upload/image/*', 'perms[common,admin]', 'POST', current_time, current_time);
+############
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('账号密码登录', '/login/password', 'anon', 'POST', current_time, current_time);
+############
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('获取用户列表', '/user/query/list/*/*', 'perms[admin]', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('查询用户总数', '/user/query/total', 'perms[admin]', 'GET', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('查询排行榜', '/user/query/ranking/*/*', 'perms[common,admin]', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('修改用户信息', '/user/modify/info', 'perms[common,admin]', 'PUT', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
@@ -79,10 +84,19 @@ insert into system_resource(name, url, identity, request_method, create_date, up
 values ('批量添加用户', '/user/insert/list/userinfo', 'perms[admin]', 'POST', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('删除用户信息', '/user/delete/userinfo/*', 'perms[admin]', 'DELETE', current_time, current_time);
+############
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
-values ('获取用户列表', '/problem/list/*/*', 'anon', 'GET', current_time, current_time);
+values ('获取题目列表', '/problem/list/*/*', 'anon', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('获取单个题目信息', '/problem/one/*', 'anon', 'GET', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('获取题目总数', '/problem/total', 'anon', 'GET', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('调试题目', '/problem/debug', 'perms[common,admin]', 'POST', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('提交题目', '/problem/commit', 'perms[common,admin]', 'POST', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('获取用户历史记录', '/problem/history/*', 'perms[common,admin]', 'GET', current_time, current_time);
 
 drop table if exists system_role;
 create table system_role
@@ -132,12 +146,10 @@ CREATE TABLE prob_info
     `title`       VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '题目标题',
     `difficulty`  TINYINT(4) COMMENT '题目难度',
     `time_limit`  INT default 1 COMMENT '时间限制(s)',
-    space_limit   INT default 64 COMMENT '空间限制(kb)',
+    `space_limit` INT default 64 COMMENT '空间限制(kb)',
     `description` TEXT CHARACTER SET utf8mb4 collate utf8mb4_0900_ai_ci COMMENT '题目描述',
     `input_desc`  TEXT CHARACTER SET utf8mb4 collate utf8mb4_0900_ai_ci COMMENT '输入格式描述',
     `output_desc` TEXT CHARACTER SET utf8mb4 collate utf8mb4_0900_ai_ci COMMENT '输出格式描述',
-#     `sample_input`  TEXT CHARACTER SET utf8mb4 collate utf8mb4_0900_ai_ci COMMENT '样例输入',
-#     `sample_output` TEXT CHARACTER SET utf8mb4 collate utf8mb4_0900_ai_ci COMMENT '样例输出',
     `hint`        TEXT CHARACTER SET utf8mb4 collate utf8mb4_0900_ai_ci COMMENT '提示信息',
     `create_ts`   DATE COMMENT '添加时间',
     `created_by`  INT COMMENT '添加者 id',
