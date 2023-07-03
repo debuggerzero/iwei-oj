@@ -88,7 +88,9 @@ values ('删除用户信息', '/user/delete/userinfo/*', 'perms[admin]', 'DELETE
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('获取题目列表', '/problem/list/*/*', 'anon', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
-values ('获取单个题目信息', '/problem/one/*', 'anon', 'GET', current_time, current_time);
+values ('获取题目详细信息', '/problem/one/*', 'perms[admin]', 'GET', current_time, current_time);
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('获取题目详细信息(Markdown 生成)', '/problem/oneByMd/*', 'anon', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('获取题目总数', '/problem/total', 'anon', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
