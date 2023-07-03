@@ -6,9 +6,11 @@ import com.zero.acskybackend.model.command.LoginCommand;
 import com.zero.acskybackend.model.command.ModifyPasswordCommand;
 import com.zero.acskybackend.model.common.GlobalExceptionEnum;
 import com.zero.acskybackend.model.common.Page;
+import com.zero.acskybackend.model.converter.ToRankngVOConverter;
 import com.zero.acskybackend.model.converter.ToUserInfoConverter;
 import com.zero.acskybackend.model.converter.ToUserInfoVoConverter;
 import com.zero.acskybackend.model.po.UserInfo;
+import com.zero.acskybackend.model.vo.RankingVO;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import com.zero.acskybackend.repo.UserInfoRepo;
 import com.zero.acskybackend.repo.mapper.UserRoleMapper;
@@ -65,6 +67,13 @@ public class UserInfoService {
         UserInfo userInfo = (UserInfo) subject.getPrincipal();
         userInfo.setAvatar(cosService.getImageUrl(userInfo.getAvatar()));
         return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
+    }
+
+    public List<RankingVO> queryRankingList(Page page) {
+        return queryUserInfoList(page)
+                .stream()
+                .map(ToRankngVOConverter.CONVERTER::toRankingVO)
+                .collect(Collectors.toList());
     }
 
     public List<UserInfoVO> queryUserInfoList(Page page) {

@@ -29,5 +29,7 @@ public interface ToUserInfoVoConverter {
     @Mapping(source = "avatar", target = "avatar")
     @Mapping(source = "createDate", target = "createDate")
     @Mapping(source = "level", target = "level")
+    @Mapping(source = "submitCnt", target = "submitCnt")
+    @Mapping(source = "passCnt", target = "passCnt")
     UserInfoVO toUserInfoVO(UserInfo userInfo);
 }

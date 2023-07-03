@@ -67,19 +67,21 @@
     </delete>
 
     <resultMap id="queryUserInfo" type="com.zero.acskybackend.model.po.UserInfo">
-        <id column="id" property="id" />
-        <result column="name" property="name" />
-        <result column="account" property="account" />
-        <result column="password" property="password" />
-        <result column="email" property="email" />
-        <result column="phone" property="phone" />
-        <result column="profile" property="profile" />
-        <result column="avatar" property="avatar" />
-        <result column="create_date" property="createDate" />
-        <result column="update_date" property="updateDate" />
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="account" property="account"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="profile" property="profile"/>
+        <result column="avatar" property="avatar"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="submit_cnt" property="submitCnt"/>
+        <result column="pass_cnt" property="passCnt"/>
         <association property="level">
-            <id column="role_id" property="id" />
-            <result column="describe" property="name" />
+            <id column="role_id" property="id"/>
+            <result column="describe" property="name"/>
         </association>
     </resultMap>
 
@@ -88,28 +90,40 @@
         user_info.id, user_info.name, user_info.account, user_info.password,
         user_info.email, user_info.phone, user_info.profile, user_info.avatar,
         user_info.create_date, user_info.update_date, role_id,
-        system_role.describe
+        system_role.describe,
+        submit_cnt,
+        pass_cnt
         from
-        user_info, user_role, system_role
+        user_info, user_role, system_role ,(
+        select
+        user_info.id uid,
+        count(pid) submit_cnt,
+        count(distinct pid) pass_cnt
+        from user_info
+        left join history on user_info.id = history.uid
+        group by user_info.id) as history
     </sql>
 
     <select id="queryUserInfo" resultMap="queryUserInfo">
-        <include refid="queryUserInfo" />
+        <include refid="queryUserInfo"/>
         <where>
             user_info.id = user_role.user_id
             and user_role.role_id = system_role.id
+            and user_info.id = history.uid
             and is_delete=0
             and account=#{account}
         </where>
     </select>
 
     <select id="queryUserInfoList" resultMap="queryUserInfo">
-        <include refid="queryUserInfo" />
+        <include refid="queryUserInfo"/>
         <where>
             user_info.id = user_role.user_id
             and user_role.role_id = system_role.id
+            and user_info.id=history.uid
             and is_delete=0
         </where>
+        order by pass_cnt desc, submit_cnt
         limit #{pageNumber}, #{pageSize}
     </select>
 

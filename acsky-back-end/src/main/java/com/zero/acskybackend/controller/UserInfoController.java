@@ -5,6 +5,7 @@ import com.zero.acskybackend.model.command.InsertUserCommand;
 import com.zero.acskybackend.model.command.ModifyPasswordCommand;
 import com.zero.acskybackend.model.common.GlobalExceptionEnum;
 import com.zero.acskybackend.model.common.Page;
+import com.zero.acskybackend.model.vo.RankingVO;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import com.zero.acskybackend.service.UserInfoService;
 import com.zero.acskybackend.utils.StringUtil;
@@ -36,6 +37,17 @@ public class UserInfoController {
     @GetMapping("/query/total")
     public Long queryTotalRecord() {
         return userInfoService.queryTotalRecord();
+    }
+
+    /**
+     * 获取排行榜
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/query/ranking/{pageNum}/{pageSize}")
+    public List<RankingVO> queryRanking(@PathVariable Long pageNum, @PathVariable Long pageSize) {
+        return userInfoService.queryRankingList(new Page(pageNum, pageSize));
     }
 
     /**
