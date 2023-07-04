@@ -8,11 +8,12 @@
                         <div class="col-5">
                             <div class="demo-type">
                                 <div>
-                                    <el-avatar :size="80" :src="store.state.user.avatar" />
+                                    <el-avatar :size="80" :src="store.state.user.avatar"/>
                                 </div>
                             </div>
                             <div class="button-container">
-                                <button type="button" class="btn btn-secondary btn-sm" @click="toggleComponent">修改</button>
+                                <button type="button" class="btn btn-secondary btn-sm" @click="toggleComponent">修改
+                                </button>
                             </div>
                         </div>
                         <div class="col-7">
@@ -26,50 +27,105 @@
             </div>
 
             <div class="card">
-                <div class="card-body">
-                    <div class="ojinfo">
-                        <div class="submitcnt">提交数：{{ store.state.user.submit_cnt }}</div>
-                        <div class="passcnt">通过数：{{ store.state.user.pass_cnt }}</div>
-                        <div class="passingrate">通过率：{{ passing_rate }}</div>
-                    </div>
+                <div class="card-body ojinfo">
+                    <div id="chart" class="ojinfo" :style="{ width: '350px', height: '380px' }"></div>
                 </div>
             </div>
         </div>
         <div v-if="!showComponent">
-            <UpdataInfo @button-click="toggleComponent" />
+            <UpdataInfo @button-click="toggleComponent"/>
         </div>
     </div>
 </template>
 
 <script>
 
-import { ref, computed } from 'vue';
-import { useStore } from 'vuex';
-import { UserFilled } from '@element-plus/icons-vue'
+import {ref, computed} from 'vue';
+import {useStore} from 'vuex';
 import UpdataInfo from './UpdataInfo.vue';
+import * as echarts from 'echarts';
+import {onMounted, onUnmounted} from "vue";
 
 export default {
     name: "UserInfo",
     setup() {
         const store = useStore();
         const passing_rate = computed(() => {
-            return store.state.user.pass_cnt / store.state.user.submit_cnt * 100 + '%';
+            return (store.state.user.pass_cnt / store.state.user.submit_cnt * 100).toFixed(2) + "%";
         });
 
+        onMounted(() => {
+            initChart();
+        })
+
+        let showComponent = ref(true);
+        const toggleComponent = () => {
+            showComponent.value = !showComponent.value;  // 点击按钮时切换组件的显示状态
+            if(showComponent.value == true)
+            {
+                initChart();
+            }
+        }
+
+        let chart;
+        let flag = ref(false);
+        const initChart = () => {
+
+            if(flag.value == false) {
+                chart = echarts.init(document.getElementById("chart"), "purple-passion");
+                flag.value = true;
+            }
+            chart.setOption({
+                title: {
+                    text: (store.state.user.pass_cnt / store.state.user.submit_cnt * 100).toFixed(2) + "%",
+                    left: "center",
+                    top: "46%",
+                    textStyle: {
+                        color: "#91cc75",
+                        fontSize: 20,
+                        align: "center"
+                    }
+                },
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                        // name: 'Access From',
+                        type: 'pie',
+                        radius: ['30%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            {value: store.state.user.submit_cnt, name: 'commit'},
+                            {value: store.state.user.pass_cnt, name: 'pass'}
+                        ]
+                    }
+                ]
+            });
+        }
         return {
             store,
             passing_rate,
+            showComponent,
+            initChart,
+            toggleComponent
         };
-    },
-    data() {
-        return {
-            showComponent: true // 初始状态为显示组件
-        };
-    },
-    methods: {
-        toggleComponent() {
-            this.showComponent = !this.showComponent;  // 点击按钮时切换组件的显示状态
-        }
     },
     components: {
         UpdataInfo,
@@ -124,7 +180,9 @@ export default {
 }
 
 .ojinfo {
-    padding-left: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
 }
 
 .card {
@@ -135,12 +193,12 @@ export default {
     display: flex;
 }
 
-.demo-type>div {
+.demo-type > div {
     flex: 1;
     text-align: center;
 }
 
-.demo-type>div:not(:last-child) {
+.demo-type > div:not(:last-child) {
     border-right: 1px solid var(--el-border-color);
 }
 </style>
