@@ -73,7 +73,7 @@ values ('获取用户列表', '/user/query/list/*/*', 'perms[admin]', 'GET', cur
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('查询用户总数', '/user/query/total', 'perms[admin]', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
-values ('查询排行榜', '/user/query/ranking/*/*', 'perms[common,admin]', 'GET', current_time, current_time);
+values ('查询排行榜', '/user/query/ranking/*/*', 'anon', 'GET', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
 values ('修改用户信息', '/user/modify/info', 'perms[common,admin]', 'PUT', current_time, current_time);
 insert into system_resource(name, url, identity, request_method, create_date, update_date)
