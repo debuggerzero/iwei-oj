@@ -72,6 +72,7 @@ import { useStore } from 'vuex'
 import { useRoute } from 'vue-router';
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import axios from 'axios';
+import {ElMessage} from "element-plus";
 
 export default {
     name: 'ProblemDetailsMain',
@@ -138,10 +139,10 @@ export default {
                     prob_state.value = rst.message;
                 })
                 .catch((err) => {
-                    button_state.value = true;
-                    rst.state_code = 1;
-                    prob_state.value = err.response.data.message;
-                    console.log(err);
+                    // button_state.value = true;
+                    // rst.state_code = 1;
+                    // prob_state.value = err.response.data.message;
+                    ElMessage.error(err.response.data.message);
                 })
         }
 
@@ -176,11 +177,10 @@ export default {
                     console.log(rst);
                 })
                 .catch((err) => {
-                    button_state.value = true;
-                    rst.state_code = 1;
-                    prob_state.value = err.response.data.message;
-
-                    console.log(err);
+                    // button_state.value = true;
+                    // rst.state_code = 1;
+                    // prob_state.value = err.response.data.message;
+                    ElMessage.error(err.response.data.message);
                 })
         }
 

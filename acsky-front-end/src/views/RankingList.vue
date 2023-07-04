@@ -24,6 +24,7 @@
 import ContentBase from "../components/ContentBase.vue"
 import {reactive, onMounted} from "vue"
 import axios from "axios"
+import {ElMessage} from "element-plus";
 
 export default {
     name: 'RankingList',
@@ -51,7 +52,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    ElMessage.error(err.response.data.message);
                 })
         });
 

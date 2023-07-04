@@ -42,6 +42,7 @@ import {onMounted, ref} from 'vue';
 import axios from "axios";
 import store from "@/store";
 import MarkdownIt from "markdown-it";
+import {ElMessage} from "element-plus";
 
 export default {
     name: 'ProblemHistory',
@@ -74,7 +75,7 @@ export default {
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    ElMessage.error(err.response.data.message);
                 })
         });
 

@@ -2,28 +2,31 @@
 <template>
     <ContentBase>
         <div class="table">
-            <el-table :data="problem_info" stripe style="width: 100%"  height="900" :table-layout="auto" @row-click="handleRowClick">
-                <el-table-column prop="id" label="编号" />
-                <el-table-column prop="title" label="题目" />
-                <el-table-column prop="submit_cnt" label="总提交数" />
-                <el-table-column prop="pass_cnt" label="通过数" />
-                <el-table-column prop="passing_rate" label="通过率" />
-                <el-table-column prop="difficulty" label="难度" />
+            <el-table :data="problem_info" stripe style="width: 100%" height="900" :table-layout="auto"
+                      @row-click="handleRowClick">
+                <el-table-column prop="id" label="编号"/>
+                <el-table-column prop="title" label="题目"/>
+                <el-table-column prop="submit_cnt" label="总提交数"/>
+                <el-table-column prop="pass_cnt" label="通过数"/>
+                <el-table-column prop="passing_rate" label="通过率"/>
+                <el-table-column prop="difficulty" label="难度"/>
             </el-table>
         </div>
     </ContentBase>
     <div class="pagination">
         <el-pagination v-model:current-page="currentPage3" v-model:page-size="pageSize3" :disabled="disabled"
-            :background="true" layout="prev, pager, next, jumper" :total="total" @size-change="handleSizeChange"
-            @current-change="handleCurrentChange" />
+                       :background="true" layout="prev, pager, next, jumper" :total="total"
+                       @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"/>
     </div>
 </template>
 
 <script>
 import ContentBase from "../components/ContentBase.vue"
-import { reactive, onMounted } from "vue"
-import { useRouter } from "vue-router"
+import {reactive, onMounted} from "vue"
+import {useRouter} from "vue-router"
 import axios from "axios"
+import {ElMessage} from "element-plus";
 
 export default {
     name: 'ProblemList',
@@ -33,7 +36,7 @@ export default {
 
         const router = useRouter();
         const handleRowClick = (row) => {
-            router.push({ name: 'detail', params: { id: row.id } });
+            router.push({name: 'detail', params: {id: row.id}});
             console.log("Clicked row:", row.id);
         };
         const total = 100;
@@ -50,12 +53,12 @@ export default {
                             difficulty: res.data[i].difficulty,
                             submit_cnt: res.data[i].submitCnt,
                             pass_cnt: res.data[i].passCnt,
-                            passing_rate: (res.data[i].passCnt / res.data[i].submitCnt * 100).toFixed(2)+"%"
+                            passing_rate: (res.data[i].passCnt / (res.data[i].submitCnt === 0 ? 1 : res.data[i].submitCnt) * 100).toFixed(2) + "%"
                         });
                     }
                 })
                 .catch((err) => {
-                    console.log(err);
+                    ElMessage.error(err.response.data.message);
                 })
         });
 

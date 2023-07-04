@@ -15,6 +15,7 @@
 
 <script>
 import { mapMutations } from 'vuex';
+import { ElMessage } from 'element-plus'
 
 export default {
     name: 'LoginView',
@@ -68,7 +69,7 @@ export default {
             xhr.onreadystatechange = () => {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200) {
-                        alert("登录成功！");
+                        ElMessage.success("登录成功！");
                         var data = JSON.parse(xhr.responseText);
                         this.$store.commit("updateUser", {
                             isLoggedIn: true,
@@ -87,7 +88,7 @@ export default {
                         localStorage.setItem('user', JSON.stringify(this.$store.state.user));
                         this.$router.push({ name: 'problem' });
                     } else {
-                        alert(xhr.responseText);
+                        ElMessage.error(xhr.responseText);
                     }
                 }
             };

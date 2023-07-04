@@ -21,6 +21,7 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios'
 import MarkdownIt from 'markdown-it'
+import {ElMessage} from "element-plus";
 
 export default {
     name: 'ProblemDetailsAside',
@@ -96,7 +97,7 @@ export default {
                     console.log(renderedHTML);
                 })
                 .catch((err) => {
-                    console.log(err);
+                    ElMessage.error(err.response.data.message);
                 })
         });
 
@@ -107,8 +108,6 @@ export default {
             // renderedHTML.value = md.render(description.toString());
             const context = problem_info_new.context;
             renderedHTML.value = md.render(context.toString());
-
-
         };
 
         return {
