@@ -1,17 +1,272 @@
 <!-- 首页 -->
 <template>
-
+    <header class="header-global">
+        <nav id="navbar-main" class="navbar navbar-main navbar-expand-lg navbar-transparent navbar-light headroom">
+            <div class="container">
+                <a class="navbar-brand mr-lg-5" href="#">
+                    <h4 class="text-white">AcSky</h4>
+                </a>
+                <div class="navbar-collapse collapse" id="navbar_global">
+                    <ul class="navbar-nav navbar-nav-hover align-items-lg-center ml-lg-auto">
+                        <li class="nav-item d-none d-lg-block ml-lg-4">
+                            <a href="/login" class="btn btn-neutral btn-icon">
+                                    <span class="btn-inner--icon"><i class="fa fa-user-circle"
+                                                                     style="zoom: 1.3"></i></span>
+                                <span class="nav-link-inner--text">Sign in</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <section class="section section-hero section-shaped">
+            <!--背景方框-->
+            <div class="shape shape-style-3 shape-default">
+                <span class="span-150"></span>
+                <span class="span-50"></span>
+                <span class="span-50"></span>
+                <span class="span-75"></span>
+                <span class="span-100"></span>
+                <span class="span-75"></span>
+                <span class="span-50"></span>
+                <span class="span-100"></span>
+                <span class="span-50"></span>
+                <span class="span-100"></span>
+            </div>
+            <!--介绍&登录和进入按钮-->
+            <div class="page-header">
+                <div class="container shape-container d-flex align-items-center py-lg">
+                    <div class="col px-0">
+                        <div class="row align-items-center justify-content-center">
+                            <div class="col-lg-6 text-center">
+                                <h1 class="text-white display-3">一款在线算法练习平台</h1>
+                                <h3 class="display-5 font-weight-normal text-white">
+                                    开始您的算法之旅，挑战自我，探索无限可能吧！</h3>
+                                <div class="btn-wrapper mt-4">
+                                    <router-link class="btn btn-danger btn-icon mt-3 mb-sm-0"
+                                                 :to="{ name: 'problem' }">
+                                        <span class="btn-inner--icon"><i class="fa fa-play"
+                                                                         style="zoom:1.1;"></i></span>
+                                        <span class="btn-inner--text">开始吧！</span>
+                                    </router-link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--分割线-->
+            <div class="separator separator-bottom separator-skew zindex-100">
+                <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <polygon class="fill-white" points="2560 0 2560 100 0 100"></polygon>
+                </svg>
+            </div>
+        </section>
+        <br><br>
+        <hr>
+        <!-- 特点卡片 -->
+        <section class="section section-lg pt-lg-0 mt--200 ">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-12">
+                        <div class="row row-grid">
+                            <div class="col-lg-4">
+                                <div class="card card-lift--hover shadow border-0">
+                                    <div class="card-body py-5">
+                                        <div class="icon icon-shape icon-shape-primary rounded-circle mb-4">
+                                            <i class="fas fa-user-shield"></i>
+                                        </div>
+                                        <h6 class="text-primary text-uppercase">安全高效</h6>
+                                        <p class="description mt-3">
+                                            全站采用HTTPS加密，系统会自动评测您的代码，并给出相应的反馈和结果。</p>
+                                        <div>
+                                            <span class="badge badge-pill badge-primary">安全</span>
+                                            <span class="badge badge-pill badge-primary">高效</span>
+                                            <span class="badge badge-pill badge-primary">专业</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card card-lift--hover shadow border-0">
+                                    <div class="card-body py-5">
+                                        <div class="icon icon-shape icon-shape-success rounded-circle mb-4">
+                                            <i class="fa fa-fighter-jet"></i>
+                                        </div>
+                                        <h6 class="text-success text-uppercase">快速稳定</h6>
+                                        <p class="description mt-3">
+                                            全自动均匀负载，多节点极速体验，各种流媒体网站解锁服务。</p>
+                                        <div>
+                                            <span class="badge badge-pill badge-success">简单</span>
+                                            <span class="badge badge-pill badge-success">便捷</span>
+                                            <span class="badge badge-pill badge-success">方便</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="card card-lift--hover shadow border-0">
+                                    <div class="card-body py-5">
+                                        <div class="icon icon-shape icon-shape-warning rounded-circle mb-4">
+                                            <i class="fa fa-puzzle-piece"></i>
+                                        </div>
+                                        <h6 class="text-warning text-uppercase">完美适配</h6>
+                                        <p class="description mt-3">响应式布局，UI
+                                            适配手机、平板、电脑，给用户最好的使用体验。</p>
+                                        <div>
+                                            <span class="badge badge-pill badge-warning">手机</span>
+                                            <span class="badge badge-pill badge-warning">平板</span>
+                                            <span class="badge badge-pill badge-warning">电脑</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 使用人群卡片 -->
+        <section class="section features-6 bg-secondary">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="info info-horizontal info-hover-primary">
+                            <div class="description pl-4">
+                                <h5 class="title" _msthash="1861639" _msttexthash="16119259">对于开发人员</h5>
+                                <p _msthash="1827722" _msttexthash="480973259">
+                                    现在是时候让一切变得美好了。无论您是一个有着丰富开发经验的程序员，还是正在追求编程技艺的新手，我们的在线算法练习平台都将为您带来改变。我们明白伟大的人总是能够脱颖而出，因为他们具备着独特的技能和热情。而我们的平台将成为您实现自己潜力的地方。</p>
+                            </div>
+                        </div>
+                        <div class="info info-horizontal info-hover-primary mt-5">
+                            <div class="description pl-4">
+                                <h5 class="title" _msthash="1862263" _msttexthash="16508739">对于研究员</h5>
+                                <p _msthash="1828346" _msttexthash="448367140">
+                                    我一生中真正想做的事，没有什么是我不能做到的。这是我的技能。除了学习的能力，我在任何方面都没有特别的天赋。作为一名研究员，您对算法和编程有着浓厚的兴趣，并且始终渴望不断学习。我们的在线算法练习平台将为您提供一个深入探索和应用算法的平台，让您能够更好地发挥自己的能力。</p>
+                            </div>
+                        </div>
+                        <div class="info info-horizontal info-hover-primary mt-5">
+                            <div class="description pl-4">
+                                <h5 class="title" _msthash="1862887" _msttexthash="15779790">对于初学者</h5>
+                                <p _msthash="1828970" _msttexthash="667248582">
+                                    不要害怕犯错，因为你不能从赞美中学到任何东西。如果我所做的一切都失败了-事实并非如此。对于正在踏入编程世界的初学者，我们明白您可能会感到迷茫和不安。然而，不要担心，我们的在线算法练习平台将给予您充分的支持和鼓励。我们相信每一个失败都是成功的一部分，并且您将通过不断的练习和尝试逐渐成长为一名优秀的程序员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-10 mx-md-auto">
+                        <img class="ml-lg-5" src="../../public/static/plugins/welcome/ill.png" width="100%" title=""
+                             style="">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 界面卡片-->
+        <section class="section section-lg ">
+            <div class="container ">
+                <div class="row row-grid align-items-center">
+                    <div class="col-md-6 order-md-2">
+                        <img src="../../public/static/plugins/welcome/promo.png" class="img-fluid floating">
+                    </div>
+                    <div class="col-md-6 order-md-1">
+                        <div class="pr-md-5">
+                            <div class="icon icon-lg icon-shape icon-shape-success shadow rounded-circle mb-5">
+                                <i class="fa fa-cog fa-spin fa-1x fa-fw"></i>
+                            </div>
+                            <h3>简单的操作界面</h3>
+                            <p>
+                                我们的平台设计简洁直观，方便您轻松地浏览和选择题目。您可以根据自己的兴趣和水平选择适合的题目进行练习。每个题目都配有详细的问题描述和输入输出样例，帮助您更好地理解问题的要求和解决思路。在提交解答后，我们的系统会自动评测您的代码，并给出相应的反馈和结果。</p>
+                            <ul class="list-unstyled mt-5">
+                                <li class="py-2">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <div class="badge badge-circle badge-success mr-3">
+                                                <i class="fa fa-hourglass-half"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">即时更新</h6>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="py-2">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <div class="badge badge-circle badge-success mr-3">
+                                                <i class="fa fa-sync-alt"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">流畅操作</h6>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="py-2">
+                                    <div class="d-flex align-items-center">
+                                        <div>
+                                            <div class="badge badge-circle badge-success mr-3">
+                                                <i class="fa fa-bullseye"></i>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">完善体验</h6>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--页脚-->
+        <footer class="footer">
+            <div class="container">
+                <div class="row align-items-center justify-content-md-between">
+                    <div class="col-md-6">
+                        <ul class="nav nav-footer justify-content-end">
+                            <li class="nav-item scroll_top">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="rounded-circle icon icon-tabler icon-tabler-arrow-bar-to-up" width="24"
+                                     height="24"
+                                     viewBox="0 0 24 24" stroke-width="4" stroke="#00abfb" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                    <line x1="12" y1="10" x2="12" y2="20"/>
+                                    <line x1="12" y1="10" x2="16" y2="14"/>
+                                    <line x1="12" y1="10" x2="8" y2="14"/>
+                                    <line x1="4" y1="4" x2="20" y2="4"/>
+                                </svg>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
 </template>
 
 <script>
-
+import $ from 'jquery';
 
 export default {
-  name: 'HomeView',
-  components: {
-
-  }
+    name: 'HomeView',
+    setup() {
+        $(document).ready(function ($) {
+            $('.scroll_top').click(function () {
+                $('html,body').animate({scrollTop: '0px'}, 100);
+            }); //100毫秒
+        });
+    },
+    components: {},
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+/*@import "../../public/static/plugins/welcome/style.min.css";*/
+@import "../../public/css/font-awesome.css";
+</style>
+
+

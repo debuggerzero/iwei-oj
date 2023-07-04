@@ -12,14 +12,14 @@ import ProblemDetails from '../views/ProblemDetails';
 const routes = [
   {
     path: '/',
+    name: 'home',
+    component: HomeView
+  },
+  {
+    path: '/frame',
     name: 'frame',
     component: FrameView,
     children: [
-      {
-        path: '/home',
-        name: 'home',
-        component: HomeView
-      },
       {
         path: '/userprofile',
         name: 'userprofile',

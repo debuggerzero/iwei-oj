@@ -6,11 +6,15 @@
     <ContentBase>
         <div class="table">
             <el-table :data="rank_info" height="800" style="width: 100%">
-                <el-table-column prop="rank" label="排名" />
-                <el-table-column prop="name" label="用户" />
-                <el-table-column prop="avatar" label=" "> <el-avatar :src="avatar" /></el-table-column>
-                <el-table-column prop="pass_cnt" label="通过数" />
-                <el-table-column prop="profile" label="个人简介" />
+                <el-table-column prop="rank" label="排名" width="100"/>
+                <el-table-column label="avatar" width="120">
+                    <template #default="{ row }">
+                        <el-avatar :src="row.avatar"/>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="name" label="用户" width="180"/>
+                <el-table-column prop="pass_cnt" label="通过数"/>
+                <el-table-column prop="profile" label="个人简介"/>
             </el-table>
         </div>
     </ContentBase>
@@ -18,7 +22,7 @@
 
 <script>
 import ContentBase from "../components/ContentBase.vue"
-import { reactive, onMounted } from "vue"
+import {reactive, onMounted} from "vue"
 import axios from "axios"
 
 export default {

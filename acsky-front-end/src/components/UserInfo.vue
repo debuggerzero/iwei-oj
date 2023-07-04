@@ -19,7 +19,7 @@
                         <div class="col-7">
                             <div class="username">{{ store.state.user.name }}</div>
                             <div class="account">{{ store.state.user.email }}</div>
-                            <div>个人简介</div>
+                            <div class="profile">个人简介</div>
                             <div class="profiles">{{ store.state.user.profile }}</div>
                         </div>
                     </div>
@@ -28,7 +28,8 @@
 
             <div class="card">
                 <div class="card-body ojinfo">
-                    <div id="chart" class="ojinfo" :style="{ width: '350px', height: '380px' }"></div>
+                    <PassingRate :width="'350px'" :height="'380px'" :pass_cnt="store.state.user.pass_cnt"
+                                 :submit_cnt="store.state.user.submit_cnt"/>
                 </div>
             </div>
         </div>
@@ -45,6 +46,7 @@ import {useStore} from 'vuex';
 import UpdataInfo from './UpdataInfo.vue';
 import * as echarts from 'echarts';
 import {onMounted, onUnmounted} from "vue";
+import PassingRate from "@/components/PassingRate.vue";
 
 export default {
     name: "UserInfo",
@@ -54,80 +56,20 @@ export default {
             return (store.state.user.pass_cnt / store.state.user.submit_cnt * 100).toFixed(2) + "%";
         });
 
-        onMounted(() => {
-            initChart();
-        })
-
         let showComponent = ref(true);
         const toggleComponent = () => {
             showComponent.value = !showComponent.value;  // 点击按钮时切换组件的显示状态
-            if(showComponent.value == true)
-            {
-                initChart();
-            }
         }
 
-        let chart;
-        let flag = ref(false);
-        const initChart = () => {
-
-            if(flag.value == false) {
-                chart = echarts.init(document.getElementById("chart"), "purple-passion");
-                flag.value = true;
-            }
-            chart.setOption({
-                title: {
-                    text: (store.state.user.pass_cnt / store.state.user.submit_cnt * 100).toFixed(2) + "%",
-                    left: "center",
-                    top: "46%",
-                    textStyle: {
-                        color: "#91cc75",
-                        fontSize: 20,
-                        align: "center"
-                    }
-                },
-                tooltip: {
-                    trigger: 'item'
-                },
-                legend: {
-                    top: '5%',
-                    left: 'center'
-                },
-                series: [
-                    {
-                        // name: 'Access From',
-                        type: 'pie',
-                        radius: ['30%', '70%'],
-                        avoidLabelOverlap: false,
-                        itemStyle: {
-                            borderRadius: 10,
-                            borderColor: '#fff',
-                            borderWidth: 2
-                        },
-                        label: {
-                            show: false,
-                            position: 'center'
-                        },
-                        labelLine: {
-                            show: false
-                        },
-                        data: [
-                            {value: store.state.user.submit_cnt, name: 'commit'},
-                            {value: store.state.user.pass_cnt, name: 'pass'}
-                        ]
-                    }
-                ]
-            });
-        }
         return {
             store,
             passing_rate,
             showComponent,
-            initChart,
             toggleComponent
         };
     },
     components: {
+        PassingRate,
         UpdataInfo,
     },
 };
@@ -143,7 +85,11 @@ export default {
     font-size: 12px;
     color: gray;
 }
-
+.profile {
+    margin-top: 10px;
+    font-weight: bold;
+    /*font-size: 15px;*/
+}
 .button-container {
     display: flex;
     justify-content: center;

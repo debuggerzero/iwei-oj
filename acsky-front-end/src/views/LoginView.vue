@@ -85,7 +85,7 @@ export default {
                             pass_cnt: data.passCnt,
                         });
                         localStorage.setItem('user', JSON.stringify(this.$store.state.user));
-                        this.$router.push({ name: 'home' });
+                        this.$router.push({ name: 'problem' });
                     } else {
                         alert(xhr.responseText);
                     }
