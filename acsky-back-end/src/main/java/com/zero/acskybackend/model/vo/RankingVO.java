@@ -40,4 +40,9 @@ public class RankingVO {
      */
     private Long passCnt;
 
+    /**
+     * 个人简介
+     */
+    private String profile;
+
 }

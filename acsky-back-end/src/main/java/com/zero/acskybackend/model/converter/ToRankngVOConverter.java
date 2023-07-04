@@ -27,6 +27,7 @@ public interface ToRankngVOConverter {
     @Mapping(source = "avatar", target = "avatar")
     @Mapping(source = "submitCnt", target = "submitCnt")
     @Mapping(source = "passCnt", target = "passCnt")
+    @Mapping(source = "profile", target = "profile")
     RankingVO toRankingVO(UserInfoVO userInfoVO);
 
 }

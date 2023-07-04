@@ -82,6 +82,7 @@ public class UserInfoService {
         return userInfoRepo.queryUserInfoList(page)
                 .stream()
                 .map(ToUserInfoVoConverter.CONVERTER::toUserInfoVO)
+                .peek(o -> o.setAvatar(cosService.getImageUrl(o.getAvatar())))
                 .collect(Collectors.toList());
     }
 
