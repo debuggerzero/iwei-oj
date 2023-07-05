@@ -4,7 +4,7 @@
         <div class="container">
             <div class="card">
                 <div class="card-body">
-                    <el-table :data="tableData" height="100%" style="width: 100%">
+                    <el-table :data="tableData" height="330px" style="width: 100%">
                         <el-table-column prop="pid" label="题号" width="100"/>
                         <el-table-column prop="type" label="语言类别" width="130"/>
                         <el-table-column prop="proTime" label="时间" width="180"/>
