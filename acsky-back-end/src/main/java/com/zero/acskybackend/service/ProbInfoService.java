@@ -60,7 +60,7 @@ public class ProbInfoService {
 
         StringBuilder builder = new StringBuilder();
         builder.append(probInfo.getDescription());
-        builder.append("\n");
+        builder.append("\n\n");
         if (probInfo.getInputDesc() != null) {
             builder.append("**输入描述：**\n- ");
             builder.append(probInfo.getInputDesc());
