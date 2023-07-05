@@ -5,47 +5,55 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-5">
-                            <div class="demo-type">
-                                <div>
-                                    <el-avatar :size="80" :src="store.state.user.avatar"/>
+                        <el-row :gutter="1">
+                            <el-col :span="9">
+                                <div class="demo-type">
+                                    <div>
+                                        <el-avatar :size="80" :src="store.state.user.avatar" />
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="button-container">
-                                <button type="button" class="btn btn-secondary btn-sm" @click="toggleComponent">修改
-                                </button>
-                            </div>
-                        </div>
-                        <div class="col-7">
-                            <div class="username">{{ store.state.user.name }}</div>
-                            <div class="account">{{ store.state.user.email }}</div>
-                            <div class="profile">个人简介</div>
-                            <div class="profiles">{{ store.state.user.profile }}</div>
-                        </div>
+                                <div class="button-container">
+                                    <button type="button" class="btn btn-secondary btn-sm" @click="toggleComponent">修改
+                                    </button>
+                                </div>
+                            </el-col>
+                            <el-col :span="1">
+                                <el-divider direction="vertical" class="line" />
+                            </el-col>
+                            <el-col :span="14">
+                                <div class="info">
+                                    <div class="username">{{ store.state.user.name }}</div>
+                                    <div class="account">{{ store.state.user.email }}</div>
+                                    <div class="profile">个人简介</div>
+                                    <div class="profiles">{{ store.state.user.profile }}</div>
+                                </div>
+                            </el-col>
+                        </el-row>
                     </div>
                 </div>
             </div>
-
-            <div class="card">
-                <div class="card-body ojinfo">
-                    <PassingRate :width="'350px'" :height="'380px'" :pass_cnt="store.state.user.pass_cnt"
-                                 :submit_cnt="store.state.user.submit_cnt"/>
+            <div class='card_container'>
+                <div class="card ">
+                    <div class="card-body ojinfo">
+                        <PassingRate :width="'350px'" :height="'380px'" :pass_cnt="store.state.user.pass_cnt"
+                            :submit_cnt="store.state.user.submit_cnt" />
+                    </div>
                 </div>
             </div>
         </div>
         <div v-if="!showComponent">
-            <UpdataInfo @button-click="toggleComponent"/>
+            <UpdataInfo @button-click="toggleComponent" />
         </div>
     </div>
 </template>
 
 <script>
 
-import {ref, computed} from 'vue';
-import {useStore} from 'vuex';
+import { ref, computed } from 'vue';
+import { useStore } from 'vuex';
 import UpdataInfo from './UpdataInfo.vue';
 import * as echarts from 'echarts';
-import {onMounted, onUnmounted} from "vue";
+import { onMounted, onUnmounted } from "vue";
 import PassingRate from "@/components/PassingRate.vue";
 
 export default {
@@ -85,11 +93,13 @@ export default {
     font-size: 12px;
     color: gray;
 }
+
 .profile {
     margin-top: 10px;
     font-weight: bold;
     /*font-size: 15px;*/
 }
+
 .button-container {
     display: flex;
     justify-content: center;
@@ -139,12 +149,31 @@ export default {
     display: flex;
 }
 
-.demo-type > div {
+.demo-type>div {
     flex: 1;
     text-align: center;
 }
 
-.demo-type > div:not(:last-child) {
+.demo-type>div:not(:last-child) {
     border-right: 1px solid var(--el-border-color);
+}
+
+.line {
+    height: 140px;
+}
+
+.profiles {
+    font-size: 12px;
+    color: gray;
+    margin-top: 5px;
+    margin-left: 0px;
+}
+
+.info {
+    margin-left: 9px;
+}
+
+.card_container {
+  margin-top:20px;
 }
 </style>

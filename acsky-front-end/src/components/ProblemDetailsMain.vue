@@ -5,8 +5,8 @@
                 <el-container>
                     <el-main class="main">
                         <div>
-                            <el-input class="code" v-model="code_input" resize="none" :rows="26" type="textarea" @keydown="insertSpace"
-                                placeholder="//在这里写下你的代码"
+                            <el-input class="code" v-model="code_input" resize="none" :rows="26" type="textarea"
+                                @keydown="insertSpace" placeholder="//在这里写下你的代码"
                                 input-style=" background-color: #f5f5f5;border-radius: 5px;padding: 10px;font-family: Consolas, Monaco, monospace;font-size: 14px;line-height: 1.5;color: #333; overflow-x: auto;" />
                         </div>
                     </el-main>
@@ -72,7 +72,7 @@ import { useStore } from 'vuex'
 import { useRoute } from 'vue-router';
 import { reactive, ref, onMounted, nextTick } from 'vue'
 import axios from 'axios';
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 
 export default {
     name: 'ProblemDetailsMain',
@@ -95,15 +95,29 @@ export default {
             message: '',
             stdout: ''
         })
-        const code_input = ref(' ');
+        const code_input = ref('');
 
+        // const insertSpace = (event) => {
+        //     if (event.keyCode === 9 || event.code === 'Tab') {  // 判断按下的是否是 Tab 键
+        //         event.preventDefault();  // 阻止默认行为（即将 Tab 键切换到下一个可聚焦元素）
+        //         code_input.value += '    ';
+        //     }
+        // };
         const insertSpace = (event) => {
-            if (event.keyCode === 9 || event.code === 'Tab') {  // 判断按下的是否是 Tab 键
-                event.preventDefault();  // 阻止默认行为（即将 Tab 键切换到下一个可聚焦元素）
-                code_input.value += '    ';
+            if (event.keyCode === 9 || event.code === 'Tab') {
+                event.preventDefault();
+                const input = event.target;
+                const { selectionStart, selectionEnd } = input;  // 获取当前光标的位置
+
+                const value = input.value;
+                const newValue = value.substring(0, selectionStart) + '    ' + value.substring(selectionEnd);
+
+                input.value = newValue;
+
+                // 恢复光标位置
+                input.selectionStart = input.selectionEnd = selectionStart + 4;
             }
         };
-
 
         var textarea_input = ref('')
         var textarea_output = ref('')

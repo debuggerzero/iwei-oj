@@ -39,7 +39,7 @@ export default {
                 title: {
                     top: 10,
                     left: 'center',
-                    text: '历史记录'
+                    // text: '历史记录'
                 },
                 tooltip: {},
                 visualMap: [{

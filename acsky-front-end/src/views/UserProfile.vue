@@ -3,12 +3,14 @@
     <ContentBase>
         <div class="row">
             <div class="col-4">
-                <UserInfo/>
+                <UserInfo />
             </div>
             <viv class="col-8">
-                <CalendarChart :width="'100%'" :height="'220px'" />
                 <ProblemHistory />
             </viv>
+        </div>
+        <div class="div-margin">
+            <CalendarChart :width="'100%'" :height="'220px'" />
         </div>
     </ContentBase>
 </template>;
@@ -32,7 +34,7 @@ export default {
 
 <style scoped>
 
-/* .row {
-    text-align: center;
-} */
+.div-margin{
+    margin-top: -22px;
+}
 </style>
