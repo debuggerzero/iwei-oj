@@ -1,10 +1,12 @@
 package com.zero.acskybackend.repo.impl;
 
+import com.zero.acskybackend.model.Query.UserInfoQuery;
 import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.repo.UserInfoRepo;
 import com.zero.acskybackend.repo.mapper.UserInfoMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,8 +34,8 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     }
 
     @Override
-    public UserInfo queryUserInfo(String account) {
-        return userInfoMapper.queryUserInfo(account);
+    public UserInfo queryUserInfo(UserInfoQuery userInfoQuery) {
+        return userInfoMapper.queryUserInfo(userInfoQuery);
     }
 
     @Override

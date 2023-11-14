@@ -1,5 +1,6 @@
 package com.zero.acskybackend.repo;
 
+import com.zero.acskybackend.model.Query.UserInfoQuery;
 import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
 
@@ -21,16 +22,17 @@ public interface UserInfoRepo {
 
     /**
      * 查询用户列表
+     * @param page 分页
      * @return 用户列表
      */
     List<UserInfo> queryUserInfoList(Page page);
 
     /**
      * 通过账号查询用户信息
-     * @param account 账号
+     * @param userInfoQuery 用户信息查询器
      * @return 用户信息
      */
-    UserInfo queryUserInfo(String account);
+    UserInfo queryUserInfo(UserInfoQuery userInfoQuery);
 
     /**
      * 更新用户信息

@@ -1,7 +1,9 @@
 package com.zero.acskybackend.controller;
 
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.common.BaseResponse;
+import com.zero.acskybackend.model.common.ErrorCode;
+import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.vo.ImageInfoVO;
 import com.zero.acskybackend.service.ImageOperationService;
 import lombok.RequiredArgsConstructor;
@@ -26,16 +28,17 @@ public class FileOperationController {
     /**
      * 上传图片
      * @param file 图片
-     * @param id 用户 Id
+     * @param userId 用户 Id
      * @return 图片信息
      */
-    @PostMapping("/upload/image/{id}")
-    public ImageInfoVO uploadImage(@RequestPart(value = "file") MultipartFile file, @PathVariable Integer id) {
-
+    @PostMapping("/upload/image/{userId}")
+    public BaseResponse<ImageInfoVO> uploadImage(@RequestPart(value = "file") MultipartFile file, @PathVariable Integer userId) {
         if (Objects.isNull(file)) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "文件上传失败");
         }
-
-        return fileOperationService.uploadImage(file, id);
+        if (Objects.isNull(userId)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        return ResultUtils.success(fileOperationService.uploadImage(file, userId));
     }
 }

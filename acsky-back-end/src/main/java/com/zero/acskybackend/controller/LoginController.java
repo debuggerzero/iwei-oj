@@ -1,8 +1,10 @@
 package com.zero.acskybackend.controller;
 
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.command.LoginCommand;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.request.LoginRequest;
+import com.zero.acskybackend.model.common.BaseResponse;
+import com.zero.acskybackend.model.common.ErrorCode;
+import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.vo.UserInfoVO;
 import com.zero.acskybackend.service.UserInfoService;
 import com.zero.acskybackend.utils.StringUtil;
@@ -26,21 +28,24 @@ public class LoginController {
 
     /**
      * 账号密码登录
-     * @param loginCommand 账号密码
+     * @param loginRequest 账号密码
      * @return 用户信息
      */
     @PostMapping("/password")
-    public UserInfoVO login(@RequestBody LoginCommand loginCommand) {
-        if (Objects.isNull(loginCommand)) {
-            throw new AssertionException(GlobalExceptionEnum.ACCOUNT_OR_PASSWORD_EXCEPTION);
+    public BaseResponse<UserInfoVO> login(@RequestBody LoginRequest loginRequest) {
+        if (Objects.isNull(loginRequest)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        String account = loginCommand.getAccount();
-        String password = loginCommand.getPassword();
-        if (StringUtil.isEmpty(account) || StringUtil.isEmpty(password)) {
-            throw new AssertionException(GlobalExceptionEnum.ACCOUNT_OR_PASSWORD_EXCEPTION);
+        String account = loginRequest.getAccount();
+        String password = loginRequest.getPassword();
+        if (StringUtil.isEmpty(account)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "账号不能为空");
         }
-        loginCommand.setPassword(StringUtil.md5(password));
-        return userInfoService.login(loginCommand);
+        if (StringUtil.isEmpty(password)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "密码不能为空");
+        }
+        loginRequest.setPassword(StringUtil.md5(password));
+        return ResultUtils.success(userInfoService.login(loginRequest));
     }
 
 }

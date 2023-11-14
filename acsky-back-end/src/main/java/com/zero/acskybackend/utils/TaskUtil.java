@@ -1,6 +1,6 @@
 package com.zero.acskybackend.utils;
 
-import com.zero.acskybackend.model.command.ProblemCommand;
+import com.zero.acskybackend.model.request.ProblemRequest;
 import com.zero.acskybackend.model.common.LanguageEnum;
 import com.zero.acskybackend.model.common.StatusEnum;
 import com.zero.acskybackend.model.dto.RunResultDTO;
@@ -33,7 +33,7 @@ public class TaskUtil {
         RUNTIME = Runtime.getRuntime();
     }
 
-    public static Answer compileAndRun(ProblemCommand question) throws IOException, InterruptedException {
+    public static Answer compileAndRun(ProblemRequest question) throws IOException, InterruptedException {
 
         String type = question.getType() != null ? question.getType() : "c++";
         if (question.getTimeLimit() == null) {

@@ -1,7 +1,7 @@
 package com.zero.acskybackend.service;
 
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.common.ErrorCode;
 import com.zero.acskybackend.model.po.ImageInfo;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.model.vo.ImageInfoVO;
@@ -38,7 +38,7 @@ public class ImageOperationService {
 
     private String getFilename(String contentType) {
         if (Objects.isNull(contentType)) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.SYSTEM_ERROR);
         }
         return StringUtil.uuid() + "." + contentType.substring(contentType.lastIndexOf("/") + 1);
     }
@@ -48,26 +48,26 @@ public class ImageOperationService {
         try {
             hash = DigestUtils.md5Hex(inputStream);
         } catch (IOException e) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.SYSTEM_ERROR);
         }
         return hash;
     }
 
     private ImageInfoVO insertImage(
-            Integer id,
+            Integer userId,
             String name,
             String imageHash,
             InputStream inputStream,
             long contentLength
     ) {
-        String key = "/" + id + "/assets/" + name;
+        String key = "/" + userId + "/assets/" + name;
         UserInfo userInfo = new UserInfo();
-        userInfo.setId(id);
+        userInfo.setId(userId);
         Integer length = insertImage(
                 new ImageInfo(null, name, key, imageHash, userInfo, null)
         );
         if (length == 0) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         key = cosService.putObject(inputStream, key, contentLength);
         return new ImageInfoVO(-1, name, cosService.getImageUrl(key));
@@ -82,7 +82,7 @@ public class ImageOperationService {
             }
             outputStream.flush();
         } catch (IOException e) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         return outputStream;
     }
@@ -91,7 +91,7 @@ public class ImageOperationService {
         return imageInfoRepo.insertImage(imageInfo);
     }
 
-    public ImageInfoVO uploadImage(MultipartFile multipartFile, Integer id) {
+    public ImageInfoVO uploadImage(MultipartFile multipartFile, Integer userId) {
 
         InputStream inputStream;
         long contentLength;
@@ -99,12 +99,12 @@ public class ImageOperationService {
             inputStream = multipartFile.getInputStream();
             contentLength = multipartFile.getResource().contentLength();
         } catch (IOException e) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         ByteArrayOutputStream outputStream = cloneInputStream(inputStream);
         inputStream = new ByteArrayInputStream(outputStream.toByteArray());
         String imageHash = getImageHash(inputStream);
-        ImageInfo imageInfo = imageInfoRepo.queryImageInfoByHash(id, imageHash);
+        ImageInfo imageInfo = imageInfoRepo.queryImageInfoByHash(userId, imageHash);
 
         ImageInfoVO imageInfoVO;
         if (Objects.nonNull(imageInfo)) {
@@ -112,7 +112,7 @@ public class ImageOperationService {
         } else {
             String filename = getFilename(multipartFile.getContentType());
             inputStream = new ByteArrayInputStream(outputStream.toByteArray());
-            return insertImage(id, filename, imageHash, inputStream, contentLength);
+            return insertImage(userId, filename, imageHash, inputStream, contentLength);
         }
 
         return imageInfoVO;

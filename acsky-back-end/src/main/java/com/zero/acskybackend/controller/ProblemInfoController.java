@@ -1,9 +1,11 @@
 package com.zero.acskybackend.controller;
 
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.command.ProblemCommand;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.request.ProblemRequest;
+import com.zero.acskybackend.model.common.BaseResponse;
+import com.zero.acskybackend.model.common.ErrorCode;
 import com.zero.acskybackend.model.common.Page;
+import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.po.History;
 import com.zero.acskybackend.model.po.ProbInfo;
 import com.zero.acskybackend.model.vo.Answer;
@@ -39,8 +41,8 @@ public class ProblemInfoController {
      * @return 总数
      */
     @GetMapping("/total")
-    public Long queryProbInfoTotal() {
-        return probInfoService.queryTotal();
+    public BaseResponse<Long> queryProbInfoTotal() {
+        return ResultUtils.success(probInfoService.queryTotal());
     }
 
     /**
@@ -51,8 +53,11 @@ public class ProblemInfoController {
      * @return 题目列表
      */
     @GetMapping("/list/{pageNum}/{pageSize}")
-    public List<ProbInfoVO> queryProbInfoVOList(@PathVariable Long pageNum, @PathVariable Long pageSize) {
-        return probInfoService.queryProbInfoVOList(new Page(pageNum, pageSize));
+    public BaseResponse<List<ProbInfoVO>> queryProbInfoVOList(@PathVariable Long pageNum, @PathVariable Long pageSize) {
+        if (Objects.isNull(pageNum) || Objects.isNull(pageSize) || pageNum <= 0 || pageSize <= 0) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        return ResultUtils.success(probInfoService.queryProbInfoVOList(new Page(pageNum, pageSize)));
     }
 
     /**
@@ -62,8 +67,12 @@ public class ProblemInfoController {
      * @return 题目信息
      */
     @GetMapping("/one/{problemId}")
-    public ProbInfo queryProbInfo(@PathVariable Integer problemId) {
-        return probInfoService.queryOneProbInfo(problemId);
+    @Deprecated
+    public BaseResponse<ProbInfo> queryProbInfo(@PathVariable Integer problemId) {
+        if (Objects.isNull(problemId)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        return ResultUtils.success(probInfoService.queryOneProbInfo(problemId));
     }
 
     /**
@@ -72,50 +81,67 @@ public class ProblemInfoController {
      * @return 题目信息
      */
     @GetMapping("/oneByMd/{problemId}")
-    public QuestionVO queryquestionVO(@PathVariable Integer problemId) {
-        return probInfoService.queryOneQuestionVO(problemId);
+    public BaseResponse<QuestionVO> queryQuestionVO(@PathVariable Integer problemId) {
+        if (Objects.isNull(problemId)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        return ResultUtils.success(probInfoService.queryOneQuestionVO(problemId));
     }
 
     /**
      * 调试题目
      *
-     * @param problemCommand problemCommand
+     * @param problemRequest problemRequest
      * @return 答案
      */
     @PostMapping("/debug")
-    public Answer debugProb(@RequestBody ProblemCommand problemCommand) {
-        if (Objects.isNull(problemCommand) || StringUtil.isEmpty(problemCommand.getType())) {
-            throw new AssertionException(GlobalExceptionEnum.SERVER_ERROR);
-        }
-        return probInfoService.taseAndRun(problemCommand);
+    public BaseResponse<Answer> debugProb(@RequestBody ProblemRequest problemRequest) {
+        isNullProblemRequest(problemRequest);
+        return ResultUtils.success(probInfoService.taseAndRun(problemRequest));
     }
 
     /**
      * 提交题目
      *
-     * @param problemCommand problemCommand
+     * @param problemRequest problemRequest
      * @return 答案
      */
     @PostMapping("/commit")
-    public Answer commitAndRun(@RequestBody ProblemCommand problemCommand) {
-        if (Objects.isNull(problemCommand) ||
-                problemCommand.getPid() == null ||
-                problemCommand.getUid() == null ||
-                StringUtil.isEmpty(problemCommand.getType())) {
-            throw new AssertionException(GlobalExceptionEnum.SERVER_ERROR);
+    public BaseResponse<Answer> commitAndRun(@RequestBody ProblemRequest problemRequest) {
+        isNullProblemRequest(problemRequest);
+        return ResultUtils.success(probInfoService.commitAndRun(problemRequest));
+    }
+
+    private void isNullProblemRequest(@RequestBody ProblemRequest problemRequest) {
+        // 对象为空
+        if (Objects.isNull(problemRequest)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        return probInfoService.commitAndRun(problemCommand);
+        // 题目 id 为空
+        if (Objects.isNull(problemRequest.getPid())) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        // 用户 id 为空
+        if (Objects.isNull(problemRequest.getUid())) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        // 语种类型 为空
+        if (StringUtil.isEmpty(problemRequest.getType())) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
     }
 
     /**
-     * 获取用户历史记录
+     * 获取用户做题记录
+     * @param uid 用户 id
+     * @return 记录列表
      */
     @GetMapping("/history/{uid}")
-    public List<History> queryHistoryList(@PathVariable Integer uid) {
-        if (uid == null) {
-            throw new AssertionException(GlobalExceptionEnum.SERVER_ERROR);
+    public BaseResponse<List<History>> queryHistoryList(@PathVariable Integer uid) {
+        if (Objects.isNull(uid)) {
+            throw new AssertionException(ErrorCode.SYSTEM_ERROR);
         }
-        return historyService.queryHistoryList(uid);
+        return ResultUtils.success(historyService.queryHistoryList(uid));
     }
 
 }

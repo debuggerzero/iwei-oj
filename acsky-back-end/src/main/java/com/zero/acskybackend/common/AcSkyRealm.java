@@ -1,5 +1,6 @@
 package com.zero.acskybackend.common;
 
+import com.zero.acskybackend.model.Query.UserInfoQuery;
 import com.zero.acskybackend.model.po.SystemRole;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.repo.SystemRoleRepo;
@@ -50,8 +51,7 @@ public class AcSkyRealm extends AuthorizingRealm {
 
         UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
         String account = token.getUsername();
-
-        UserInfo userInfo = userInfoRepo.queryUserInfo(account);
+        UserInfo userInfo = userInfoRepo.queryUserInfo(UserInfoQuery.builder().account(account).build());
         if (Objects.isNull(userInfo)) {
             return null;
         }

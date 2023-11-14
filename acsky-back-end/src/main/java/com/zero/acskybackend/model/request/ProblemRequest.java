@@ -1,4 +1,4 @@
-package com.zero.acskybackend.model.command;
+package com.zero.acskybackend.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProblemCommand {
+public class ProblemRequest {
 
     /**
      * 题目 id

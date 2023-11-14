@@ -1,6 +1,6 @@
 package com.zero.acskybackend.model.converter;
 
-import com.zero.acskybackend.model.command.ProblemCommand;
+import com.zero.acskybackend.model.request.ProblemRequest;
 import com.zero.acskybackend.model.po.History;
 import com.zero.acskybackend.model.vo.Answer;
 import org.mapstruct.Mapper;
@@ -23,6 +23,6 @@ public interface ToHistoryConverter {
     @Mapping(source = "problemCommand.code", target = "code")
     @Mapping(source = "problemCommand.type", target = "type")
     @Mapping(source = "answer.message", target = "status")
-    History toProbInfoVO(ProblemCommand problemCommand, Answer answer);
+    History toProbInfoVO(ProblemRequest problemCommand, Answer answer);
 
 }

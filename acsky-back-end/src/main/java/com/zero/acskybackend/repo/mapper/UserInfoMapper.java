@@ -1,5 +1,6 @@
 package com.zero.acskybackend.repo.mapper;
 
+import com.zero.acskybackend.model.Query.UserInfoQuery;
 import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,10 +31,10 @@ public interface UserInfoMapper {
 
     /**
      * 通过账号获取用户信息
-     * @param account 账号
+     * @param userInfoQuery 用户信息查询器
      * @return 用户信息
      */
-    UserInfo queryUserInfo(String account);
+    UserInfo queryUserInfo(UserInfoQuery userInfoQuery);
 
     /**
      * 更新用户信息

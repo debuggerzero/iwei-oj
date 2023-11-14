@@ -1,8 +1,8 @@
 package com.zero.acskybackend.service;
 
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.command.ProblemCommand;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.request.ProblemRequest;
+import com.zero.acskybackend.model.common.ErrorCode;
 import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.common.StatusEnum;
 import com.zero.acskybackend.model.converter.ToHistoryConverter;
@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -47,10 +49,17 @@ public class ProbInfoService {
     }
 
     public List<ProbInfoVO> queryProbInfoVOList(Page page) {
-        return probInfoRepo.queryAllList()
-                .stream()
+        if (Objects.isNull(page)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        List<ProbInfo> allList = probInfoRepo.queryAllList();
+        if (allList == null) {
+            return Collections.emptyList();
+        }
+        return allList.stream()
                 .map(ToProbInfoVOConverter.CONVERTER::toProbInfoVO)
-                .skip((page.getPageNumber() - 1) * page.getPageSize())
+                .filter(Objects::nonNull)
+                .skip((page.getPageNumber() > 0 && page.getPageSize() > 0) ? (page.getPageNumber() - 1) * page.getPageSize() : 0)
                 .limit(page.getPageSize())
                 .collect(Collectors.toList());
     }
@@ -102,18 +111,17 @@ public class ProbInfoService {
         return probInfoRepo.queryOne(probId);
     }
 
-    public Answer taseAndRun(ProblemCommand problemCommand) {
+    public Answer taseAndRun(ProblemRequest problemCommand) {
         Answer answer;
         try {
             answer = TaskUtil.compileAndRun(problemCommand);
         } catch (InterruptedException | IOException e) {
-            e.printStackTrace();
-            throw new AssertionException(GlobalExceptionEnum.SERVER_ERROR);
+            throw new AssertionException(ErrorCode.SYSTEM_ERROR);
         }
         return answer;
     }
 
-    public Answer commitAndRun(ProblemCommand problemCommand) {
+    public Answer commitAndRun(ProblemRequest problemCommand) {
         List<Sample> samples = sampleService.querySampleByProbId(problemCommand.getPid());
         Answer answer = null;
         boolean flag = true;
@@ -140,7 +148,7 @@ public class ProbInfoService {
         }
         Integer result = historyService.insertHistory(ToHistoryConverter.CONVERTER.toProbInfoVO(problemCommand, answer));
         if (result == 0) {
-            throw new AssertionException(GlobalExceptionEnum.SERVER_ERROR);
+            throw new AssertionException(ErrorCode.SYSTEM_ERROR);
         }
         return answer;
     }

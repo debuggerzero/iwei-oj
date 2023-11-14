@@ -11,11 +11,10 @@ import com.qcloud.cos.transfer.TransferManagerConfiguration;
 import com.qcloud.cos.utils.IOUtils;
 import com.zero.acskybackend.config.CosConfig;
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.common.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -81,7 +80,7 @@ public class CosService {
             return uploadResult.getKey();
         }
         catch (Exception e) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_UPLOAD_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         finally {
             shutdownTransferManager(transferManager);
@@ -103,7 +102,7 @@ public class CosService {
             bytes = IOUtils.toByteArray(objectContent);
         }
         catch (Exception e) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_QUERY_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
         } finally {
             shutdownCosClient(cosClient);
         }
@@ -117,7 +116,7 @@ public class CosService {
             cosClient.deleteObject(cosConfig.getBucketName(), cosConfig.getPrefix() + key);
         }
         catch (Exception e) {
-            throw new AssertionException(GlobalExceptionEnum.FILE_DELETE_FAIL_EXCEPTION);
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
         } finally {
             shutdownCosClient(cosClient);
         }

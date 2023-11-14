@@ -104,14 +104,18 @@
         group by user_info.id) as history
     </sql>
 
-    <select id="queryUserInfo" resultMap="queryUserInfo">
+    <select id="queryUserInfo" resultMap="queryUserInfo" parameterType="com.zero.acskybackend.model.Query.UserInfoQuery">
         <include refid="queryUserInfo"/>
         <where>
             user_info.id = user_role.user_id
             and user_role.role_id = system_role.id
-            and user_info.id = history.uid
             and is_delete=0
-            and account=#{account}
+            <if test="id!=null">
+                and id=#id
+            </if>
+            <if test="account!=null">
+                and (account=#{account} or email=#{account} or phone=#{account})
+            </if>
         </where>
     </select>
 
@@ -120,7 +124,6 @@
         <where>
             user_info.id = user_role.user_id
             and user_role.role_id = system_role.id
-            and user_info.id=history.uid
             and is_delete=0
         </where>
         order by pass_cnt desc, submit_cnt

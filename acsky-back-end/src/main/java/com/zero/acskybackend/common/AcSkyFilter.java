@@ -1,7 +1,8 @@
 package com.zero.acskybackend.common;
 
 import com.zero.acskybackend.exception.AssertionException;
-import com.zero.acskybackend.model.common.GlobalExceptionEnum;
+import com.zero.acskybackend.model.common.ErrorCode;
+import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.subject.Subject;
@@ -12,7 +13,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.LinkedHashMap;
 import java.util.Objects;
 
 /**
@@ -25,7 +25,7 @@ import java.util.Objects;
 public class AcSkyFilter extends AuthorizationFilter {
 
     @Override
-    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) throws Exception {
+    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) {
         Subject subject = getSubject(servletRequest, servletResponse);
         String[] rolesArray = (String[]) o;
         if (Objects.isNull(rolesArray) || rolesArray.length == 0) {
@@ -49,22 +49,15 @@ public class AcSkyFilter extends AuthorizationFilter {
 
         PrintWriter writer = servletResponse.getWriter();
         String jsonString;
+        ErrorCode code;
         if (Objects.isNull(subject)) {
-            AssertionException exception = new AssertionException(GlobalExceptionEnum.NO_LOG_IN_EXCEPTION);
-            log.info("global exception handle, code: {}, message: {} ", exception.getCode(), exception.getMessage());
-            jsonString = JsonUtil.toJsonString(new LinkedHashMap<String, Object>() {{
-                put("code", exception.getCode());
-                put("message", exception.getMessage());
-            }});
+            code = ErrorCode.NOT_LOGIN_ERROR;
+        } else {
+            code = ErrorCode.NO_AUTH_ERROR;
         }
-        else {
-            AssertionException exception = new AssertionException(GlobalExceptionEnum.NO_PERMISSION_EXCEPTION);
-            log.info("global exception handle, code: {}, message: {}", exception.getCode(), exception.getMessage());
-            jsonString = JsonUtil.toJsonString(new LinkedHashMap<String, Object>() {{
-                put("code", exception.getCode());
-                put("message", exception.getMessage());
-            }});
-        }
+        AssertionException exception = new AssertionException(code);
+        log.info("AssertionException", exception);
+        jsonString = JsonUtil.toJsonString(ResultUtils.error(code));
         writer.print(jsonString);
         writer.flush();
         writer.close();
