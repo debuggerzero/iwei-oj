@@ -1,6 +1,6 @@
 package com.zero.acskybackend.repo.mapper;
 
-import com.zero.acskybackend.model.Query.UserInfoQuery;
+import com.zero.acskybackend.model.query.UserInfoQuery;
 import com.zero.acskybackend.model.common.Page;
 import com.zero.acskybackend.model.po.UserInfo;
 import org.apache.ibatis.annotations.Mapper;

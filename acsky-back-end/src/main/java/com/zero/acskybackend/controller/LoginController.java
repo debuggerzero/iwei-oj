@@ -4,13 +4,16 @@ import com.zero.acskybackend.exception.AssertionException;
 import com.zero.acskybackend.model.request.LoginRequest;
 import com.zero.acskybackend.model.common.BaseResponse;
 import com.zero.acskybackend.model.common.ErrorCode;
+import com.zero.acskybackend.service.UserInfoService;
 import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.vo.UserInfoVO;
-import com.zero.acskybackend.service.UserInfoService;
+import com.zero.acskybackend.service.impl.UserInfoServiceImpl;
 import com.zero.acskybackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
@@ -24,7 +27,8 @@ import java.util.Objects;
 @RequestMapping("/login")
 public class LoginController {
 
-    private final UserInfoService userInfoService;
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
 
     /**
      * 账号密码登录
@@ -32,7 +36,7 @@ public class LoginController {
      * @return 用户信息
      */
     @PostMapping("/password")
-    public BaseResponse<UserInfoVO> login(@RequestBody LoginRequest loginRequest) {
+    public BaseResponse<UserInfoVO> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
         if (Objects.isNull(loginRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
@@ -45,7 +49,7 @@ public class LoginController {
             throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "密码不能为空");
         }
         loginRequest.setPassword(StringUtil.md5(password));
-        return ResultUtils.success(userInfoService.login(loginRequest));
+        return ResultUtils.success(userInfoService.login(loginRequest, request));
     }
 
 }

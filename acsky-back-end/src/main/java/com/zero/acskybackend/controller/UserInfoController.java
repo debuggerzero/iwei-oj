@@ -6,15 +6,18 @@ import com.zero.acskybackend.model.request.ModifyPasswordRequest;
 import com.zero.acskybackend.model.common.BaseResponse;
 import com.zero.acskybackend.model.common.ErrorCode;
 import com.zero.acskybackend.model.common.Page;
+import com.zero.acskybackend.service.UserInfoService;
 import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.vo.RankingVO;
 import com.zero.acskybackend.model.vo.UserInfoVO;
-import com.zero.acskybackend.service.UserInfoService;
+import com.zero.acskybackend.service.impl.UserInfoServiceImpl;
 import com.zero.acskybackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,16 +32,17 @@ import java.util.Objects;
 @RequestMapping("/user")
 public class UserInfoController {
 
-    private final UserInfoService userInfoService;
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
 
     /**
-     * 通过 id 查询用户信息
+     * 获取登录用户
      * @param id 用户 id
      * @return
      */
-    @GetMapping("/query/one/{userid}")
-    public BaseResponse<UserInfoVO> queryUserInfoById(@PathVariable Integer userid) {
-        return ResultUtils.success(userInfoService.queryUserInfoById(userid));
+    @GetMapping("/query/one")
+    public BaseResponse<UserInfoVO> getLoginUser(HttpServletRequest request) {
+        return ResultUtils.success(userInfoService.getLoginUser(request));
     }
 
     /**
@@ -86,7 +90,7 @@ public class UserInfoController {
      * @return 用户信息可视对象
      */
     @PutMapping("/modify/info")
-    public BaseResponse<UserInfoVO> modifyInfo(@RequestBody UserInfoVO userInfoVO) {
+    public BaseResponse<UserInfoVO> modifyInfo(@RequestBody UserInfoVO userInfoVO, HttpServletRequest request) {
         if (Objects.isNull(userInfoVO) || Objects.isNull(userInfoVO.getId())) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
@@ -96,7 +100,7 @@ public class UserInfoController {
         if (!StringUtil.isEmpty(userInfoVO.getEmail()) && !StringUtil.isEmail(userInfoVO.getEmail())) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR, "邮箱格式错误");
         }
-        return ResultUtils.success(userInfoService.modifyInfo(userInfoVO));
+        return ResultUtils.success(userInfoService.modifyInfo(userInfoVO, request));
     }
 
     /**

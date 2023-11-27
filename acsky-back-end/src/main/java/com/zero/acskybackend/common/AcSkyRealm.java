@@ -1,6 +1,6 @@
 package com.zero.acskybackend.common;
 
-import com.zero.acskybackend.model.Query.UserInfoQuery;
+import com.zero.acskybackend.model.query.UserInfoQuery;
 import com.zero.acskybackend.model.po.SystemRole;
 import com.zero.acskybackend.model.po.UserInfo;
 import com.zero.acskybackend.repo.SystemRoleRepo;
@@ -29,10 +29,10 @@ import java.util.Objects;
 public class AcSkyRealm extends AuthorizingRealm {
 
     @Resource(name = "userInfoRepoImpl")
-    private final UserInfoRepo userInfoRepo;
+    private UserInfoRepo userInfoRepo;
 
     @Resource(name = "systemRoleRepoImpl")
-    private final SystemRoleRepo systemRoleRepo;
+    private SystemRoleRepo systemRoleRepo;
 
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {

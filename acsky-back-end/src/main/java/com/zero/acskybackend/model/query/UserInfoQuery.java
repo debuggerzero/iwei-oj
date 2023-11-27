@@ -1,4 +1,4 @@
-package com.zero.acskybackend.model.Query;
+package com.zero.acskybackend.model.query;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

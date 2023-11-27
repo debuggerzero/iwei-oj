@@ -3,13 +3,15 @@ package com.zero.acskybackend.controller;
 import com.zero.acskybackend.exception.AssertionException;
 import com.zero.acskybackend.model.common.BaseResponse;
 import com.zero.acskybackend.model.common.ErrorCode;
+import com.zero.acskybackend.service.ImageOperationService;
 import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.vo.ImageInfoVO;
-import com.zero.acskybackend.service.ImageOperationService;
+import com.zero.acskybackend.service.impl.ImageOperationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 /**
@@ -23,7 +25,8 @@ import java.util.Objects;
 @RequestMapping("/file")
 public class FileOperationController {
 
-    private final ImageOperationService fileOperationService;
+    @Resource(name = "imageOperationServiceImpl")
+    private ImageOperationService fileOperationService;
 
     /**
      * 上传图片

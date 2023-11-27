@@ -5,18 +5,21 @@ import com.zero.acskybackend.model.request.ProblemRequest;
 import com.zero.acskybackend.model.common.BaseResponse;
 import com.zero.acskybackend.model.common.ErrorCode;
 import com.zero.acskybackend.model.common.Page;
+import com.zero.acskybackend.service.HistoryService;
+import com.zero.acskybackend.service.ProbInfoService;
 import com.zero.acskybackend.utils.ResultUtils;
 import com.zero.acskybackend.model.po.History;
 import com.zero.acskybackend.model.po.ProbInfo;
 import com.zero.acskybackend.model.vo.Answer;
 import com.zero.acskybackend.model.vo.ProbInfoVO;
 import com.zero.acskybackend.model.vo.QuestionVO;
-import com.zero.acskybackend.service.HistoryService;
-import com.zero.acskybackend.service.ProbInfoService;
+import com.zero.acskybackend.service.impl.HistoryServiceImpl;
+import com.zero.acskybackend.service.impl.ProbInfoServiceImpl;
 import com.zero.acskybackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,8 +34,10 @@ import java.util.Objects;
 @RequestMapping("/problem")
 public class ProblemInfoController {
 
-    private final ProbInfoService probInfoService;
+    @Resource(name = "probInfoServiceImpl")
+    private ProbInfoService probInfoService;
 
+    @Resource(name = "historyServiceImpl")
     private final HistoryService historyService;
 
     /**
