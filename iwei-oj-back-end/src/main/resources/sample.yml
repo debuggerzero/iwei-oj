@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url:
+    username:
+    password:
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: isDelete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  mapper-locations: classpath:com/zero/iweiojbackend/mapper/**/*.xml
+
+  cos:
+    secretId:
+    secretKey:
+    reginName:
+    bucketName:
+    url:
+    prefix:

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.iweiojbackend.repo.mapper.ProbInfoMapper">
+
+    <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into prob_info(title, difficulty, time_limit, space_limit, description, create_person, update_person)
+        values (#{title}, #{difficulty}, #{timeLimit}, #{spaceLimit}, #{description}, #{createPerson}, #{updatePerson});
+    </insert>
+
+    <update id="updateSubmitCnt">
+        update prob_info
+        set submit_cnt = submit_cnt + 1
+        where id = #{id};
+    </update>
+
+    <update id="updateAcceptCnt">
+        update prob_info
+        set accept_cnt = accept_cnt + 1
+        where id = #{id};
+    </update>
+
+    <update id="updateById">
+        update prob_info
+        <set>
+            <if test="title!=null">
+                title
+                =
+                #{title},
+            </if>
+            <if test="difficulty!=null">
+                difficulty
+                =
+                #{difficulty},
+            </if>
+            <if test="timeLimit!=null">
+                time_limit
+                =
+                #{timeLimit},
+            </if>
+            <if test="spaceLimit!=null">
+                space_limit
+                =
+                #{spaceLimit},
+            </if>
+            <if test="description!=null">
+                description
+                =
+                #{description},
+            </if>
+            <if test="updatePerson!=null">
+                update_person
+                =
+                #{updatePerson},
+            </if>
+            <if test="isDelete!=null">
+                is_delete
+                =
+                #{isDelete}
+            </if>
+        </set>
+        where id = #{id};
+    </update>
+
+    <insert id="insertTagInfoById">
+        insert into pro_tag(pro_id, tag_id) VALUES
+        <foreach collection="tagIds" item="item" index="index" separator=",">
+                (#{proId}, #{item})
+        </foreach>
+    </insert>
+
+    <delete id="deleteById">
+        delete
+        from prob_info
+        <where>
+            id
+            =
+            #{id}
+        </where>
+    </delete>
+
+    <delete id="deleteTagInfoById">
+        delete from pro_tag
+        <where>
+            <if test="proId!=null">
+                and pro_id=
+                #{proId}
+            </if>
+            <if test="tagIds!=null">
+                and tag_id in
+                <foreach collection="tagIds" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </delete>
+
+    <select id="queryTotal" resultType="java.lang.Long">
+        select count(*)
+        from prob_info;
+    </select>
+
+    <resultMap id="getProbInfo" type="com.zero.iweiojbackend.model.po.ProbInfo">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="difficulty" property="difficulty"/>
+        <result column="submit_cnt" property="submitCnt"/>
+        <result column="accept_cnt" property="acceptCnt"/>
+        <result column="time_limit" property="timeLimit"/>
+        <result column="space_limit" property="spaceLimit"/>
+        <result column="description" property="description"/>
+        <result column="create_person" property="createPerson"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_person" property="updatePerson"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="is_delete" property="isDelete"/>
+        <collection property="tagInfos" ofType="com.zero.iweiojbackend.model.po.TagInfo">
+            <id column="tag_id" property="id"/>
+            <result column="tag_name" property="name"/>
+        </collection>
+    </resultMap>
+
+    <select id="getAll" resultMap="getProbInfo">
+        select p.id,
+        p.title,
+        p.difficulty,
+        p.submit_cnt,
+        p.accept_cnt,
+        p.time_limit,
+        p.space_limit,
+        p.description,
+        p.is_delete,
+        u1.name as create_person,
+        p.create_date,
+        u2.name as update_person,
+        p.update_date,
+        t.id as tag_id,
+        t.name as tag_name
+        from (select id,
+        title,
+        difficulty,
+        submit_cnt,
+        accept_cnt,
+        time_limit,
+        space_limit,
+        description,
+        create_person,
+        create_date,
+        update_person,
+        update_date,
+        is_delete
+        from prob_info
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                and ( id like "%"
+                #{keyword}
+                "%"
+                or
+                title
+                like
+                "%"
+                #{keyword}
+                "%"
+                )
+            </if>
+            <if test="isDelete!=null">
+                and is_delete=
+                #{isDelete}
+            </if>
+        </where>
+        order by id
+        limit #{page.pageNumber}, #{page.pageSize}) as p
+        left join user_info u1 on p.create_person = u1.id
+        left join user_info u2 on p.update_person = u2.id
+        left join pro_tag pt on p.id = pt.pro_id
+        left join tag_info t on pt.tag_id = t.id;
+    </select>
+
+    <select id="getById" resultMap="getProbInfo">
+        select p.id,
+               p.title,
+               p.difficulty,
+               p.submit_cnt,
+               p.accept_cnt,
+               p.time_limit,
+               p.space_limit,
+               p.description,
+               u1.name as create_person,
+               p.create_date,
+               u2.name as update_person,
+               p.update_date,
+               t.id    as tag_id,
+               t.name  as tag_name
+        from prob_info p
+                 left join user_info u1 on p.create_person = u1.id
+                 left join user_info u2 on p.update_person = u2.id
+                 left join pro_tag pt on p.id = pt.pro_id
+                 left join tag_info t on pt.tag_id = t.id
+        where p.id = #{id};
+    </select>
+
+</mapper>

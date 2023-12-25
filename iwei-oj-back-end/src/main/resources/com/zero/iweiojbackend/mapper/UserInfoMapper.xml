@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.iweiojbackend.repo.mapper.UserInfoMapper">
+
+    <insert id="save">
+        insert into user_info(`name`, `account`, `password`)
+        values (#{name}, #{account}, #{password});
+    </insert>
+
+    <insert id="saveAll" parameterType="java.util.Collection">
+        insert into user_info(`name`, `account`, `password`)
+        values
+        <foreach collection="list" item="model" index="index" separator=",">
+            (#{model.name}, #{model.account}, #{model.password})
+        </foreach>
+    </insert>
+
+    <update id="updateById">
+        update
+        user_info
+        <set>
+            <if test="name != null">
+                name=
+                #{name},
+            </if>
+            <if test="email != null">
+                email=
+                #{email},
+            </if>
+            <if test="phone != null">
+                phone=
+                #{phone},
+            </if>
+            <if test="profile != null">
+                profile=
+                #{profile},
+            </if>
+            <if test="avatar != null">
+                avatar=
+                #{avatar},
+            </if>
+        </set>
+        where id=#{id};
+    </update>
+
+    <update id="updateUserPassword">
+        update
+            user_info
+        set password=#{password}
+        where account = #{account}
+    </update>
+
+    <delete id="deleteById">
+        update
+            user_info
+        set is_delete=1
+        where id = #{id}
+          and is_delete = 0
+    </delete>
+
+    <resultMap id="queryUserInfo" type="com.zero.iweiojbackend.model.po.UserInfo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="account" property="account"/>
+        <result column="password" property="password"/>
+        <result column="email" property="email"/>
+        <result column="phone" property="phone"/>
+        <result column="profile" property="profile"/>
+        <result column="avatar" property="avatar"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="submit_cnt" property="submitCnt"/>
+        <result column="accept_cnt" property="acceptCnt"/>
+        <association property="level">
+            <id column="role_id" property="id"/>
+            <result column="describe" property="name"/>
+        </association>
+    </resultMap>
+
+    <sql id="queryUserInfo">
+        select user_info.id,
+               user_info.name,
+               user_info.account,
+               user_info.password,
+               user_info.email,
+               user_info.phone,
+               user_info.profile,
+               user_info.avatar,
+               user_info.create_date,
+               user_info.update_date,
+               role_id,
+               system_role.describe,
+               submit_cnt,
+               accept_cnt
+        from user_info,
+             user_role,
+             system_role
+    </sql>
+
+    <select id="getOne" resultMap="queryUserInfo" parameterType="com.zero.iweiojbackend.model.query.UserInfoQuery">
+        <include refid="queryUserInfo"/>
+        <where>
+            user_info.id = user_role.user_id
+            and user_role.role_id = system_role.id
+            and is_delete=0
+            <if test="id!=null">
+                and user_info.id=
+                #{id}
+            </if>
+            <if test="account!=null">
+                and
+                (account=#{account} or email=#{account} or phone=#{account})
+            </if>
+        </where>
+    </select>
+
+    <select id="getAll" resultMap="queryUserInfo">
+        <include refid="queryUserInfo"/>
+        <where>
+            user_info.id = user_role.user_id
+            and user_role.role_id = system_role.id
+            and is_delete=0
+            <if test="keyword!=null and keyword!=''">
+                and
+                ( user_info.id like "%"#{keyword}"%" or user_info.account like "%"#{keyword}"%" or user_info.name like
+                "%"#{keyword}"%" or user_info.email
+                like "%"#{keyword}"%")
+            </if>
+        </where>
+        order by accept_cnt desc, submit_cnt
+        limit #{page.pageNumber}, #{page.pageSize}
+    </select>
+
+    <select id="queryTotalRecord" resultType="java.lang.Long">
+        select count(*)
+        from user_info
+        <where>
+            is_delete=0
+        </where>
+    </select>
+
+</mapper>

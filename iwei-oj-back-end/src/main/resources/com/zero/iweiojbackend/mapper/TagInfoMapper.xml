@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.iweiojbackend.repo.mapper.TagInfoMapper">
+
+    <insert id="save">
+
+    </insert>
+
+    <update id="updateById">
+
+    </update>
+
+    <delete id="deleteById">
+
+    </delete>
+
+    <select id="getAll" resultType="com.zero.iweiojbackend.model.po.TagInfo">
+
+    </select>
+
+    <select id="getById" resultType="com.zero.iweiojbackend.model.po.TagInfo">
+
+    </select>
+
+</mapper>
