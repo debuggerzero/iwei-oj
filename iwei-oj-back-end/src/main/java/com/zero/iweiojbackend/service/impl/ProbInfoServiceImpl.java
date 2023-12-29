@@ -1,15 +1,17 @@
 package com.zero.iweiojbackend.service.impl;
 
 import com.zero.iweiojbackend.exception.AssertionException;
+import com.zero.iweiojbackend.model.po.Sample;
 import com.zero.iweiojbackend.model.po.TagInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.converter.ToProbInfoVoConverter;
 import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
 import com.zero.iweiojbackend.model.common.ErrorCode;
-import com.zero.iweiojbackend.model.common.Page;
 import com.zero.iweiojbackend.model.po.ProbInfo;
+import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import com.zero.iweiojbackend.repo.ProbInfoRepo;
+import com.zero.iweiojbackend.repo.SampleRepo;
 import com.zero.iweiojbackend.service.ProbInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.AopContext;
@@ -33,51 +35,50 @@ public class ProbInfoServiceImpl implements ProbInfoService {
     @Resource(name = "probInfoRepoImpl")
     private ProbInfoRepo probInfoRepo;
 
-    @Override
-    public Long queryTotal() {
-        return probInfoRepo.queryTotal();
-    }
+    @Resource(name = "sampleRepoImpl")
+    private SampleRepo sampleRepo;
 
     @Override
-    public List<ProbInfoVO> queryProbInfoVOList(BaseQuery query) {
-        if (Objects.isNull(query)) {
+    public GeneralCollectionResult<ProbInfoVO> queryProbInfoVOList(BaseQuery query) {
+        if (BaseQuery.isNull(query)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        query.setIsDelete(0);
-        List<ProbInfo> probInfos = queryProbInfoList(query);
-        return probInfos.stream()
+        query.setStatus(0);
+        Collection<ProbInfoVO> probInfoVos = probInfoRepo.getAll(query)
+                .stream()
                 .map(ToProbInfoVoConverter.CONVERTER::toProbInfoVO)
                 .collect(Collectors.toList());
+        Long count = probInfoRepo.queryTotal(0);
+        return new GeneralCollectionResult<>(probInfoVos, count);
     }
 
     @Override
-    public List<ProbInfo> queryProbInfoList(BaseQuery query) {
-        Page page = query.getPage();
-        page.setPageNumber((page.getPageNumber() - 1) * page.getPageSize());
-        if (page.getPageNumber() < 0 || page.getPageSize() <= 0) {
+    public GeneralCollectionResult<ProbInfo> queryProbInfoList(BaseQuery query) {
+        if (BaseQuery.isNull(query)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         Collection<ProbInfo> probInfos = probInfoRepo.getAll(query);
         if (probInfos == null) {
-            return Collections.emptyList();
+            return new GeneralCollectionResult<>(Collections.emptyList(), 0L);
         }
-        return (List<ProbInfo>) probInfos;
+        Long count = probInfoRepo.queryTotal(query.getStatus());
+        return new GeneralCollectionResult<>(probInfos, count);
     }
 
     @Override
     public ProbInfoVO queryOneProbInfo(Integer probId) {
+        if (Objects.isNull(probId)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
         return ToProbInfoVoConverter.CONVERTER.toProbInfoVO(probInfoRepo.getById(probId));
     }
 
     @Override
     public Integer save(ProblemRequest problemRequest) {
-        if (Objects.isNull(problemRequest) || Objects.isNull(problemRequest.getUid())) {
+        if (ProblemRequest.isNull(problemRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         ProbInfo probInfo = problemRequest.getProbInfo();
-        if (Objects.isNull(probInfo)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
         String uid = problemRequest.getUid().toString();
         // 设置创建用户与修改用户 id
         probInfo.setCreatePerson(uid);
@@ -90,10 +91,22 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         // 上传标签
         if (Objects.nonNull(probInfo.getTagInfos()) && !probInfo.getTagInfos().isEmpty()) {
             List<Integer> tagIds = probInfo.getTagInfos().stream().map(TagInfo::getId).collect(Collectors.toList());
-            probInfoRepo.insertTagInfoById(probInfo.getId(), tagIds);
+            Integer i = probInfoRepo.insertTagInfoById(probInfo.getId(), tagIds);
+            if (i != tagIds.size()) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
+            }
         }
-        // TODO 上传用例
-
+        // 上传样例
+        if (!problemRequest.getSamples().isEmpty()) {
+            List<Sample> samples = problemRequest.getSamples()
+                    .stream()
+                    .peek(o -> o.setProId(probInfo.getId()))
+                    .collect(Collectors.toList());
+            Integer i = sampleRepo.saveAll(samples);
+            if (i != samples.size()) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
+            }
+        }
         return save;
     }
 
@@ -101,11 +114,11 @@ public class ProbInfoServiceImpl implements ProbInfoService {
     @Transactional(rollbackFor = Exception.class)
     public Integer updateById(ProblemRequest problemRequest) {
         // 验证参数是否正确
-        if (Objects.isNull(problemRequest) || Objects.isNull(problemRequest.getUid())) {
+        if (ProblemRequest.isNull(problemRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         ProbInfo probInfo = problemRequest.getProbInfo();
-        if (Objects.isNull(probInfo) || Objects.isNull(probInfo.getId())) {
+        if (Objects.isNull(probInfo.getId())) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         // 如果上传的参数为空默认给个空集合
@@ -116,7 +129,8 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         // 修改 tagInfo 与 probInfo 关联
         ProbInfoServiceImpl probInfoService = (ProbInfoServiceImpl) AopContext.currentProxy();
         probInfoService.updateTagIds(probInfo);
-        // TODO 修改用例
+        // 修改题目样例
+        probInfoService.updateSamples(problemRequest.getSamples(), probInfo.getId());
         // 修改题目信息
         Integer i = probInfoRepo.updateById(probInfo);
         if (i == 0) {
@@ -138,7 +152,15 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         if (probInfo.getTagInfos().size() != tagIdsSize) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
-        // TODO 删除用例
+        // 删除用例
+        Collection<Number> sampleIds = sampleRepo.getAllByProId(probInfo.getId())
+                .stream()
+                .map(Sample::getId)
+                .collect(Collectors.toList());
+        Integer sampleIdsSuccessCount = sampleRepo.deleteByIds(sampleIds);
+        if (sampleIdsSuccessCount != sampleIds.size()) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
         // 删除题目
         Integer i = probInfoRepo.deleteById(id);
         if (i == 0) {
@@ -185,6 +207,64 @@ public class ProbInfoServiceImpl implements ProbInfoService {
                 if (length != tagIds.size()) {
                     throw new AssertionException(ErrorCode.OPERATION_ERROR);
                 }
+            }
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateSamples(Collection<Sample> samples, Integer proId) {
+        // 获取新样例的 id
+        Collection<Integer> sampleIds = samples.stream().map(Sample::getId).collect(Collectors.toList());
+        // 获取旧样例的列表
+        Collection<Sample> oldSamples = sampleRepo.getAllByProId(proId);
+        if (Objects.isNull(oldSamples)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        // 筛选出预处理的 旧 sample 对象 id
+        Collection<Sample> primaryOldSample = oldSamples
+                .stream()
+                .peek(o->o.setProId(proId))
+                .filter(item -> !samples.contains(item))
+                .collect(Collectors.toList());
+        // 筛选出预更新与预删除的数据
+        Collection<Sample> primaryUpdateSample = new ArrayList<>();
+        Collection<Number> primaryDeleteSampleIds = new ArrayList<>();
+        for (Sample item : primaryOldSample) {
+            if (sampleIds.contains(item.getId())) {
+                primaryUpdateSample.add(item);
+            } else {
+                primaryDeleteSampleIds.add(item.getId());
+            }
+        }
+        // 获取旧样例的 id
+        Collection<Integer> oldSampleIds = oldSamples.stream().map(Sample::getId).collect(Collectors.toList());
+        // 筛选出预添加的数据
+        Collection<Sample> primaryAddSample = new ArrayList<>();
+        for (Sample item : samples) {
+            if (!oldSampleIds.contains(item.getId())) {
+                item.setProId(proId);
+                primaryAddSample.add(item);
+            }
+        }
+        if (!primaryDeleteSampleIds.isEmpty()) {
+            // 删除数据
+            Integer successDelCount = sampleRepo.deleteByIds(primaryDeleteSampleIds);
+            if (successDelCount != primaryDeleteSampleIds.size()) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
+            }
+        }
+        if (!primaryUpdateSample.isEmpty()) {
+            // 修改数据
+            Integer successUpCount = sampleRepo.updateByIds(primaryUpdateSample);
+            if (successUpCount != primaryUpdateSample.size()) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
+            }
+        }
+        if (!primaryAddSample.isEmpty()) {
+            // 添加数据
+            Integer successAddCount = sampleRepo.saveAll(primaryAddSample);
+            if (successAddCount != primaryAddSample.size()) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
             }
         }
     }

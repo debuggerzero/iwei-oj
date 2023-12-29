@@ -1,7 +1,9 @@
 package com.zero.iweiojbackend.repo;
 
 import com.zero.iweiojbackend.model.po.Sample;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -10,13 +12,13 @@ import java.util.List;
  * @author ZERO
  * @date 2023/7/3
  */
-public interface SampleRepo {
+public interface SampleRepo extends BaseRepo<Sample> {
 
     /**
-     * 通过题号查询用例
-     * @param probId 题号
-     * @return 用例信息
+     * 通过题目 id 查询样例
+     * @param proId 题目 id
+     * @return 结果集
      */
-    List<Sample> querySampleByProbId(Integer probId);
+    Collection<Sample> getAllByProId(Number proId);
 
 }

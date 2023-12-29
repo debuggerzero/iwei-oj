@@ -1,8 +1,6 @@
 package com.zero.iweiojbackend.model.po;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * 用例
@@ -16,6 +14,11 @@ import lombok.NoArgsConstructor;
 public class Sample {
 
     /**
+     * 样例 id
+     */
+    private Integer id;
+
+    /**
      * 输入
      */
     private String input;
@@ -25,4 +28,8 @@ public class Sample {
      */
     private String output;
 
+    /**
+     * 题目 Id
+     */
+    private Integer proId;
 }

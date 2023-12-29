@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 /**
  * 基础查询
  *
@@ -27,8 +29,18 @@ public class BaseQuery {
     private Page page;
 
     /**
-     * 是否删除
+     * 是否禁用
      */
-    private Integer isDelete;
+    private Integer status;
+
+    public static boolean isNull(BaseQuery baseQuery)  {
+        if (Objects.isNull(baseQuery)) {
+            return true;
+        }
+        // 若 page 为空就给他一个默认值
+        Page page = baseQuery.getPage();
+        baseQuery.setPage(Page.revise(page));
+        return false;
+    }
 
 }

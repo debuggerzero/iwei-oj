@@ -61,5 +61,5 @@ public class ProbInfoVO {
     /**
      * 标签信息列表
      */
-    private List<TagInfo> tagInfos;
+    private List<TagInfoVO> tagInfos;
 }

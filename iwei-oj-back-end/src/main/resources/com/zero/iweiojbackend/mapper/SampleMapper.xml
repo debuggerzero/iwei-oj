@@ -4,13 +4,90 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zero.iweiojbackend.repo.mapper.SampleMapper">
 
-    <select id="querySampleByProbId" resultType="com.zero.iweiojbackend.model.po.Sample">
-        select
-        input, output
-        from
-        test_data
+    <insert id="save">
+        insert into sample_info (input, output, pid)
+        values (#{sample.input}, #{sample.output}, #{sample.proId});
+    </insert>
+
+    <insert id="saveAll">
+        insert into sample_info (input, output, pid)
+        values
+        <foreach collection="samples" separator="," item="item">
+                (#{item.input}, #{item.output}, #{item.proId})
+        </foreach>
+    </insert>
+
+    <sql id="update">
+        update sample_info
+        <set>
+            input=
+            #{sample.input},
+            output
+            =
+            #{sample.output}
+        </set>
+    </sql>
+
+    <update id="updateById">
+        <include refid="update"/>
+        <where>
+            id
+            =
+            #{sample.id}
+        </where>
+    </update>
+
+    <update id="updateByIds">
+        update sample_info
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="input=case" suffix="end,">
+                <foreach collection="samples" item="item" index="index">
+                    when id=
+                    #{item.id}
+                    then
+                    #{item.input}
+                </foreach>
+            </trim>
+            <trim prefix="output=case" suffix="end,">
+                <foreach collection="samples" item="item" index="index">
+                    when id=
+                    #{item.id}
+                    then
+                    #{item.output}
+                </foreach>
+            </trim>
+        </trim>
         where
-        pid=#{probId}
+        id in
+        <foreach collection="samples" separator="," open="(" close=")" item="item">
+            #{item.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteById">
+        delete
+        from sample_info
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByIds">
+        delete from sample_info where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <resultMap id="selectMap" type="com.zero.iweiojbackend.model.po.Sample">
+        <id column="id" property="id"/>
+        <result column="input" property="input"/>
+        <result column="output" property="output"/>
+        <result column="pid" property="proId"/>
+    </resultMap>
+
+    <select id="getAllByProId" resultMap="selectMap">
+        select id, input, output, pid
+        from sample_info
+        where pid = #{proId}
     </select>
 
 </mapper>

@@ -3,6 +3,7 @@ package com.zero.iweiojbackend.repo.mapper;
 import com.zero.iweiojbackend.model.po.TagInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 
@@ -16,6 +17,19 @@ import java.util.Collection;
 public interface TagInfoMapper {
 
     /**
+     * 标签总数
+     * @return 结果
+     */
+    Long tagCount();
+
+    /**
+     * 标签关联总数
+     * @param tagId tagId 标签 id
+     * @return 结果
+     */
+    Long tagRelevancyCount(@Param("tagId") Number tagId);
+
+    /**
      * 添加标签信息
      * @param tagInfo 标签信息
      * @return 受影响的行数
@@ -27,7 +41,7 @@ public interface TagInfoMapper {
      * @param id 标签 id
      * @return 受影响的行数
      */
-    Integer deleteById(Number id);
+    Integer deleteById(@Param("id") Number id);
 
     /**
      * 更新标签信息
@@ -48,5 +62,5 @@ public interface TagInfoMapper {
      * @param id 标签信息
      * @return 结果
      */
-    TagInfo getById(Number id);
+    TagInfo getById(@Param("id") Number id);
 }

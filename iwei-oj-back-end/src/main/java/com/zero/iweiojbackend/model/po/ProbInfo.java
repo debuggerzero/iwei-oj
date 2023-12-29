@@ -81,9 +81,9 @@ public class ProbInfo {
     private String updatePerson;
 
     /**
-     * 是否删除
+     * 状态
      */
-    private Integer isDelete;
+    private Integer status;
 
     /**
      * 标签信息列表

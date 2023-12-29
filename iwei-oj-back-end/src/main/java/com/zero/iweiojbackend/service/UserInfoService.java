@@ -64,6 +64,7 @@ public interface UserInfoService {
     /**
      * 修改用户密码
      * @param modifyPasswordRequest 用户密码请求
+     * @param request request
      * @return 操作成功的条数
      */
     Integer modifyUserPassword(ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request);

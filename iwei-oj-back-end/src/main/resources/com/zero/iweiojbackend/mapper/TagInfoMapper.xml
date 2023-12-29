@@ -5,23 +5,101 @@
 <mapper namespace="com.zero.iweiojbackend.repo.mapper.TagInfoMapper">
 
     <insert id="save">
-
+        insert into tag_info(name, create_person, update_person)
+        values (#{name}, #{createPerson}, #{updatePerson});
     </insert>
 
     <update id="updateById">
-
+        update tag_info
+        <set>
+            <if test="name!=null and name!=''">
+                name
+                =
+                #{name},
+            </if>
+            <if test="updatePerson!=null">
+                update_person
+                =
+                #{updatePerson},
+            </if>
+        </set>
+        <where>
+            id
+            =
+            #{id}
+        </where>
     </update>
 
     <delete id="deleteById">
-
+        delete
+        from tag_info
+        where id = #{id}
     </delete>
 
-    <select id="getAll" resultType="com.zero.iweiojbackend.model.po.TagInfo">
+    <resultMap id="getResult" type="com.zero.iweiojbackend.model.po.TagInfo">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createDate" column="create_date"/>
+        <result property="createPerson" column="create_person"/>
+        <result property="updateDate" column="update_date"/>
+        <result property="updatePerson" column="update_person"/>
+    </resultMap>
 
+    <sql id="getTagInfo">
+        SELECT tag_info.id,
+               tag_info.name,
+               tag_info.create_date,
+               u1.name AS create_person,
+               tag_info.update_date,
+               u2.name AS update_person,
+        FROM tag_info
+                 INNER JOIN user_info u1 ON tag_info.create_person = u1.id
+                 INNER JOIN user_info u2 ON tag_info.update_person = u2.id
+    </sql>
+
+    <select id="getAll" resultMap="getResult">
+        <include refid="getTagInfo"/>
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                and (tag_info.id like "%"
+                #{keyword}
+                "%"
+                or
+                tag_info
+                .
+                name
+                like
+                "%"
+                #{keyword}
+                "%"
+                )
+            </if>
+        </where>
+        limit #{page.pageNumber}, #{page.pageSize}
     </select>
 
     <select id="getById" resultType="com.zero.iweiojbackend.model.po.TagInfo">
+        <include refid="getTagInfo"/>
+        <where>
+            tag_info
+            .
+            id
+            =
+            #{id}
+        </where>
+    </select>
 
+    <select id="tagCount" resultType="java.lang.Long">
+        select count(*)
+        from tag_info
+    </select>
+
+    <select id="tagRelevancyCount" resultType="java.lang.Long">
+        select count(*)
+        from tag_info,
+             pro_tag
+        where tag_info.id = pro_tag.pro_id
+          and tag_info.id = #{tagId}
     </select>
 
 </mapper>

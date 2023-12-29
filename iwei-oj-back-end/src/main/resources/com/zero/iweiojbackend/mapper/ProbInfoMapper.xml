@@ -54,10 +54,10 @@
                 =
                 #{updatePerson},
             </if>
-            <if test="isDelete!=null">
-                is_delete
+            <if test="status!=null">
+                status
                 =
-                #{isDelete}
+                #{status}
             </if>
         </set>
         where id = #{id};
@@ -98,7 +98,14 @@
 
     <select id="queryTotal" resultType="java.lang.Long">
         select count(*)
-        from prob_info;
+        from prob_info
+        <where>
+            <if test="status!=null">
+                status
+                =
+                #{status}
+            </if>
+        </where>
     </select>
 
     <resultMap id="getProbInfo" type="com.zero.iweiojbackend.model.po.ProbInfo">
@@ -114,30 +121,64 @@
         <result column="create_date" property="createDate"/>
         <result column="update_person" property="updatePerson"/>
         <result column="update_date" property="updateDate"/>
-        <result column="is_delete" property="isDelete"/>
+        <result column="status" property="status"/>
         <collection property="tagInfos" ofType="com.zero.iweiojbackend.model.po.TagInfo">
             <id column="tag_id" property="id"/>
             <result column="tag_name" property="name"/>
         </collection>
     </resultMap>
 
-    <select id="getAll" resultMap="getProbInfo">
+    <sql id="selectPrefix">
         select p.id,
-        p.title,
-        p.difficulty,
-        p.submit_cnt,
-        p.accept_cnt,
-        p.time_limit,
-        p.space_limit,
-        p.description,
-        p.is_delete,
-        u1.name as create_person,
-        p.create_date,
-        u2.name as update_person,
-        p.update_date,
-        t.id as tag_id,
-        t.name as tag_name
-        from (select id,
+               p.title,
+               p.difficulty,
+               p.submit_cnt,
+               p.accept_cnt,
+               p.time_limit,
+               p.space_limit,
+               p.description,
+               p.status,
+               u1.name as create_person,
+               p.create_date,
+               u2.name as update_person,
+               p.update_date,
+               t.id    as tag_id,
+               t.name  as tag_name
+    </sql>
+
+    <sql id="selectPostfix">
+        left join user_info u1 on p.create_person = u1.id
+        left join user_info u2 on p.update_person = u2.id
+        left join pro_tag pt on p.id = pt.pro_id
+        left join tag_info t on pt.tag_id = t.id
+    </sql>
+
+    <sql id="selectId">
+        select distinct pro_tag.pro_id
+        from pro_tag
+        join tag_info on tag_info.id = pro_tag.tag_id
+        <where>
+            <if test="keyword!=null">
+                and (locate(tag_info.name,
+                #{keyword}
+                )
+                >
+                0
+                or
+                tag_info
+                .
+                name
+                like
+                "%"
+                #{keyword}
+                "%"
+                )
+            </if>
+        </where>
+    </sql>
+
+    <sql id="selectProb">
+        select id,
         title,
         difficulty,
         submit_cnt,
@@ -149,11 +190,12 @@
         create_date,
         update_person,
         update_date,
-        is_delete
+        status
         from prob_info
         <where>
             <if test="keyword!=null and keyword!=''">
-                and ( id like "%"
+                and (
+                id like "%"
                 #{keyword}
                 "%"
                 or
@@ -163,41 +205,30 @@
                 #{keyword}
                 "%"
                 )
+                or id in (
+                <include refid="selectId"/>
+                )
             </if>
-            <if test="isDelete!=null">
-                and is_delete=
-                #{isDelete}
+            <if test="status!=null">
+                and status=
+                #{status}
             </if>
         </where>
         order by id
-        limit #{page.pageNumber}, #{page.pageSize}) as p
-        left join user_info u1 on p.create_person = u1.id
-        left join user_info u2 on p.update_person = u2.id
-        left join pro_tag pt on p.id = pt.pro_id
-        left join tag_info t on pt.tag_id = t.id;
+        limit #{page.pageNumber}, #{page.pageSize}
+    </sql>
+
+    <select id="getAll" resultMap="getProbInfo">
+        <include refid="selectPrefix"/>
+        from (<include refid="selectProb"/>) as p
+        <include refid="selectPostfix"/>
     </select>
 
     <select id="getById" resultMap="getProbInfo">
-        select p.id,
-               p.title,
-               p.difficulty,
-               p.submit_cnt,
-               p.accept_cnt,
-               p.time_limit,
-               p.space_limit,
-               p.description,
-               u1.name as create_person,
-               p.create_date,
-               u2.name as update_person,
-               p.update_date,
-               t.id    as tag_id,
-               t.name  as tag_name
+        <include refid="selectPrefix"/>
         from prob_info p
-                 left join user_info u1 on p.create_person = u1.id
-                 left join user_info u2 on p.update_person = u2.id
-                 left join pro_tag pt on p.id = pt.pro_id
-                 left join tag_info t on pt.tag_id = t.id
-        where p.id = #{id};
+        <include refid="selectPostfix"/>
+        and p.id = #{id};
     </select>
 
 </mapper>

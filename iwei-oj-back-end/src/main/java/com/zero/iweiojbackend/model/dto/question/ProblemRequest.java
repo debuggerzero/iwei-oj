@@ -7,7 +7,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * ProblemRequest
@@ -35,5 +37,17 @@ public class ProblemRequest {
      * 用例集
      */
     private List<Sample> samples;
+
+    public static boolean isNull(ProblemRequest problemRequest) {
+        if (Objects.isNull(problemRequest) ||
+                Objects.isNull(problemRequest.getUid()) ||
+                Objects.isNull(problemRequest.getProbInfo())) {
+            return true;
+        }
+        if (Objects.isNull(problemRequest.getSamples())) {
+            problemRequest.setSamples(Collections.emptyList());
+        }
+        return false;
+    }
 
 }

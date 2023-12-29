@@ -1,27 +1,20 @@
 package com.zero.iweiojbackend.controller;
 
-import com.zero.iweiojbackend.exception.AssertionException;
+import com.zero.iweiojbackend.model.po.ProbInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
 import com.zero.iweiojbackend.model.common.BaseResponse;
-import com.zero.iweiojbackend.model.common.ErrorCode;
-import com.zero.iweiojbackend.model.common.Page;
-import com.zero.iweiojbackend.service.HistoryService;
+import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.service.ProbInfoService;
 import com.zero.iweiojbackend.utils.ResultUtils;
-import com.zero.iweiojbackend.model.po.History;
-import com.zero.iweiojbackend.model.vo.Answer;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
-import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
 
 /**
- * 用户做题模块
+ * 题目模块
  *
  * @author ZERO
  * @date 2023/12/24
@@ -34,17 +27,14 @@ public class ProblemInfoController {
     @Resource(name = "probInfoServiceImpl")
     private ProbInfoService probInfoService;
 
-    @Resource(name = "historyServiceImpl")
-    private final HistoryService historyService;
-
     /**
-     * 获取题目总数
-     *
-     * @return 总数
+     * 查询问题信息列表（管理员）
+     * @param query 查询器
+     * @return List<ProbInfo>
      */
-    @GetMapping("/total")
-    public BaseResponse<Long> queryProbInfoTotal() {
-        return ResultUtils.success(probInfoService.queryTotal());
+    @PostMapping("/getProbInfoList")
+    public BaseResponse<GeneralCollectionResult<ProbInfo>> queryProbInfoList(@RequestBody BaseQuery query) {
+        return ResultUtils.success(probInfoService.queryProbInfoList(query));
     }
 
     /**
@@ -53,43 +43,52 @@ public class ProblemInfoController {
      * @param baseQuery 查询器
      * @return 题目列表
      */
-    @PostMapping("/list")
-    public BaseResponse<List<ProbInfoVO>> queryProbInfoVOList(@RequestBody BaseQuery baseQuery) {
-        if (Objects.isNull(baseQuery)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        Page page = baseQuery.getPage();
-        if (Objects.isNull(page) || Objects.isNull(page.getPageNumber()) || Objects.isNull(page.getPageSize()) || page.getPageNumber() <= 0 || page.getPageSize() <= 0) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
+    @PostMapping("/getProbInfoVOList")
+    public BaseResponse<GeneralCollectionResult<ProbInfoVO>> queryProbInfoVOList(@RequestBody BaseQuery baseQuery) {
         return ResultUtils.success(probInfoService.queryProbInfoVOList(baseQuery));
     }
 
     /**
      * 获取题目详细信息
      *
-     * @param problemId 题号
+     * @param proId 题号
      * @return 题目信息
      */
-    @GetMapping("/one/{problemId}")
+    @GetMapping("/one/{proId}")
     @Deprecated
-    public BaseResponse<ProbInfoVO> queryProbInfo(@PathVariable Integer problemId) {
-        if (Objects.isNull(problemId)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        return ResultUtils.success(probInfoService.queryOneProbInfo(problemId));
+    public BaseResponse<ProbInfoVO> queryProbInfo(@PathVariable Integer proId) {
+        return ResultUtils.success(probInfoService.queryOneProbInfo(proId));
     }
 
     /**
-     * 获取用户做题记录
-     * @param uid 用户 id
-     * @return 记录列表
+     * 添加题目（管理员）
+     * @param problemRequest 题目信息
+     * @return 受影响的行数
      */
-    @GetMapping("/history/{uid}")
-    public BaseResponse<List<History>> queryHistoryList(@PathVariable Integer uid) {
-        if (Objects.isNull(uid)) {
-            throw new AssertionException(ErrorCode.SYSTEM_ERROR);
-        }
-        return ResultUtils.success(historyService.queryHistoryList(uid));
+    @PostMapping("/save")
+    public BaseResponse<Integer> save(@RequestBody ProblemRequest problemRequest) {
+        return ResultUtils.success(probInfoService.save(problemRequest));
     }
+
+    /**
+     * 通过 id 更新题目信息（管理员）
+     * @param problemRequest 题目信息
+     * @return 受影响的行数
+     */
+    @PutMapping ("/update")
+    public BaseResponse<Integer> updateById(@RequestBody ProblemRequest problemRequest) {
+        return ResultUtils.success(probInfoService.updateById(problemRequest));
+    }
+
+    /**
+     * 通过 id 删除题目信息（管理员）
+     * @param proId 题目 id
+     * @return 受影响的行数
+     */
+    @DeleteMapping("/delete/{proId}")
+    public BaseResponse<Integer> deleteById(@PathVariable Integer proId) {
+        return ResultUtils.success(probInfoService.deleteById(proId));
+    }
+
+
 }

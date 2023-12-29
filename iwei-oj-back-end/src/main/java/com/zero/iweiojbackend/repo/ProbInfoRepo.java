@@ -15,9 +15,10 @@ public interface ProbInfoRepo extends BaseRepo<ProbInfo> {
 
     /**
      * 查询题目总数
+     * @param status 是否禁用
      * @return 题目总数
      */
-    Long queryTotal();
+    Long queryTotal(Integer status);
 
     /**
      * 更新提交次数

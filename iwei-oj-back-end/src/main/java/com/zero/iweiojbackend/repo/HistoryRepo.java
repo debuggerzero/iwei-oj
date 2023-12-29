@@ -10,7 +10,7 @@ import java.util.List;
  * @author ZERO
  * @date 2023/7/3
  */
-public interface HistoryRepo {
+public interface  HistoryRepo {
 
     /**
      * 插入历史记录

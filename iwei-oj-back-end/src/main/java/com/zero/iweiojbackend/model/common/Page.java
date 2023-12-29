@@ -1,9 +1,10 @@
 package com.zero.iweiojbackend.model.common;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 /**
  * 页
@@ -12,7 +13,6 @@ import lombok.NoArgsConstructor;
  * @date 2023/12/24
  */
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Page {
@@ -26,5 +26,21 @@ public class Page {
      * 页号
      */
     private Long pageSize=10L;
+
+    public static boolean isNull(Page page) {
+        return Objects.isNull(page) || Objects.isNull(page.pageNumber) || Objects.isNull(page.pageSize);
+    }
+
+    public static Page revise(Page page) {
+        if (!isNull(page)) {
+            page.setPageNumber((page.getPageNumber() - 1) * page.getPageSize());
+            if (page.getPageNumber() < 0 || page.getPageSize() <= 0) {
+                return new Page(0L, 10L);
+            }
+        } else {
+            return new Page(0L, 10L);
+        }
+        return page;
+    }
 
 }

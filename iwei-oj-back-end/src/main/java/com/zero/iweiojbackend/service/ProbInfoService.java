@@ -3,10 +3,8 @@ package com.zero.iweiojbackend.service;
 import com.zero.iweiojbackend.model.po.ProbInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
-import com.zero.iweiojbackend.model.vo.Answer;
+import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
-
-import java.util.List;
 
 /**
  * ProbInfoService
@@ -17,24 +15,18 @@ import java.util.List;
 public interface ProbInfoService {
 
     /**
-     * 查询问题总数
-     * @return 总条数
-     */
-    Long queryTotal();
-
-    /**
      * 查询问题信息列表
      * @param query 分页
-     * @return List<ProbInfoVO>
+     * @return GeneralCollectionResult<ProbInfoVO>
      */
-    List<ProbInfoVO> queryProbInfoVOList(BaseQuery query);
+    GeneralCollectionResult<ProbInfoVO> queryProbInfoVOList(BaseQuery query);
 
     /**
      * 查询问题信息列表（管理员）
      * @param query 查询器
      * @return List<ProbInfo>
      */
-    List<ProbInfo> queryProbInfoList(BaseQuery query);
+    GeneralCollectionResult<ProbInfo> queryProbInfoList(BaseQuery query);
 
     /**
      * 查询问题详细信息
