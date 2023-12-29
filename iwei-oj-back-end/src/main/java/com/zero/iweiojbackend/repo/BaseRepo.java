@@ -101,7 +101,15 @@ public interface BaseRepo<T> {
 
     /**
      * 查询所有
-     *
+     * @return 结果集
+     */
+    default Collection<T> getAll() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * 查询所有
+     * @param query 查询条件
      * @return 返回所有
      */
     default Collection<T> getAll(BaseQuery query) {

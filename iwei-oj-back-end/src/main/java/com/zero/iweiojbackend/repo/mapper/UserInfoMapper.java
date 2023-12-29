@@ -4,6 +4,7 @@ import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.query.UserInfoQuery;
 import com.zero.iweiojbackend.model.po.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,9 +20,10 @@ public interface UserInfoMapper {
 
     /**
      * 查询总记录
+     * @param status 状态
      * @return 条数
      */
-    Long queryTotalRecord();
+    Long queryTotal(Number status);
 
     /**
      * 获取用户信息列表
@@ -45,12 +47,33 @@ public interface UserInfoMapper {
     Integer updateById(UserInfo userInfo);
 
     /**
+     * 修改用户角色
+     * @param roleId 用户权限
+     * @return 受影响的行数
+     */
+    Integer updateUserRole(@Param("roleId") Integer roleId);
+
+    /**
      * 修改用户密码
-     * @param account 账号
+     * @param uid 账号
      * @param password 密码
      * @return 受影响的行数
      */
-    Integer updateUserPassword(String account, String password);
+    Integer updateUserPassword(@Param("uid") Integer uid, @Param("password") String password);
+
+    /**
+     * 更新提交次数
+     * @param id 用户 id
+     * @return 受影响的行数
+     */
+    Integer updateSubmitCnt(@Param("id") Number id);
+
+    /**
+     * 更新通过次数
+     * @param id 用户 id
+     * @return 受影响的行数
+     */
+    Integer updateAcceptCnt(@Param("id") Number id);
 
     /**
      * 添加单个用户信息

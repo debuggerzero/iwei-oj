@@ -24,8 +24,8 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     private final UserInfoMapper userInfoMapper;
 
     @Override
-    public Long queryTotalRecord() {
-        return userInfoMapper.queryTotalRecord();
+    public Long queryTotal(Number status) {
+        return userInfoMapper.queryTotal(status);
     }
 
     @Override
@@ -44,8 +44,23 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     }
 
     @Override
-    public Integer updateUserPassword(String account, String password) {
-        return userInfoMapper.updateUserPassword(account, password);
+    public Integer updateUserPassword(Integer uid, String password) {
+        return userInfoMapper.updateUserPassword(uid, password);
+    }
+
+    @Override
+    public Integer updateSubmitCnt(Number id) {
+        return userInfoMapper.updateSubmitCnt(id);
+    }
+
+    @Override
+    public Integer updateAcceptCnt(Number id) {
+        return userInfoMapper.updateAcceptCnt(id);
+    }
+
+    @Override
+    public Integer updateUserRole(Integer roleId) {
+        return userInfoMapper.updateUserRole(roleId);
     }
 
     @Override

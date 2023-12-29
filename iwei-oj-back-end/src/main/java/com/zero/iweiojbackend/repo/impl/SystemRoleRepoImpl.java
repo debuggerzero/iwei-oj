@@ -1,11 +1,13 @@
 package com.zero.iweiojbackend.repo.impl;
 
 import com.zero.iweiojbackend.model.po.SystemRole;
+import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.repo.SystemRoleRepo;
 import com.zero.iweiojbackend.repo.mapper.SystemRoleMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -21,12 +23,22 @@ public class SystemRoleRepoImpl implements SystemRoleRepo {
     private final SystemRoleMapper systemRoleMapper;
 
     @Override
-    public SystemRole querySystemRole(String account) {
-        return systemRoleMapper.querySystemRole(account);
+    public Long queryTotal() {
+        return systemRoleMapper.queryTotal();
     }
 
     @Override
-    public List<SystemRole> queryAllSystemRole() {
-        return systemRoleMapper.queryAllSystemRole();
+    public SystemRole getUserRoleByAccount(String account) {
+        return systemRoleMapper.getUserRoleByAccount(account);
+    }
+
+    @Override
+    public SystemRole getUserRoleByName(String name) {
+        return systemRoleMapper.getUserRoleByName(name);
+    }
+
+    @Override
+    public Collection<SystemRole> getAll() {
+        return systemRoleMapper.getAll();
     }
 }

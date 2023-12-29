@@ -1,6 +1,7 @@
 package com.zero.iweiojbackend.model.po;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.Date;
  * @date 2023/12/24
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserInfo {
@@ -58,9 +60,19 @@ public class UserInfo {
     private String avatar;
 
     /**
+     * 创建人
+     */
+    private String createPerson;
+
+    /**
      * 创建时间
      */
     private Date createDate;
+
+    /**
+     * 修改人
+     */
+    private String updatePerson;
 
     /**
      * 修改时间
@@ -70,7 +82,7 @@ public class UserInfo {
     /**
      * 用户权限
      */
-    private Level level;
+    private SystemRole role;
 
     /**
      * 提交数
@@ -81,5 +93,10 @@ public class UserInfo {
      * 通过数
      */
     private Long acceptCnt;
+
+    /**
+     * 查看用户状态
+     */
+    private Integer status;
 
 }

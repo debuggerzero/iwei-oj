@@ -10,18 +10,27 @@ import java.util.List;
  * @author ZERO
  * @date 2023/6/18
  */
-public interface SystemRoleRepo {
+public interface SystemRoleRepo extends BaseRepo<SystemRole> {
+
+    /**
+     * 查询总数
+     * @return 总条数
+     */
+    Long queryTotal();
+
 
     /**
      * 查询用户角色
      * @param account 账号
      * @return 用户角色
      */
-    SystemRole querySystemRole(String account);
+    SystemRole getUserRoleByAccount(String account);
 
     /**
-     * 查询所有系统角色
-     * @return 系统角色
+     * 通过权限名查询用户用户角色
+     * @param name 权限名
+     * @return 用户角色
      */
-    List<SystemRole> queryAllSystemRole();
+    SystemRole getUserRoleByName(String name);
+
 }

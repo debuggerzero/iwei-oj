@@ -34,9 +34,8 @@ public class PoiServiceImpl implements PoiService {
                 continue;
             }
             UserInfo userInfo = new UserInfo();
-            userInfo.setAccount((String) PoiUtil.getCellValue(row.getCell(0)));
-            userInfo.setName((String) PoiUtil.getCellValue(row.getCell(1)));
-            userInfo.setPassword(StringUtil.md5(StringUtil.md5("123456")));
+            userInfo.setName((String) PoiUtil.getCellValue(row.getCell(0)));
+            userInfo.setAccount((String) PoiUtil.getCellValue(row.getCell(1)));
             list.add(userInfo);
         }
         sheets.close();

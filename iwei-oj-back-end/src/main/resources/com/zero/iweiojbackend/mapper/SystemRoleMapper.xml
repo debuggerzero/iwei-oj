@@ -15,40 +15,40 @@
         <result property="remark" column="remark"/>
     </resultMap>
 
-    <select id="querySystemRole" resultMap="systemRole">
-        SELECT
-        sr.id as 'id',
-        sr.name as 'name',
-        sr.describe as 'describe',
-        sr.create_date as 'create_date',
-        u1.name as 'create_person',
-        sr.update_date as 'update_date',
-        u2.name as 'update_person',
-        sr.remark as 'remark'
-        FROM
-        system_role sr, user_info u1, user_info u2, user_info u3, user_role ur
+    <sql id="queryPrefix">
+        select system_role.id,
+               system_role.name,
+               system_role.`describe`,
+               system_role.create_date,
+               u1.name as 'create_person', system_role.create_date,
+               u2.name as 'update_person', system_role.update_date,
+               system_role.remark
+        from system_role
+                 left join user_info u1 on system_role.create_person = u1.id
+                 left join user_info u2 on system_role.update_person = u2.id
+    </sql>
+
+    <select id="getUserRoleByAccount" resultMap="systemRole">
+        <include refid="queryPrefix"/>
+        join user_info u on u.role_id = system_role.id
         <where>
-            sr.create_person = u1.id AND sr.update_person = u2.id
-            AND u3.id = ur.user_id AND ur.role_id = sr.id AND u3.account = #{account};
+            u.account=#{account}
         </where>
     </select>
 
-    <select id="queryAllSystemRole" resultMap="systemRole">
-        SELECT sr.id as 'id',
-        sr.name as 'name',
-        sr.describe as 'describe',
-        sr.create_date as 'create_date',
-        u1.name as 'create_person',
-        sr.update_date as 'update_date',
-        u2.name as 'update_person',
-        sr.remark as 'remark'
-        FROM system_role sr,
-        user_info u1,
-        user_info u2
+    <select id="getUserRoleByName" resultType="com.zero.iweiojbackend.model.po.SystemRole">
+        <include refid="queryPrefix"/>
         <where>
-            sr.create_person = u1.id
-            AND sr.update_person = u2.id
+            system.name = #{name}
         </where>
+    </select>
+
+    <select id="getAll" resultMap="systemRole">
+        <include refid="queryPrefix"/>
+    </select>
+
+    <select id="queryTotal" resultType="java.lang.Long">
+        select count(*) from system_role;
     </select>
 
 </mapper>

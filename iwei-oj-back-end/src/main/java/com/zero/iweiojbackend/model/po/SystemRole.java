@@ -1,6 +1,7 @@
 package com.zero.iweiojbackend.model.po;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import java.util.Date;
  * @date 2023/6/15
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class SystemRole {

@@ -1,7 +1,6 @@
 package com.zero.iweiojbackend.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zero.iweiojbackend.model.po.Level;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -63,7 +62,7 @@ public class UserInfoVO {
     /**
      * 权限
      */
-    private Level level;
+    private UserRole role;
 
     /**
      * 提交数

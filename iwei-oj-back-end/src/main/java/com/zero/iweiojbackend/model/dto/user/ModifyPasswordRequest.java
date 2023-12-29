@@ -1,6 +1,7 @@
 package com.zero.iweiojbackend.model.dto.user;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,14 +12,10 @@ import lombok.NoArgsConstructor;
  * @date 2023/12/24
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ModifyPasswordRequest {
-
-    /**
-     * 用户账号
-     */
-    private String account;
 
     /**
      * 旧的密码

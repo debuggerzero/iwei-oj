@@ -1,24 +1,21 @@
 package com.zero.iweiojbackend.controller;
 
-import com.zero.iweiojbackend.exception.AssertionException;
+import com.zero.iweiojbackend.model.po.UserInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
-import com.zero.iweiojbackend.model.dto.user.InsertUserRequest;
+import com.zero.iweiojbackend.model.dto.user.UserInfoRequest;
 import com.zero.iweiojbackend.model.dto.user.ModifyPasswordRequest;
 import com.zero.iweiojbackend.model.common.BaseResponse;
-import com.zero.iweiojbackend.model.common.ErrorCode;
-import com.zero.iweiojbackend.model.common.Page;
+import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
+import com.zero.iweiojbackend.model.vo.UserRole;
 import com.zero.iweiojbackend.service.UserInfoService;
 import com.zero.iweiojbackend.utils.ResultUtils;
 import com.zero.iweiojbackend.model.vo.UserInfoVO;
-import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * 用户操作
@@ -36,8 +33,8 @@ public class UserInfoController {
 
     /**
      * 获取登录用户
-     * @param id 用户 id
-     * @return
+     * @param request 用户 request
+     * @return BaseResponse<UserInfoVO></UserInfoVO>
      */
     @GetMapping("/query/one")
     public BaseResponse<UserInfoVO> getLoginUser(HttpServletRequest request) {
@@ -45,63 +42,58 @@ public class UserInfoController {
     }
 
     /**
-     * 查询总记录
+     * 获取用户列表（管理员）
      *
-     * @return 条数
+     * @return BaseResponse<GeneralCollectionResult<UserRole>>
      */
-    @GetMapping("/query/total")
-    public BaseResponse<Long> queryTotalRecord() {
-        return ResultUtils.success(userInfoService.queryTotalRecord());
-    }
-
-    /**
-     * 获取用户列表
-     *
-     * @return 用户信息列表
-     */
-    @PostMapping("/query/list")
-    public BaseResponse<List<UserInfoVO>> queryUserInfoList(@RequestBody BaseQuery baseQuery) {
-        if (Objects.isNull(baseQuery)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        Page page = baseQuery.getPage();
-        if (Objects.isNull(page) || Objects.isNull(page.getPageNumber()) || Objects.isNull(page.getPageSize()) || page.getPageNumber() <= 0 || page.getPageSize() <= 0) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
+    @PostMapping("/queryUserInfoList")
+    public BaseResponse<GeneralCollectionResult<UserInfo>> queryUserInfoList(@RequestBody BaseQuery baseQuery) {
         return ResultUtils.success(userInfoService.queryUserInfoList(baseQuery));
     }
 
     /**
      * 获取排行榜
      *
-     * @param pageNum
-     * @param pageSize
-     * @return
+     * @param baseQuery baseQuery
+     * @return BaseResponse<GeneralCollectionResult<UserRole>>
      */
-    @PostMapping("/query/ranking")
-    public BaseResponse<List<UserInfoVO>> queryRanking(@RequestBody BaseQuery baseQuery) {
-        return this.queryUserInfoList(baseQuery);
+    @PostMapping("/queryRanking")
+    public BaseResponse<GeneralCollectionResult<UserInfoVO>> queryRanking(@RequestBody BaseQuery baseQuery) {
+        return ResultUtils.success(userInfoService.queryUserInfoVOList(baseQuery));
+    }
+
+    /**
+     * 获取用户角色列表（管理员）
+     *
+     * @return BaseResponse<GeneralCollectionResult<UserRole>>
+     */
+    @GetMapping("/queryUserRoleList")
+    public BaseResponse<GeneralCollectionResult<UserRole>> queryUserRoleList() {
+        return ResultUtils.success(userInfoService.queryUserRoleList());
     }
 
     /**
      * 修改用户信息
      *
-     * @param userInfoVO 用户信息可视层
+     * @param userInfoRequest 用户信息交互
      * @param request request
-     * @return 用户信息可视对象
+     * @return BaseResponse<Integer>
      */
-    @PutMapping("/modify/info")
-    public BaseResponse<UserInfoVO> modifyInfo(@RequestBody UserInfoVO userInfoVO, HttpServletRequest request) {
-        if (Objects.isNull(userInfoVO) || Objects.isNull(userInfoVO.getId())) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        if (StringUtil.isEmpty(userInfoVO.getAccount())) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        if (!StringUtil.isEmpty(userInfoVO.getEmail()) && !StringUtil.isEmail(userInfoVO.getEmail())) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR, "邮箱格式错误");
-        }
-        return ResultUtils.success(userInfoService.modifyInfo(userInfoVO, request));
+    @PutMapping("/modifyInfoByUser")
+    public BaseResponse<Integer> modifyInfoByUser(@RequestBody UserInfoRequest userInfoRequest, HttpServletRequest request) {
+        return ResultUtils.success(userInfoService.modifyInfoByUser(userInfoRequest, request));
+    }
+
+    /**
+     * 修改用户信息（管理员）
+     *
+     * @param userInfoRequest 用户信息交互
+     * @param request request
+     * @return BaseResponse<Integer>
+     */
+    @PutMapping("/modifyInfoByAdmin")
+    public BaseResponse<Integer> modifyInfoByAdmin(@RequestBody UserInfoRequest userInfoRequest, HttpServletRequest request) {
+        return ResultUtils.success(userInfoService.modifyInfoByAdmin(userInfoRequest, request));
     }
 
     /**
@@ -109,68 +101,55 @@ public class UserInfoController {
      *
      * @param modifyPasswordRequest modifyPasswordCommand
      * @param request request
-     * @return 受影响的行数
+     * @return BaseResponse<Integer>
      */
-    @PutMapping("/modify/password")
+    @PutMapping("/modifyUserPassword")
     public BaseResponse<Integer> modifyUserPassword(@RequestBody ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request) {
-        if (Objects.isNull(modifyPasswordRequest)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        if (StringUtil.isEmpty(modifyPasswordRequest.getAccount()) ||
-                StringUtil.isEmpty(modifyPasswordRequest.getOldPassword()) ||
-                StringUtil.isEmpty(modifyPasswordRequest.getNewPassword())) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR, "账号密码不能为空");
-        }
-        return ResultUtils.success(userInfoService.modifyUserPassword(modifyPasswordRequest, request));
+        return ResultUtils.success(userInfoService.modifyPasswordByUser(modifyPasswordRequest, request));
     }
 
     /**
-     * 添加用户信息
+     * 重置用户密码（管理员）
      *
-     * @param insertUserRequest insertUserCommand
+     * @param uid 用户 id
+     * @return BaseResponse<Integer>
+     */
+    @PutMapping("/resetPassword/{uid}")
+    public BaseResponse<Integer> resetPassword(@PathVariable Integer uid) {
+        return ResultUtils.success(userInfoService.resetPassword(uid));
+    }
+
+    /**
+     * 添加用户信息（管理员）
+     *
+     * @param userInfoRequest userInfoRequest
+     * @param request request
      * @return 受影响的行数
      */
-    @PostMapping("/insert/userinfo")
-    public BaseResponse<Integer> insertOneUserInfo(@RequestBody InsertUserRequest insertUserRequest) {
-        if (Objects.isNull(insertUserRequest)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        if (StringUtil.isEmpty(insertUserRequest.getName()) ||
-                StringUtil.isEmpty(insertUserRequest.getAccount())) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR, "账号用户名不能为空");
-        }
-        return ResultUtils.success(userInfoService.insertOneUserInfo(insertUserRequest));
+    @PostMapping("/insertOneUserInfo")
+    public BaseResponse<Integer> insertOneUserInfo(@RequestBody UserInfoRequest userInfoRequest, HttpServletRequest request) {
+        return ResultUtils.success(userInfoService.insertOneUserInfo(userInfoRequest, request));
     }
 
     /**
-     * 批量添加用户
+     * 批量添加用户（管理员）
      *
      * @param file 文件
      * @return 受影响的行数
      */
-    @PostMapping("/insert/list/userinfo")
-    public BaseResponse<Integer> insertUserInfoList(@RequestPart(value = "file") MultipartFile file) {
-        if (Objects.isNull(file)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        String xlsx = "xlsx";
-        if (Objects.equals(file.getContentType(), xlsx)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR, "文件类型错误");
-        }
-        return ResultUtils.success(userInfoService.insertUserInfoList(file));
+    @PostMapping("/insertUserInfoList")
+    public BaseResponse<Integer> insertUserInfoList(@RequestPart(value = "file") MultipartFile file, HttpServletRequest request) {
+        return ResultUtils.success(userInfoService.insertUserInfoList(file, request));
     }
 
     /**
-     * 删除用户信息
+     * 删除用户信息（管理员）
      *
      * @param id 用户 Id
      * @return 返回受影响的行数
      */
-    @DeleteMapping("/delete/userinfo/{id}")
+    @DeleteMapping("/deleteUserInfoList/{id}")
     public BaseResponse<Integer> deleteUserInfoList(@PathVariable Integer id) {
-        if (Objects.isNull(id)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
         return ResultUtils.success(userInfoService.deleteUserInfo(id));
     }
 

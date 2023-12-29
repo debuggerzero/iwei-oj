@@ -4,16 +4,20 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zero.iweiojbackend.repo.mapper.UserInfoMapper">
 
+    <sql id="savePrefix">
+        insert into user_info(`name`, `account`, `password`, `create_person`, `update_person`, `role_id`)
+    </sql>
+
     <insert id="save">
-        insert into user_info(`name`, `account`, `password`)
-        values (#{name}, #{account}, #{password});
+        <include refid="savePrefix"/>
+        values (#{name}, #{account}, #{password}, #{createPerson}, #{updatePerson}, #{role.id});
     </insert>
 
     <insert id="saveAll" parameterType="java.util.Collection">
-        insert into user_info(`name`, `account`, `password`)
+        <include refid="savePrefix"/>
         values
         <foreach collection="list" item="model" index="index" separator=",">
-            (#{model.name}, #{model.account}, #{model.password})
+            (#{model.name}, #{model.account}, #{model.password}, #{model.createPerson}, #{model.updatePerson}, #{model.role.id})
         </foreach>
     </insert>
 
@@ -22,24 +26,39 @@
         user_info
         <set>
             <if test="name != null">
-                name=
+                name
+                =
                 #{name},
             </if>
             <if test="email != null">
-                email=
+                email
+                =
                 #{email},
             </if>
             <if test="phone != null">
-                phone=
+                phone
+                =
                 #{phone},
             </if>
             <if test="profile != null">
-                profile=
+                profile
+                =
                 #{profile},
             </if>
             <if test="avatar != null">
-                avatar=
+                avatar
+                =
                 #{avatar},
+            </if>
+            <if test="updatePerson != null">
+                update_person
+                =
+                #{updatePerson}
+            </if>
+            <if test="status != null">
+                status
+                =
+                #{status}
             </if>
         </set>
         where id=#{id};
@@ -49,15 +68,37 @@
         update
             user_info
         set password=#{password}
-        where account = #{account}
+        where id = #{uid}
+    </update>
+
+    <update id="updateSubmitCnt">
+        update user_info
+        set submit_cnt = submit_cnt + 1
+        where id = #{id}
+    </update>
+
+    <update id="updateAcceptCnt">
+        update user_info
+        set accept_cnt = accept_cnt + 1
+        where id = #{id}
+    </update>
+
+    <update id="updateUserRole">
+        update user_info
+        <set>
+            role_id
+            =
+            #{roleId}
+        </set>
     </update>
 
     <delete id="deleteById">
-        update
-            user_info
-        set is_delete=1
-        where id = #{id}
-          and is_delete = 0
+        delete from user_info
+        <where>
+            id
+            =
+            #{id}
+        </where>
     </delete>
 
     <resultMap id="queryUserInfo" type="com.zero.iweiojbackend.model.po.UserInfo">
@@ -69,49 +110,70 @@
         <result column="phone" property="phone"/>
         <result column="profile" property="profile"/>
         <result column="avatar" property="avatar"/>
+        <result column="create_person" property="createPerson"/>
         <result column="create_date" property="createDate"/>
+        <result column="update_person" property="updatePerson"/>
         <result column="update_date" property="updateDate"/>
         <result column="submit_cnt" property="submitCnt"/>
         <result column="accept_cnt" property="acceptCnt"/>
-        <association property="level">
+        <result column="status" property="status"/>
+        <association property="role">
             <id column="role_id" property="id"/>
-            <result column="describe" property="name"/>
+            <result column="role_name" property="name"/>
+            <result column="role_describe" property="describe"/>
         </association>
     </resultMap>
 
     <sql id="queryUserInfo">
-        select user_info.id,
-               user_info.name,
-               user_info.account,
-               user_info.password,
-               user_info.email,
-               user_info.phone,
-               user_info.profile,
-               user_info.avatar,
-               user_info.create_date,
-               user_info.update_date,
-               role_id,
-               system_role.describe,
-               submit_cnt,
-               accept_cnt
-        from user_info,
-             user_role,
-             system_role
+        select u.id,
+               u.name,
+               u.account,
+               u.password,
+               u.email,
+               u.phone,
+               u.profile,
+               u.avatar,
+               u1.name                as create_person,
+               u.create_date,
+               u2.name                as update_person,
+               u.update_date,
+               system_role.id         as role_id,
+               system_role.name       as role_name,
+               system_role.`describe` as role_describe,
+               u.submit_cnt,
+               u.accept_cnt,
+               u.status
+        from user_info u
+                 join system_role on system_role.id = u.role_id
+                 left join user_info u1 on u1.id = u.create_person
+                 left join user_info u2 on u2.id = u.update_person
     </sql>
 
     <select id="getOne" resultMap="queryUserInfo" parameterType="com.zero.iweiojbackend.model.query.UserInfoQuery">
         <include refid="queryUserInfo"/>
         <where>
-            user_info.id = user_role.user_id
-            and user_role.role_id = system_role.id
-            and is_delete=0
+            u.status=0
             <if test="id!=null">
-                and user_info.id=
+                and u.id=
                 #{id}
             </if>
             <if test="account!=null">
                 and
-                (account=#{account} or email=#{account} or phone=#{account})
+                (u.account=
+                #{account}
+                or
+                u
+                .
+                email
+                =
+                #{account}
+                or
+                u
+                .
+                phone
+                =
+                #{account}
+                )
             </if>
         </where>
     </select>
@@ -119,25 +181,62 @@
     <select id="getAll" resultMap="queryUserInfo">
         <include refid="queryUserInfo"/>
         <where>
-            user_info.id = user_role.user_id
-            and user_role.role_id = system_role.id
-            and is_delete=0
+            <if test="status!=null">
+                u
+                .
+                status
+                =
+                #{status}
+            </if>
             <if test="keyword!=null and keyword!=''">
                 and
-                ( user_info.id like "%"#{keyword}"%" or user_info.account like "%"#{keyword}"%" or user_info.name like
-                "%"#{keyword}"%" or user_info.email
-                like "%"#{keyword}"%")
+                ( u.id like "%"
+                #{keyword}
+                "%"
+                or
+                u
+                .
+                account
+                like
+                "%"
+                #{keyword}
+                "%"
+                or
+                u
+                .
+                name
+                like
+                "%"
+                #{keyword}
+                "%"
+                or
+                u
+                .
+                email
+                like
+                "%"
+                #{keyword}
+                "%"
+                )
             </if>
         </where>
-        order by accept_cnt desc, submit_cnt
-        limit #{page.pageNumber}, #{page.pageSize}
+        order by u.accept_cnt desc, u.submit_cnt
+        <if test="page!=null and page.pageNumber!=null and page.pageSize!=null">
+            limit
+            #{page.pageNumber},
+            #{page.pageSize}
+        </if>
     </select>
 
-    <select id="queryTotalRecord" resultType="java.lang.Long">
+    <select id="queryTotal" resultType="java.lang.Long">
         select count(*)
         from user_info
         <where>
-            is_delete=0
+            <if test="status!=null">
+                status
+                =
+                #{status}
+            </if>
         </where>
     </select>
 

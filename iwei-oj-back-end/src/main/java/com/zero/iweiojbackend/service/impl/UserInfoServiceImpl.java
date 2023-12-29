@@ -1,19 +1,21 @@
 package com.zero.iweiojbackend.service.impl;
 
 import com.zero.iweiojbackend.exception.AssertionException;
+import com.zero.iweiojbackend.model.converter.ToUserRoleConverter;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.query.UserInfoQuery;
-import com.zero.iweiojbackend.model.dto.user.InsertUserRequest;
+import com.zero.iweiojbackend.model.dto.user.UserInfoRequest;
 import com.zero.iweiojbackend.model.dto.user.LoginRequest;
 import com.zero.iweiojbackend.model.dto.user.ModifyPasswordRequest;
 import com.zero.iweiojbackend.model.common.ErrorCode;
-import com.zero.iweiojbackend.model.common.Page;
 import com.zero.iweiojbackend.model.converter.ToUserInfoConverter;
 import com.zero.iweiojbackend.model.converter.ToUserInfoVoConverter;
 import com.zero.iweiojbackend.model.po.UserInfo;
+import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.UserInfoVO;
+import com.zero.iweiojbackend.model.vo.UserRole;
+import com.zero.iweiojbackend.repo.SystemRoleRepo;
 import com.zero.iweiojbackend.repo.UserInfoRepo;
-import com.zero.iweiojbackend.repo.mapper.UserRoleMapper;
 import com.zero.iweiojbackend.service.CosService;
 import com.zero.iweiojbackend.service.PoiService;
 import com.zero.iweiojbackend.service.UserInfoService;
@@ -30,11 +32,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.zero.iweiojbackend.model.common.UserConstant.USER_LOGIN_STATE;
+import static com.zero.iweiojbackend.model.common.UserConstant.*;
 
 /**
  * UserInfoServiceImpl
@@ -52,13 +55,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Resource(name = "poiServiceImpl")
     private PoiService poiService;
 
-    private final UserRoleMapper userRoleMapper;
-
     @Resource(name = "userInfoRepoImpl")
     private UserInfoRepo userInfoRepo;
 
-    public Long queryTotalRecord() {
-        return userInfoRepo.queryTotalRecord();
+    @Resource(name = "systemRoleRepoImpl")
+    private SystemRoleRepo systemRoleRepo;
+
+    public Long queryTotal(Integer status) {
+        return userInfoRepo.queryTotal(status);
     }
 
     public UserInfoVO login(LoginRequest loginRequest, HttpServletRequest request) {
@@ -95,50 +99,115 @@ public class UserInfoServiceImpl implements UserInfoService {
         return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
     }
 
-    public List<UserInfoVO> queryUserInfoList(BaseQuery query) {
-        Page page = query.getPage();
-        page.setPageNumber((page.getPageNumber() - 1) * page.getPageSize());
-        if (page.getPageNumber() < 0 || page.getPageSize() <= 0) {
+    public GeneralCollectionResult<UserInfo> queryUserInfoList(BaseQuery query) {
+        if (BaseQuery.isNull(query)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        return userInfoRepo.getAll(query)
+        Collection<UserInfo> userInfos = userInfoRepo.getAll(query)
                 .stream()
-                .map(ToUserInfoVoConverter.CONVERTER::toUserInfoVO)
+                .filter(Objects::nonNull)
                 .peek(o -> o.setAvatar(cosService.getImageUrl(o.getAvatar())))
                 .collect(Collectors.toList());
+        return new GeneralCollectionResult<>(userInfos, this.queryTotal(query.getStatus()));
+    }
+
+    @Override
+    public GeneralCollectionResult<UserInfoVO> queryUserInfoVOList(BaseQuery query) {
+        if (BaseQuery.isNull(query)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        query.setStatus(0);
+        Collection<UserInfoVO> userInfoVos = userInfoRepo.getAll(query)
+                .stream()
+                .filter(Objects::nonNull)
+                .peek(o -> o.setAvatar(cosService.getImageUrl(o.getAvatar())))
+                .map(ToUserInfoVoConverter.CONVERTER::toUserInfoVO)
+                .collect(Collectors.toList());
+        return new GeneralCollectionResult<>(userInfoVos, this.queryTotal(0));
+    }
+
+    public GeneralCollectionResult<UserRole> queryUserRoleList() {
+        List<UserRole> userRoles = systemRoleRepo.getAll()
+                .stream()
+                .map(ToUserRoleConverter.CONVERTER::toUserRole)
+                .collect(Collectors.toList());
+        return new GeneralCollectionResult<>(userRoles, systemRoleRepo.queryTotal());
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public UserInfoVO modifyInfo(UserInfoVO userInfoVO, HttpServletRequest request) {
+    public Integer modifyInfoByUser(UserInfoRequest userInfoRequest, HttpServletRequest request) {
+        if (UserInfoRequest.isNull(userInfoRequest)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
+        // 判断当前登录用户与操作人 id 是否相同，不相同则无法更新
+        UserInfoVO currentUserInfoVO = this.getLoginUser(request);
+        if (currentUserInfoVO.getId().equals(userInfoVO.getId())) {
+            throw new AssertionException(ErrorCode.NO_AUTH_ERROR);
+        }
         UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
+        userInfo.setAvatar(cosService.getImageKey(userInfo.getAvatar()));
+        userInfo.setUpdatePerson(currentUserInfoVO.getId().toString());
         // 更新用户信息
         Integer result = userInfoRepo.updateById(userInfo);
         if (result == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
-        UserInfo temp = userInfoRepo.getOne(UserInfoQuery.builder().id(userInfo.getId()).build());
-        temp.setAvatar(cosService.getImageUrl(temp.getAvatar()));
-        userInfoVO = ToUserInfoVoConverter.CONVERTER.toUserInfoVO(temp);
+        UserInfo newUserInfo = userInfoRepo.getOne(UserInfoQuery.builder().id(userInfo.getId()).build());
+        if (Objects.isNull(newUserInfo)) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        newUserInfo.setAvatar(cosService.getImageUrl(newUserInfo.getAvatar()));
         // 更新 session 中用户信息
-        request.getSession().setAttribute(USER_LOGIN_STATE, userInfoVO);
-        return userInfoVO;
+        request.getSession().setAttribute(USER_LOGIN_STATE, ToUserInfoVoConverter.CONVERTER.toUserInfoVO(newUserInfo));
+        return result;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Integer modifyInfoByAdmin(UserInfoRequest userInfoRequest, HttpServletRequest request) {
+        if (UserInfoRequest.isNull(userInfoRequest)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
+        UserInfoVO currentUserInfoVO = this.getLoginUser(request);
+        UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
+        userInfo.setStatus(userInfoRequest.getStatus());
+        userInfo.setAvatar(cosService.getImageKey(userInfo.getAvatar()));
+        userInfo.setUpdatePerson(currentUserInfoVO.getId().toString());
+        // 更新用户信息
+        Integer result = userInfoRepo.updateById(userInfo);
+        if (result == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        // 更新用户权限
+        UserRole role = userInfoVO.getRole();
+        if (Objects.isNull(role) || Objects.isNull(role.getId())) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer i = userInfoRepo.updateUserRole(role.getId());
+        if (i == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        return result;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Integer modifyUserPassword(ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request) {
-        String account = modifyPasswordRequest.getAccount();
+    public Integer modifyPasswordByUser(ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request) {
         String oldPassword = modifyPasswordRequest.getOldPassword();
         String newPassword = modifyPasswordRequest.getNewPassword();
+        if (Objects.isNull(oldPassword) || Objects.isNull(newPassword)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
         if (oldPassword.equals(newPassword)) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "两次密码相同");
         }
-
-        UserInfo userInfo = userInfoRepo.getOne(UserInfoQuery.builder().account(account).build());
+        UserInfoVO loginUser = this.getLoginUser(request);
+        UserInfo userInfo = userInfoRepo.getOne(UserInfoQuery.builder().id(loginUser.getId()).build());
         if (userInfo.getPassword().equals(StringUtil.md5(oldPassword))) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "密码错误");
         }
-
-        Integer result = userInfoRepo.updateUserPassword(account, StringUtil.md5(newPassword));
+        Integer result = userInfoRepo.updateUserPassword(loginUser.getId(), StringUtil.md5(newPassword));
         if (result == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
@@ -146,38 +215,78 @@ public class UserInfoServiceImpl implements UserInfoService {
         return result;
     }
 
-    @Transactional(rollbackFor = Exception.class)
-    public Integer insertOneUserInfo(InsertUserRequest insertUserRequest) {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setAccount(insertUserRequest.getAccount());
-        userInfo.setName(insertUserRequest.getName());
-        userInfo.setPassword(StringUtil.md5(StringUtil.md5("123456")));
-        Integer userResult = userInfoRepo.save(userInfo);
-        Integer roleResult = userRoleMapper.insertUserRole(userInfo);
-        if (userResult == 0 || roleResult == 0) {
+    @Override
+    public Integer resetPassword(Integer uid) {
+        if (Objects.isNull(uid)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer i = userInfoRepo.updateUserPassword(uid, StringUtil.md5(StringUtil.md5(INITIAL_PASSWORD)));
+        if (i == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
-        return userResult;
+        return i;
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Integer insertUserInfoList(MultipartFile file) {
+    public Integer insertOneUserInfo(UserInfoRequest userInfoRequest, HttpServletRequest request) {
+        if (UserInfoRequest.isNull(userInfoRequest)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
+        UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
+        UserInfoVO loginUser = this.getLoginUser(request);
+        if (Objects.isNull(userInfo.getRole()) || Objects.isNull(userInfo.getRole().getId())) {
+            userInfo.setRole(systemRoleRepo.getUserRoleByName(USER_ROLE_USER));
+        }
+        userInfo.setPassword(StringUtil.md5(StringUtil.md5(INITIAL_PASSWORD)));
+        userInfo.setCreatePerson(loginUser.getId().toString());
+        userInfo.setUpdatePerson(loginUser.getId().toString());
+        Integer result = userInfoRepo.save(userInfo);
+        if (result == 0) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public Integer insertUserInfoList(MultipartFile file, HttpServletRequest request) {
+        if (Objects.isNull(file)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        // 判断文件格式已否正确
+        String xlsx = "xlsx";
+        if (Objects.equals(file.getContentType(), xlsx)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR, "文件类型错误");
+        }
+        // 处理表格
         List<UserInfo> userInfoList;
         try {
             userInfoList = poiService.getUserInfoList(file.getInputStream());
         } catch (Exception e) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, e.getMessage());
         }
-        Integer userResult = userInfoRepo.saveAll(userInfoList);
-        Integer roleResult = userRoleMapper.insertUserRoleList(userInfoList);
-        if (userResult < userInfoList.size() || roleResult < userInfoList.size()) {
+        // 处理 userinfo
+        Collection<UserInfo> userInfos = userInfoList
+                .stream()
+                .peek(o -> {
+                    o.setPassword(StringUtil.md5(StringUtil.md5(INITIAL_PASSWORD)));
+                    o.setRole(systemRoleRepo.getUserRoleByName(USER_ROLE_USER));
+                    o.setCreatePerson(this.getLoginUser(request).getId().toString());
+                    o.setUpdatePerson(this.getLoginUser(request).getId().toString());
+                })
+                .collect(Collectors.toList());
+        Integer result = userInfoRepo.saveAll(userInfos);
+        if (result != userInfos.size()) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
-        return userResult;
+        return result;
     }
 
     @Transactional(rollbackFor = Exception.class)
     public Integer deleteUserInfo(Integer id) {
+        if (Objects.isNull(id)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
         Integer result = userInfoRepo.deleteById(id);
         if (result == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);

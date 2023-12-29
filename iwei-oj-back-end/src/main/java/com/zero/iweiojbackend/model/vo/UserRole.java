@@ -1,4 +1,4 @@
-package com.zero.iweiojbackend.model.po;
+package com.zero.iweiojbackend.model.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
  * 用户权限
  *
  * @author ZERO
- * @date 2023/7/2
+ * @date 2023/12/29
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class Level {
+@AllArgsConstructor
+public class UserRole {
 
     /**
      * 权限 id
@@ -21,8 +21,12 @@ public class Level {
     private Integer id;
 
     /**
-     * 权限名
+     * 权限名称
      */
     private String name;
 
+    /**
+     * 描述
+     */
+    private String describe;
 }

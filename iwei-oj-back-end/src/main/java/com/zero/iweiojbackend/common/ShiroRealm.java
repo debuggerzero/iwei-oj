@@ -40,7 +40,7 @@ public class ShiroRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
         Subject subject = SecurityUtils.getSubject();
         UserInfo user = (UserInfo) subject.getPrincipal();
-        SystemRole systemRole = systemRoleRepo.querySystemRole(user.getAccount());
+        SystemRole systemRole = systemRoleRepo.getUserRoleByAccount(user.getAccount());
         authorizationInfo.addStringPermission(systemRole.getName());
 
         return authorizationInfo;
