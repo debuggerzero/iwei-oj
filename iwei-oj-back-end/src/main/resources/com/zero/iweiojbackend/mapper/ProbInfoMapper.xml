@@ -228,7 +228,9 @@
         <include refid="selectPrefix"/>
         from prob_info p
         <include refid="selectPostfix"/>
-        and p.id = #{id};
+        <where>
+            and p.id = #{id};
+        </where>
     </select>
 
 </mapper>

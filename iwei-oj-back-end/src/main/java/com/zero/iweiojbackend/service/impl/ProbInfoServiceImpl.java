@@ -154,18 +154,22 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         // 查询预删除的题目信息
         ProbInfo probInfo = probInfoRepo.getById(id);
         // 删除题目与标签的关联信息
-        Integer tagIdsSize = probInfoRepo.deleteTagInfoById(id, null);
-        if (probInfo.getTagInfos().size() != tagIdsSize) {
-            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        if (!Objects.isNull(probInfo.getTagInfos()) && !probInfo.getTagInfos().isEmpty()) {
+            Integer tagIdsSize = probInfoRepo.deleteTagInfoById(id, null);
+            if (probInfo.getTagInfos().size() != tagIdsSize) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
+            }
         }
         // 删除用例
         Collection<Number> sampleIds = sampleRepo.getAllByProId(probInfo.getId())
                 .stream()
                 .map(Sample::getId)
                 .collect(Collectors.toList());
-        Integer sampleIdsSuccessCount = sampleRepo.deleteByIds(sampleIds);
-        if (sampleIdsSuccessCount != sampleIds.size()) {
-            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        if (!sampleIds.isEmpty()) {
+            Integer sampleIdsSuccessCount = sampleRepo.deleteByIds(sampleIds);
+            if (sampleIdsSuccessCount != sampleIds.size()) {
+                throw new AssertionException(ErrorCode.OPERATION_ERROR);
+            }
         }
         // 删除题目
         Integer i = probInfoRepo.deleteById(id);

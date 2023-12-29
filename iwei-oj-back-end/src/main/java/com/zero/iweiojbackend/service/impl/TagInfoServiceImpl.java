@@ -81,7 +81,7 @@ public class TagInfoServiceImpl implements TagInfoService {
         TagInfoVO tagInfoVO = tagInfoRequest.getTagInfoVO();
         TagInfo tagInfo = TagInfo
                 .builder()
-                .id(Integer.parseInt(uid))
+                .id(tagInfoRequest.getTagInfoVO().getId())
                 .name(tagInfoVO.getName())
                 .updatePerson(uid)
                 .build();

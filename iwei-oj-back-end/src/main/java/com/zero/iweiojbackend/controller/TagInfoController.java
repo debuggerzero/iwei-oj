@@ -40,12 +40,12 @@ public class TagInfoController {
     /**
      * 通过 id 删除标签（管理员）
      *
-     * @param proId 标签 id
+     * @param tagId 标签 id
      * @return 受影响的行数
      */
-    @DeleteMapping("/deleteTagInfoById/{proId}")
-    public BaseResponse<Integer> deleteTagInfoById(@PathVariable Integer proId) {
-        return ResultUtils.success(tagInfoService.deleteTagInfoById(proId));
+    @DeleteMapping("/deleteTagInfoById/{tagId}")
+    public BaseResponse<Integer> deleteTagInfoById(@PathVariable Integer tagId) {
+        return ResultUtils.success(tagInfoService.deleteTagInfoById(tagId));
     }
 
     /**
@@ -62,12 +62,12 @@ public class TagInfoController {
     /**
      * 通过 id 查询标签详细信息（管理员）
      *
-     * @param proId 标签 id
+     * @param tagId 标签 id
      * @return 结果
      */
-    @GetMapping("/getTagInfoById/{proId}")
-    public BaseResponse<TagInfo> getTagInfoById(@PathVariable Integer proId) {
-        return ResultUtils.success(tagInfoService.getTagInfoById(proId));
+    @GetMapping("/getTagInfoById/{tagId}")
+    public BaseResponse<TagInfo> getTagInfoById(@PathVariable Integer tagId) {
+        return ResultUtils.success(tagInfoService.getTagInfoById(tagId));
     }
 
     /**
