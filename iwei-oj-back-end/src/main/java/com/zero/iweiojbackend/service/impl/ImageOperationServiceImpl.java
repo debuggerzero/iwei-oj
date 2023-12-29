@@ -5,9 +5,11 @@ import com.zero.iweiojbackend.model.common.ErrorCode;
 import com.zero.iweiojbackend.model.po.ImageInfo;
 import com.zero.iweiojbackend.model.po.UserInfo;
 import com.zero.iweiojbackend.model.vo.ImageInfoVO;
+import com.zero.iweiojbackend.model.vo.UserInfoVO;
 import com.zero.iweiojbackend.repo.ImageInfoRepo;
 import com.zero.iweiojbackend.service.CosService;
 import com.zero.iweiojbackend.service.ImageOperationService;
+import com.zero.iweiojbackend.service.UserInfoService;
 import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,6 +40,9 @@ public class ImageOperationServiceImpl implements ImageOperationService {
 
     @Resource(name = "imageInfoRepoImpl")
     private ImageInfoRepo imageInfoRepo;
+
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
 
     private String getFilename(String contentType) {
         if (Objects.isNull(contentType)) {
@@ -88,8 +94,12 @@ public class ImageOperationServiceImpl implements ImageOperationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ImageInfoVO uploadImage(MultipartFile multipartFile, Integer userId) {
-
+    public ImageInfoVO uploadImage(MultipartFile multipartFile, HttpServletRequest request) {
+        if (Objects.isNull(multipartFile)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "文件上传失败");
+        }
+        UserInfoVO loginUser = userInfoService.getLoginUser(request);
+        Integer userId = loginUser.getId();
         InputStream inputStream;
         long contentLength;
         try {

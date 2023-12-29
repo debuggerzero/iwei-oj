@@ -1,18 +1,15 @@
 package com.zero.iweiojbackend.controller;
 
-import com.zero.iweiojbackend.exception.AssertionException;
 import com.zero.iweiojbackend.model.common.BaseResponse;
-import com.zero.iweiojbackend.model.common.ErrorCode;
 import com.zero.iweiojbackend.service.ImageOperationService;
 import com.zero.iweiojbackend.utils.ResultUtils;
 import com.zero.iweiojbackend.model.vo.ImageInfoVO;
-import com.zero.iweiojbackend.service.impl.ImageOperationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.Objects;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 文件上传
@@ -31,17 +28,12 @@ public class FileOperationController {
     /**
      * 上传图片
      * @param file 图片
-     * @param userId 用户 Id
+     * @param request request
      * @return 图片信息
      */
-    @PostMapping("/upload/image/{userId}")
-    public BaseResponse<ImageInfoVO> uploadImage(@RequestPart(value = "file") MultipartFile file, @PathVariable Integer userId) {
-        if (Objects.isNull(file)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "文件上传失败");
-        }
-        if (Objects.isNull(userId)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
-        return ResultUtils.success(fileOperationService.uploadImage(file, userId));
+    @PostMapping("/upload/image")
+    public BaseResponse<ImageInfoVO> uploadImage(@RequestPart(value = "file") MultipartFile file, HttpServletRequest request) {
+
+        return ResultUtils.success(fileOperationService.uploadImage(file, request));
     }
 }

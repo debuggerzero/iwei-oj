@@ -24,11 +24,6 @@ import java.util.Objects;
 public class ProblemRequest {
 
     /**
-     * 操作人 id
-     */
-    private Integer uid;
-
-    /**
      * 题目信息
      */
     private ProbInfo probInfo;
@@ -40,7 +35,6 @@ public class ProblemRequest {
 
     public static boolean isNull(ProblemRequest problemRequest) {
         if (Objects.isNull(problemRequest) ||
-                Objects.isNull(problemRequest.getUid()) ||
                 Objects.isNull(problemRequest.getProbInfo())) {
             return true;
         }

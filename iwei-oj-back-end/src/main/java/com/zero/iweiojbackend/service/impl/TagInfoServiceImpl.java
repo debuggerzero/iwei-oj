@@ -11,10 +11,12 @@ import com.zero.iweiojbackend.model.vo.TagInfoVO;
 import com.zero.iweiojbackend.repo.ProbInfoRepo;
 import com.zero.iweiojbackend.repo.TagInfoRepo;
 import com.zero.iweiojbackend.service.TagInfoService;
+import com.zero.iweiojbackend.service.UserInfoService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,13 +35,16 @@ public class TagInfoServiceImpl implements TagInfoService {
     @Resource
     private ProbInfoRepo probInfoRepo;
 
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer insertTagInfo(TagInfoRequest tagInfoRequest) {
+    public Integer insertTagInfo(TagInfoRequest tagInfoRequest, HttpServletRequest request) {
         if (TagInfoRequest.isNull(tagInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        String uid = tagInfoRequest.getUid().toString();
+        String uid = userInfoService.getLoginUser(request).getId().toString();
         TagInfoVO tagInfoVO = tagInfoRequest.getTagInfoVO();
         TagInfo tagInfo = TagInfo.builder().name(tagInfoVO.getName()).createPerson(uid).updatePerson(uid).build();
         Integer i = tagInfoRepo.save(tagInfo);
@@ -68,15 +73,15 @@ public class TagInfoServiceImpl implements TagInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer updateTagInfoById(TagInfoRequest tagInfoRequest) {
+    public Integer updateTagInfoById(TagInfoRequest tagInfoRequest, HttpServletRequest request) {
         if (TagInfoRequest.isNull(tagInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        String uid = tagInfoRequest.getUid().toString();
+        String uid = userInfoService.getLoginUser(request).getId().toString();
         TagInfoVO tagInfoVO = tagInfoRequest.getTagInfoVO();
         TagInfo tagInfo = TagInfo
                 .builder()
-                .id(tagInfoRequest.getUid())
+                .id(Integer.parseInt(uid))
                 .name(tagInfoVO.getName())
                 .updatePerson(uid)
                 .build();
@@ -109,14 +114,12 @@ public class TagInfoServiceImpl implements TagInfoService {
     }
 
     @Override
-    public GeneralCollectionResult<TagInfoVO> getTagInfoVOList(BaseQuery query) {
-        if (BaseQuery.isNull(query)) {
-            throw new AssertionException(ErrorCode.PARAMS_ERROR);
-        }
+    public GeneralCollectionResult<TagInfoVO> getTagInfoVOList() {
         Collection<TagInfoVO> tagInfoVos =
-                tagInfoRepo.getAll(query)
+                tagInfoRepo.getAll()
                         .stream()
-                        .map(ToTagInfoVoConverter.CONVERTER::toTagInfoVO).collect(Collectors.toList());
+                        .map(ToTagInfoVoConverter.CONVERTER::toTagInfoVO)
+                        .collect(Collectors.toList());
         Long count = tagInfoRepo.tagCount();
         return new GeneralCollectionResult<>(tagInfoVos, count);
     }

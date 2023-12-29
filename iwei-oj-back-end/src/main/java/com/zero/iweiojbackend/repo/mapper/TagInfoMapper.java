@@ -51,11 +51,17 @@ public interface TagInfoMapper {
     Integer updateById(TagInfo tagInfo);
 
     /**
+     * 查询所有标签
+     * @return 查询所有标签
+     */
+    Collection<TagInfo> getAll();
+
+    /**
      * 查询所有标签信息
      * @param baseQuery 基础查询
      * @return 结果集
      */
-    Collection<TagInfo> getAll(BaseQuery baseQuery);
+    Collection<TagInfo> getAllByQuery(BaseQuery baseQuery);
 
     /**
      * 通过 id 查询标签信息

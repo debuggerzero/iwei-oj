@@ -13,12 +13,14 @@ import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import com.zero.iweiojbackend.repo.ProbInfoRepo;
 import com.zero.iweiojbackend.repo.SampleRepo;
 import com.zero.iweiojbackend.service.ProbInfoService;
+import com.zero.iweiojbackend.service.UserInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,9 @@ public class ProbInfoServiceImpl implements ProbInfoService {
 
     @Resource(name = "sampleRepoImpl")
     private SampleRepo sampleRepo;
+
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
 
     @Override
     public GeneralCollectionResult<ProbInfoVO> queryProbInfoVOList(BaseQuery query) {
@@ -74,12 +79,12 @@ public class ProbInfoServiceImpl implements ProbInfoService {
     }
 
     @Override
-    public Integer save(ProblemRequest problemRequest) {
+    public Integer save(ProblemRequest problemRequest, HttpServletRequest request) {
+        String uid = userInfoService.getLoginUser(request).getId().toString();
         if (ProblemRequest.isNull(problemRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         ProbInfo probInfo = problemRequest.getProbInfo();
-        String uid = problemRequest.getUid().toString();
         // 设置创建用户与修改用户 id
         probInfo.setCreatePerson(uid);
         probInfo.setUpdatePerson(uid);
@@ -112,7 +117,8 @@ public class ProbInfoServiceImpl implements ProbInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer updateById(ProblemRequest problemRequest) {
+    public Integer updateById(ProblemRequest problemRequest, HttpServletRequest request) {
+        String uid = userInfoService.getLoginUser(request).getId().toString();
         // 验证参数是否正确
         if (ProblemRequest.isNull(problemRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
@@ -125,7 +131,7 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         if (Objects.isNull(probInfo.getTagInfos())) {
             probInfo.setTagInfos(new ArrayList<>());
         }
-        probInfo.setUpdatePerson(problemRequest.getUid().toString());
+        probInfo.setUpdatePerson(uid);
         // 修改 tagInfo 与 probInfo 关联
         ProbInfoServiceImpl probInfoService = (ProbInfoServiceImpl) AopContext.currentProxy();
         probInfoService.updateTagIds(probInfo);

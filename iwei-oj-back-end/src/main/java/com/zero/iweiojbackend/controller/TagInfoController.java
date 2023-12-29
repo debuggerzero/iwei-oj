@@ -11,6 +11,7 @@ import com.zero.iweiojbackend.utils.ResultUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 标签模块
@@ -27,36 +28,40 @@ public class TagInfoController {
 
     /**
      * 添加标签信息（管理员）
+     *
      * @param tagInfoRequest tagInfoRequest
      * @return 受影响的行数
      */
     @PostMapping("/insert")
-    public BaseResponse<Integer> insertTagInfo(@RequestBody TagInfoRequest tagInfoRequest) {
-        return ResultUtils.success(tagInfoService.insertTagInfo(tagInfoRequest));
+    public BaseResponse<Integer> insertTagInfo(@RequestBody TagInfoRequest tagInfoRequest, HttpServletRequest request) {
+        return ResultUtils.success(tagInfoService.insertTagInfo(tagInfoRequest, request));
     }
 
     /**
      * 通过 id 删除标签（管理员）
+     *
      * @param proId 标签 id
      * @return 受影响的行数
      */
-    @DeleteMapping("/deleteById/{proId}")
+    @DeleteMapping("/deleteTagInfoById/{proId}")
     public BaseResponse<Integer> deleteTagInfoById(@PathVariable Integer proId) {
         return ResultUtils.success(tagInfoService.deleteTagInfoById(proId));
     }
 
     /**
      * 更新标签信息通过 id（管理员）
+     *
      * @param tagInfoRequest tagInfoRequest
      * @return 受影响的行数
      */
-    @PutMapping("/updateById")
-    public BaseResponse<Integer> updateTagInfoById(TagInfoRequest tagInfoRequest) {
-        return ResultUtils.success(tagInfoService.updateTagInfoById(tagInfoRequest));
+    @PutMapping("/updateTagInfoById")
+    public BaseResponse<Integer> updateTagInfoById(@RequestBody TagInfoRequest tagInfoRequest, HttpServletRequest request) {
+        return ResultUtils.success(tagInfoService.updateTagInfoById(tagInfoRequest, request));
     }
 
     /**
      * 通过 id 查询标签详细信息（管理员）
+     *
      * @param proId 标签 id
      * @return 结果
      */
@@ -67,6 +72,7 @@ public class TagInfoController {
 
     /**
      * 查询标签结果集（管理员）
+     *
      * @param query query
      * @return 结果集
      */
@@ -77,12 +83,12 @@ public class TagInfoController {
 
     /**
      * 查询标签视图对象
-     * @param query query
+     *
      * @return 结果集
      */
     @PostMapping("/getTagInfoVOList")
-    public BaseResponse<GeneralCollectionResult<TagInfoVO>> getTagInfoVOList(@RequestBody BaseQuery query) {
-        return ResultUtils.success(tagInfoService.getTagInfoVOList(query));
+    public BaseResponse<GeneralCollectionResult<TagInfoVO>> getTagInfoVOList() {
+        return ResultUtils.success(tagInfoService.getTagInfoVOList());
     }
 
 }

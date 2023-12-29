@@ -120,7 +120,8 @@ class MainApplicationTests {
 
     @Test
     public void testTagInfoMapper() {
-        // tagInfoMapper.getAll(new BaseQuery("动", new Page(0L, 10L), null)).forEach(System.out::println);
+        tagInfoMapper.getAllByQuery(new BaseQuery("动", new Page(0L, 10L), null)).forEach(System.out::println);
+        tagInfoMapper.getAll().forEach(System.out::println);
     }
 
     @Resource
@@ -142,7 +143,7 @@ class MainApplicationTests {
     public void testUserInfoService() {
         // System.out.println(userInfoService.queryUserInfoById(1001));
         // System.out.println(userInfoService.queryUserInfoVOList(new BaseQuery(null, null, null)));
-        System.out.println(userInfoService.queryUserRoleList());
+        // System.out.println(userInfoService.queryUserRoleList());
     }
 
 }

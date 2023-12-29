@@ -7,6 +7,8 @@ import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.TagInfoVO;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * TagInfoService
  *
@@ -18,13 +20,16 @@ public interface TagInfoService {
 
     /**
      * 添加标签信息（管理员）
+     *
      * @param tagInfoRequest tagInfoRequest
+     * @param request        request
      * @return 受影响的行数
      */
-    Integer insertTagInfo(TagInfoRequest tagInfoRequest);
+    Integer insertTagInfo(TagInfoRequest tagInfoRequest, HttpServletRequest request);
 
     /**
      * 通过 id 删除标签（管理员）
+     *
      * @param id 标签 id
      * @return 受影响的行数
      */
@@ -32,13 +37,16 @@ public interface TagInfoService {
 
     /**
      * 更新标签信息通过 id（管理员）
+     *
      * @param tagInfoRequest tagInfoRequest
+     * @param request        request
      * @return 受影响的行数
      */
-    Integer updateTagInfoById(TagInfoRequest tagInfoRequest);
+    Integer updateTagInfoById(TagInfoRequest tagInfoRequest, HttpServletRequest request);
 
     /**
      * 通过 id 查询标签详细信息（管理员）
+     *
      * @param id 标签 id
      * @return 结果
      */
@@ -46,6 +54,7 @@ public interface TagInfoService {
 
     /**
      * 查询标签结果集（管理员）
+     *
      * @param query query
      * @return 结果集
      */
@@ -53,9 +62,9 @@ public interface TagInfoService {
 
     /**
      * 查询标签视图对象
-     * @param query query
+     *
      * @return 结果集
      */
-    GeneralCollectionResult<TagInfoVO> getTagInfoVOList(BaseQuery query);
+    GeneralCollectionResult<TagInfoVO> getTagInfoVOList();
 
 }

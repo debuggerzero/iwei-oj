@@ -46,18 +46,22 @@
     </resultMap>
 
     <sql id="getTagInfo">
-        SELECT tag_info.id,
+        select tag_info.id,
                tag_info.name,
                tag_info.create_date,
-               u1.name AS create_person,
+               u1.name as create_person,
                tag_info.update_date,
-               u2.name AS update_person,
-        FROM tag_info
-                 INNER JOIN user_info u1 ON tag_info.create_person = u1.id
-                 INNER JOIN user_info u2 ON tag_info.update_person = u2.id
+               u2.name as update_person
+        from tag_info
+                 inner join user_info u1 on tag_info.create_person = u1.id
+                 inner join user_info u2 on tag_info.update_person = u2.id
     </sql>
 
-    <select id="getAll" resultMap="getResult">
+    <select id="getAll" resultType="com.zero.iweiojbackend.model.po.TagInfo">
+        <include refid="getTagInfo"/>
+    </select>
+
+    <select id="getAllByQuery" resultMap="getResult">
         <include refid="getTagInfo"/>
         <where>
             <if test="keyword!=null and keyword!=''">
@@ -78,7 +82,7 @@
         limit #{page.pageNumber}, #{page.pageSize}
     </select>
 
-    <select id="getById" resultType="com.zero.iweiojbackend.model.po.TagInfo">
+    <select id="getById" resultMap="getResult">
         <include refid="getTagInfo"/>
         <where>
             tag_info

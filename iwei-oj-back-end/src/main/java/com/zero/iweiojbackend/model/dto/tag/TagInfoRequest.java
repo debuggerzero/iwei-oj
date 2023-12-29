@@ -25,18 +25,12 @@ import java.util.Objects;
 public class TagInfoRequest {
 
     /**
-     * 操作人
-     */
-    private Integer uid;
-
-    /**
      * 标签信息
      */
     private TagInfoVO tagInfoVO;
 
     public static boolean isNull(TagInfoRequest tagInfoRequest) {
         return Objects.isNull(tagInfoRequest) ||
-                Objects.isNull(tagInfoRequest.getUid()) ||
                 Objects.isNull(tagInfoRequest.getTagInfoVO()) ||
                 StringUtil.isEmpty(tagInfoRequest.getTagInfoVO().getName());
     }

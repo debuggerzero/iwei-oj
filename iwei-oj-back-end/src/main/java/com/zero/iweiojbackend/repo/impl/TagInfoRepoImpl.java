@@ -42,8 +42,13 @@ public class TagInfoRepoImpl implements TagInfoRepo {
     }
 
     @Override
+    public Collection<TagInfo> getAll() {
+        return tagInfoMapper.getAll();
+    }
+
+    @Override
     public Collection<TagInfo> getAll(BaseQuery query) {
-        return tagInfoMapper.getAll(query);
+        return tagInfoMapper.getAllByQuery(query);
     }
 
     @Override

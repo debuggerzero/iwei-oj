@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 题目模块
@@ -29,6 +30,7 @@ public class ProblemInfoController {
 
     /**
      * 查询问题信息列表（管理员）
+     *
      * @param query 查询器
      * @return List<ProbInfo>
      */
@@ -55,33 +57,35 @@ public class ProblemInfoController {
      * @return 题目信息
      */
     @GetMapping("/one/{proId}")
-    @Deprecated
     public BaseResponse<ProbInfoVO> queryProbInfo(@PathVariable Integer proId) {
         return ResultUtils.success(probInfoService.queryOneProbInfo(proId));
     }
 
     /**
      * 添加题目（管理员）
+     *
      * @param problemRequest 题目信息
      * @return 受影响的行数
      */
     @PostMapping("/save")
-    public BaseResponse<Integer> save(@RequestBody ProblemRequest problemRequest) {
-        return ResultUtils.success(probInfoService.save(problemRequest));
+    public BaseResponse<Integer> save(@RequestBody ProblemRequest problemRequest, HttpServletRequest request) {
+        return ResultUtils.success(probInfoService.save(problemRequest, request));
     }
 
     /**
      * 通过 id 更新题目信息（管理员）
+     *
      * @param problemRequest 题目信息
      * @return 受影响的行数
      */
-    @PutMapping ("/update")
-    public BaseResponse<Integer> updateById(@RequestBody ProblemRequest problemRequest) {
-        return ResultUtils.success(probInfoService.updateById(problemRequest));
+    @PutMapping("/update")
+    public BaseResponse<Integer> updateById(@RequestBody ProblemRequest problemRequest, HttpServletRequest request) {
+        return ResultUtils.success(probInfoService.updateById(problemRequest, request));
     }
 
     /**
      * 通过 id 删除题目信息（管理员）
+     *
      * @param proId 题目 id
      * @return 受影响的行数
      */
