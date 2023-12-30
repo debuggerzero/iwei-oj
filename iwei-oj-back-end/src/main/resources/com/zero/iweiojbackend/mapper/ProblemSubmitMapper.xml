@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zero.iweiojbackend.repo.mapper.ProblemSubmitMapper">
+    <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+        values (#{language}, #{code}, #{judgeInfo}, #{status}, #{probInfo.id}, #{createPerson.id})
+    </insert>
+
+    <update id="updateById">
+        update prob_submit
+        <set>
+            <if test="judgeInfo!=null">
+                judge_info
+                =
+                #{judgeInfo}
+            </if>
+            <if test="status!=null">
+                status
+                =
+                #{status}
+            </if>
+        </set>
+        <where>
+            id
+            =
+            #{id}
+        </where>
+    </update>
+
+    <resultMap id="queryAll" type="com.zero.iweiojbackend.model.po.ProblemSubmit">
+        <id property="id" column="id"/>
+        <result property="language" column="language"/>
+        <result property="code" column="code"/>
+        <result property="judgeInfo" column="judge_info"/>
+        <result property="status" column="status"/>
+        <result property="createDate" column="create_date"/>
+        <result property="updateDate" column="update_date"/>
+        <association property="createPerson">
+            <id column="uid" property="id"/>
+            <result column="uname" property="name"/>
+        </association>
+        <association property="probInfo">
+            <id column="pid" property="id"/>
+            <result column="p_title" property="title"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectPrefix">
+        select prob_submit.id,
+               prob_submit.language,
+               prob_submit.code,
+               prob_submit.judge_info,
+               prob_submit.status,
+               p.id    as pid,
+               p.title as p_title,
+               u.id    as uid,
+               u.name  as uname,
+               prob_submit.create_date,
+               prob_submit.update_date
+        from prob_submit
+                 left join user_info u on prob_submit.create_person = u.id
+                 left join prob_info p on p.id = prob_submit.pro_Id
+    </sql>
+
+    <sql id="condition">
+        <where>
+            <if test="language!=null">
+                and prob_submit.language=
+                #{language}
+            </if>
+            <if test="status!=null">
+                and prob_submit.status
+                =
+                #{status}
+            </if>
+            <if test="pid!=null">
+                and prob_submit.pro_Id
+                =
+                #{pid}
+            </if>
+            <if test="uid!=null">
+                and prob_submit.create_person
+                =
+                #{uid}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getAll" resultMap="queryAll">
+        <include refid="selectPrefix"/>
+        <include refid="condition"/>
+        limit #{pageNumber}, #{pageSize}
+    </select>
+
+    <select id="getTotal" resultType="java.lang.Long">
+        select count(*)
+        from prob_submit
+        <include refid="condition"/>
+    </select>
+
+    <select id="getById" resultType="com.zero.iweiojbackend.model.po.ProblemSubmit">
+        <include refid="selectPrefix"/>
+        <where>
+            id=#{id}
+        </where>
+    </select>
+
+</mapper>

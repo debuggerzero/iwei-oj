@@ -27,6 +27,9 @@ public interface UserConstant {
      */
     String USER_ROLE_ADMIN = "admin";
 
+    /**
+     * 初始密码
+     */
     String INITIAL_PASSWORD = "123456";
 
 }

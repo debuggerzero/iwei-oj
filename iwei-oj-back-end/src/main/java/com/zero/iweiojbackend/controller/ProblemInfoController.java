@@ -1,11 +1,17 @@
 package com.zero.iweiojbackend.controller;
 
+import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitAddRequest;
+import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitQueryRequest;
 import com.zero.iweiojbackend.model.po.ProbInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
 import com.zero.iweiojbackend.model.common.BaseResponse;
 import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
+import com.zero.iweiojbackend.model.vo.ProblemSubmitVO;
+import com.zero.iweiojbackend.model.vo.UserInfoVO;
 import com.zero.iweiojbackend.service.ProbInfoService;
+import com.zero.iweiojbackend.service.ProblemSubmitService;
+import com.zero.iweiojbackend.service.UserInfoService;
 import com.zero.iweiojbackend.utils.ResultUtils;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +33,12 @@ public class ProblemInfoController {
 
     @Resource(name = "probInfoServiceImpl")
     private ProbInfoService probInfoService;
+
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
+
+    @Resource(name = "problemSubmitServiceImpl")
+    private ProblemSubmitService problemSubmitService;
 
     /**
      * 查询问题信息列表（管理员）
@@ -94,5 +106,28 @@ public class ProblemInfoController {
         return ResultUtils.success(probInfoService.deleteById(proId));
     }
 
+    /**
+     * 执行判题
+     * @param problemSubmitAddRequest 添加判题信息
+     * @param request 请求
+     * @return BaseResponse<Long>
+     */
+    @PostMapping("/doQuestionSubmit")
+    public BaseResponse<Long> doQuestionSubmit(@RequestBody ProblemSubmitAddRequest problemSubmitAddRequest, HttpServletRequest request) {
+        UserInfoVO loginUser = userInfoService.getLoginUser(request);
+        return ResultUtils.success(problemSubmitService.doQuestionSubmit(problemSubmitAddRequest, loginUser));
+    }
+
+    /**
+     * 查询判题记录
+     * @param problemSubmitQueryRequest 查询器
+     * @param request 请求
+     * @return BaseResponse<GeneralCollectionResult<ProblemSubmitVO>>
+     */
+    @PostMapping("/getProblemSubmitVO")
+    public BaseResponse<GeneralCollectionResult<ProblemSubmitVO>> getProblemSubmitVO(@RequestBody ProblemSubmitQueryRequest problemSubmitQueryRequest, HttpServletRequest request) {
+        UserInfoVO loginUser = userInfoService.getLoginUser(request);
+        return ResultUtils.success(problemSubmitService.getProblemSubmitVO(problemSubmitQueryRequest, loginUser));
+    }
 
 }
