@@ -134,7 +134,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         return new GeneralCollectionResult<>(userRoles, systemRoleRepo.queryTotal());
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public Integer modifyInfoByUser(UserInfoRequest userInfoRequest, HttpServletRequest request) {
         if (UserInfoRequest.isNull(userInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
@@ -192,7 +191,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         return result;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public Integer modifyPasswordByUser(ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request) {
         String oldPassword = modifyPasswordRequest.getOldPassword();
         String newPassword = modifyPasswordRequest.getNewPassword();
@@ -227,7 +225,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         return i;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public Integer insertOneUserInfo(UserInfoRequest userInfoRequest, HttpServletRequest request) {
         if (UserInfoRequest.isNull(userInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
@@ -282,7 +279,6 @@ public class UserInfoServiceImpl implements UserInfoService {
         return result;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public Integer deleteUserInfo(Integer id) {
         if (Objects.isNull(id)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);

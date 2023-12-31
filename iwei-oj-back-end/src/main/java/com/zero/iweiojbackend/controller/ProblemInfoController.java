@@ -107,7 +107,7 @@ public class ProblemInfoController {
     }
 
     /**
-     * 执行判题
+     * 提交题目
      * @param problemSubmitAddRequest 添加判题信息
      * @param request 请求
      * @return BaseResponse<Long>
@@ -119,7 +119,7 @@ public class ProblemInfoController {
     }
 
     /**
-     * 查询判题记录
+     * 查询历史记录
      * @param problemSubmitQueryRequest 查询器
      * @param request 请求
      * @return BaseResponse<GeneralCollectionResult<ProblemSubmitVO>>

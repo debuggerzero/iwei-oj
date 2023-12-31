@@ -1,4 +1,4 @@
-package com.zero.iweiojbackend.model.dto.question;
+package com.zero.iweiojbackend.judge.codesandbox.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

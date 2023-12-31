@@ -1,6 +1,7 @@
 package com.zero.iweiojbackend.service.impl;
 
 import com.zero.iweiojbackend.exception.AssertionException;
+import com.zero.iweiojbackend.judge.JudgeService;
 import com.zero.iweiojbackend.model.common.ErrorCode;
 import com.zero.iweiojbackend.model.common.ProblemSubmitLanguageEnum;
 import com.zero.iweiojbackend.model.common.ProblemSubmitStatusEnum;
@@ -18,12 +19,15 @@ import com.zero.iweiojbackend.repo.ProblemSubmitRepo;
 import com.zero.iweiojbackend.service.ProbInfoService;
 import com.zero.iweiojbackend.service.ProblemSubmitService;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 
 import static com.zero.iweiojbackend.model.common.UserConstant.USER_ROLE_ADMIN;
@@ -43,6 +47,13 @@ public class ProblemSubmitServiceImpl implements ProblemSubmitService {
     @Resource(name = "problemSubmitRepoImpl")
     private ProblemSubmitRepo problemSubmitRepo;
 
+    @Resource(name = "taskExecutor")
+    private Executor executor;
+
+    @Resource(name = "judgeServiceImpl")
+    @Lazy
+    private JudgeService judgeService;
+
     @Override
     public Long doQuestionSubmit(ProblemSubmitAddRequest questionSubmitAddRequest, UserInfoVO loginUser) {
         if (Objects.isNull(questionSubmitAddRequest)) {
@@ -61,11 +72,15 @@ public class ProblemSubmitServiceImpl implements ProblemSubmitService {
         // 每个用户串行提交题目
         ProblemSubmit problemSubmit = getProblemSubmit(questionSubmitAddRequest, loginUser, language);
         Integer save = problemSubmitRepo.save(problemSubmit);
-        if (save == 0){
+        if (save == 0) {
             throw new AssertionException(ErrorCode.SYSTEM_ERROR);
         }
-        // TODO 判题实现
-        return problemSubmit.getId();
+        Long problemSubmitId = problemSubmit.getId();
+        // 判题实现
+        CompletableFuture.runAsync(() -> {
+            judgeService.doJudge(problemSubmitId);
+        }, executor);
+        return problemSubmitId;
     }
 
     @Override
@@ -73,19 +88,19 @@ public class ProblemSubmitServiceImpl implements ProblemSubmitService {
         if (Objects.isNull(problemSubmit) || Objects.isNull(problemSubmit.getId())) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        return problemSubmitRepo.updateById(problemSubmit);
+        Integer i = problemSubmitRepo.updateById(problemSubmit);
+        if (i == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        return i;
     }
 
     @Override
-    public ProblemSubmit getById(Integer id) {
+    public ProblemSubmit getById(Long id) {
         if (Objects.isNull(id)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        ProblemSubmit problemSubmit = problemSubmitRepo.getById(id);
-        if (Objects.isNull(problemSubmit)) {
-            throw new AssertionException(ErrorCode.OPERATION_ERROR);
-        }
-        return problemSubmit;
+        return problemSubmitRepo.getById(id);
     }
 
     @Override

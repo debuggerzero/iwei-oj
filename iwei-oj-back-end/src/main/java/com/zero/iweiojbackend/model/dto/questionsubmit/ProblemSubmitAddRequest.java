@@ -10,11 +10,10 @@ import lombok.*;
  * @date 2023/12/30
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProblemSubmitAddRequest extends Page {
+public class ProblemSubmitAddRequest {
 
     /**
      * 编程语言

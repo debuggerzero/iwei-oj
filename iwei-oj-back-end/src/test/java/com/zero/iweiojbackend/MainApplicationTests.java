@@ -2,12 +2,19 @@ package com.zero.iweiojbackend;
 
 import com.zero.iweiojbackend.model.common.Page;
 import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
+import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitAddRequest;
+import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitQueryRequest;
 import com.zero.iweiojbackend.model.po.*;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.query.UserInfoQuery;
+import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
+import com.zero.iweiojbackend.model.vo.ProblemSubmitVO;
+import com.zero.iweiojbackend.model.vo.UserInfoVO;
+import com.zero.iweiojbackend.model.vo.UserRole;
 import com.zero.iweiojbackend.repo.SampleRepo;
 import com.zero.iweiojbackend.repo.mapper.*;
 import com.zero.iweiojbackend.service.ProbInfoService;
+import com.zero.iweiojbackend.service.ProblemSubmitService;
 import com.zero.iweiojbackend.service.UserInfoService;
 import com.zero.iweiojbackend.utils.StringUtil;
 import org.apache.catalina.User;
@@ -120,8 +127,8 @@ class MainApplicationTests {
 
     @Test
     public void testTagInfoMapper() {
-        tagInfoMapper.getAllByQuery(new BaseQuery("动", new Page(0L, 10L), null)).forEach(System.out::println);
-        tagInfoMapper.getAll().forEach(System.out::println);
+        // tagInfoMapper.getAllByQuery(new BaseQuery("动", new Page(0L, 10L), null)).forEach(System.out::println);
+        // tagInfoMapper.getAll().forEach(System.out::println);
     }
 
     @Resource
@@ -144,6 +151,44 @@ class MainApplicationTests {
         // System.out.println(userInfoService.queryUserInfoById(1001));
         // System.out.println(userInfoService.queryUserInfoVOList(new BaseQuery(null, null, null)));
         // System.out.println(userInfoService.queryUserRoleList());
+    }
+
+    @Resource
+    ProblemSubmitMapper problemSubmitMapper;
+
+    @Resource(name = "problemSubmitServiceImpl")
+    ProblemSubmitService problemSubmitService;
+
+    @Test
+    public void testProblemSubmitMapper() {
+        // ProblemSubmitQueryRequest problemSubmitQueryRequest = new ProblemSubmitQueryRequest();
+        // problemSubmitQueryRequest.setPageNumber(0L);
+        // problemSubmitQueryRequest.setPageSize(10L);
+        // problemSubmitQueryRequest.setPid(1);
+        // problemSubmitMapper.getAll(problemSubmitQueryRequest).forEach(System.out::println);
+
+        ProblemSubmitAddRequest problemSubmitAddRequest = ProblemSubmitAddRequest
+                .builder()
+                .pid(1)
+                .language("java")
+                .code("package com.zero.iweiojbackend;")
+                .build();
+        UserInfoVO userInfoVO = new UserInfoVO();
+        userInfoVO.setId(1001);
+        System.out.println(problemSubmitService.doQuestionSubmit(problemSubmitAddRequest, userInfoVO));
+
+        // ProblemSubmitQueryRequest problemSubmitQueryRequest = ProblemSubmitQueryRequest
+        //         .builder()
+        //         .uid(1001)
+        //         .language("java")
+        //         .build();
+        // UserInfoVO userInfoVO = new UserInfoVO();
+        // userInfoVO.setId(1001);
+        // userInfoVO.setRole(new UserRole(1003, "admin", "管理员"));
+        // GeneralCollectionResult<ProblemSubmitVO> problemSubmitVO = problemSubmitService.getProblemSubmitVO(problemSubmitQueryRequest, userInfoVO);
+        // problemSubmitVO.getCollection().forEach(System.out::println);
+        // System.out.println(problemSubmitVO.getCount());
+
     }
 
 }

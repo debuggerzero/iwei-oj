@@ -36,7 +36,7 @@ public interface ProblemSubmitService {
      * @param id 判题 id
      * @return 判题记录信息
      */
-    ProblemSubmit getById(Integer id);
+    ProblemSubmit getById(Long id);
 
     /**
      * 获取提交记录列表

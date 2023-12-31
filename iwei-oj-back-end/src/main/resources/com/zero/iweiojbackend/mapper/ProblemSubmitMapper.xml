@@ -14,7 +14,7 @@
             <if test="judgeInfo!=null">
                 judge_info
                 =
-                #{judgeInfo}
+                #{judgeInfo},
             </if>
             <if test="status!=null">
                 status
@@ -100,10 +100,10 @@
         <include refid="condition"/>
     </select>
 
-    <select id="getById" resultType="com.zero.iweiojbackend.model.po.ProblemSubmit">
+    <select id="getById" resultMap="queryAll">
         <include refid="selectPrefix"/>
         <where>
-            id=#{id}
+            prob_submit.id=#{id}
         </where>
     </select>
 

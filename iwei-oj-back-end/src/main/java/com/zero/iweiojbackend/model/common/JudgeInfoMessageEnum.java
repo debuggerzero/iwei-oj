@@ -1,5 +1,6 @@
 package com.zero.iweiojbackend.model.common;
 
+import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
@@ -12,14 +13,15 @@ import java.util.stream.Collectors;
  * @author ZERO
  * @date 2023/12/30
  */
+@Getter
 public enum JudgeInfoMessageEnum {
 
     /**
      * 成功
      */
-    ACCEPTED("成功", "Accepted"),
+    ACCEPTED("Accepted", "成功"),
 
-    WRONG_ANSWER("答案错误", "Wrong Answer"),
+    WRONG_ANSWER("Wrong Answer", "答案错误"),
 
     COMPILE_ERROR("Compile Error", "编译错误"),
 
@@ -43,7 +45,7 @@ public enum JudgeInfoMessageEnum {
 
     private final String value;
 
-    JudgeInfoMessageEnum(String text, String value) {
+    JudgeInfoMessageEnum(String value, String text) {
         this.text = text;
         this.value = value;
     }
@@ -73,14 +75,6 @@ public enum JudgeInfoMessageEnum {
             }
         }
         return null;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public String getText() {
-        return text;
     }
 
 }

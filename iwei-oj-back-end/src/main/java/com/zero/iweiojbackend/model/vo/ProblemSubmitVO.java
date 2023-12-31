@@ -1,7 +1,7 @@
 package com.zero.iweiojbackend.model.vo;
 
 import cn.hutool.json.JSONUtil;
-import com.zero.iweiojbackend.model.dto.question.JudgeInfo;
+import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
 import com.zero.iweiojbackend.model.po.ProblemSubmit;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,5 +1,6 @@
 package com.zero.iweiojbackend.model.common;
 
+import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
  * @author ZERO
  * @date 2023/12/30
  */
+@Getter
 public enum ProblemSubmitStatusEnum {
 
     // 0 - 待判题、1 - 判题中、2 - 成功、3 - 失败
@@ -56,11 +58,4 @@ public enum ProblemSubmitStatusEnum {
         return null;
     }
 
-    public Integer getValue() {
-        return value;
-    }
-
-    public String getText() {
-        return text;
-    }
 }

@@ -13,7 +13,6 @@ import com.zero.iweiojbackend.repo.TagInfoRepo;
 import com.zero.iweiojbackend.service.TagInfoService;
 import com.zero.iweiojbackend.service.UserInfoService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +38,6 @@ public class TagInfoServiceImpl implements TagInfoService {
     private UserInfoService userInfoService;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Integer insertTagInfo(TagInfoRequest tagInfoRequest, HttpServletRequest request) {
         if (TagInfoRequest.isNull(tagInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
@@ -55,7 +53,6 @@ public class TagInfoServiceImpl implements TagInfoService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Integer deleteTagInfoById(Integer id) {
         if (Objects.isNull(id)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
@@ -72,7 +69,6 @@ public class TagInfoServiceImpl implements TagInfoService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public Integer updateTagInfoById(TagInfoRequest tagInfoRequest, HttpServletRequest request) {
         if (TagInfoRequest.isNull(tagInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
