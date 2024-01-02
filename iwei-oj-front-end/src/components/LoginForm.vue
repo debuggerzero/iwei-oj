@@ -25,13 +25,22 @@
       />
     </el-form-item>
     <el-form-item>
-      <el-button style="width: 47%" type="primary">登录</el-button>
+      <el-button style="width: 47%" type="primary" @click="doLogin"
+        >登录
+      </el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <script setup>
 import { reactive, ref } from "vue";
+import UserService from "@/service/UserService";
+import { useRoute, useRouter } from "vue-router";
+import { useStore } from "vuex";
+
+const router = useRouter();
+const route = useRoute();
+const store = useStore();
 
 const ruleFormRef = ref();
 
@@ -59,6 +68,19 @@ const rules = reactive({
   password: [{ validator: validatePassword, trigger: "blur" }],
   account: [{ validator: validateAccount, trigger: "blur" }],
 });
+
+//执行登录
+const doLogin = async () => {
+  const data = await UserService.login(form.account, form.password);
+  if (data.code === 0) {
+    await store.dispatch("user/getLoginUser");
+    let path = route.query?.redirect ?? "/";
+    await router.push({
+      path: path,
+      replace: true,
+    });
+  }
+};
 </script>
 
 <style scoped></style>

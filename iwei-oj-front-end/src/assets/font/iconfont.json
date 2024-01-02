@@ -1,0 +1,23 @@
+{
+  "id": "4395535",
+  "name": "iwei-oj",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2857593",
+      "name": "登录",
+      "font_class": "denglu",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "38749485",
+      "name": "drop-window",
+      "font_class": "drop-window",
+      "unicode": "e606",
+      "unicode_decimal": 58886
+    }
+  ]
+}
