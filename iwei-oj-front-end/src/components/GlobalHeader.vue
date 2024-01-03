@@ -35,14 +35,14 @@
             />
             <el-avatar :src="loginUser.avatar" v-else />
           </el-col>
-          <el-col :span="14">
+          <el-col :span="14" style="text-align: center">
             <el-row align="middle" :gutter="4">
-              <el-col :span="20">
+              <el-col :span="22">
                 <el-text size="default" :line-clamp="1">
                   {{ loginUser.name }}
                 </el-text>
               </el-col>
-              <el-col :span="4">
+              <el-col :span="2">
                 <el-icon class="el-icon--left">
                   <arrow-down />
                 </el-icon>
