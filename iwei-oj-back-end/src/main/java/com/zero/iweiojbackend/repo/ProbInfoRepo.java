@@ -1,10 +1,12 @@
 package com.zero.iweiojbackend.repo;
 
 import com.zero.iweiojbackend.model.po.ProbInfo;
+import com.zero.iweiojbackend.model.query.BaseQuery;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+
 /**
  * ProbInfoRepo
  *
@@ -15,13 +17,15 @@ public interface ProbInfoRepo extends BaseRepo<ProbInfo> {
 
     /**
      * 查询题目总数
-     * @param status 是否禁用
+     *
+     * @param baseQuery 是否禁用
      * @return 题目总数
      */
-    Long queryTotal(Integer status);
+    Long queryTotal(BaseQuery baseQuery);
 
     /**
      * 更新提交次数
+     *
      * @param id 题目 id
      * @return 受影响的行数
      */
@@ -29,6 +33,7 @@ public interface ProbInfoRepo extends BaseRepo<ProbInfo> {
 
     /**
      * 更新通过次数
+     *
      * @param id 题目 id
      * @return 受影响的行数
      */
@@ -36,7 +41,8 @@ public interface ProbInfoRepo extends BaseRepo<ProbInfo> {
 
     /**
      * 更新 tagInfo
-     * @param proId 题目 id
+     *
+     * @param proId  题目 id
      * @param tagIds 标签 ids
      * @return 受影响的行数
      */
@@ -44,7 +50,8 @@ public interface ProbInfoRepo extends BaseRepo<ProbInfo> {
 
     /**
      * 删除 pro_tag 关联信息
-     * @param proId 题目 id
+     *
+     * @param proId  题目 id
      * @param tagIds 标签 ids
      * @return 受影响的行数
      */

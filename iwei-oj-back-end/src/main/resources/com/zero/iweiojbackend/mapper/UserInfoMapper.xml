@@ -178,8 +178,13 @@
         </where>
     </select>
 
-    <select id="getAll" resultMap="queryUserInfo">
-        <include refid="queryUserInfo"/>
+    <sql id="pagination">
+        limit
+        #{page.pageNumber},
+        #{page.pageSize}
+    </sql>
+
+    <sql id="inquire">
         <where>
             <if test="status!=null">
                 u
@@ -220,24 +225,20 @@
                 )
             </if>
         </where>
+    </sql>
+
+    <select id="getAll" resultMap="queryUserInfo">
+        <include refid="queryUserInfo"/>
+        <include refid="inquire"/>
         order by u.accept_cnt desc, u.submit_cnt
-        <if test="page!=null and page.pageNumber!=null and page.pageSize!=null">
-            limit
-            #{page.pageNumber},
-            #{page.pageSize}
-        </if>
+        <include refid="pagination"/>
     </select>
 
     <select id="queryTotal" resultType="java.lang.Long">
         select count(*)
-        from user_info
-        <where>
-            <if test="status!=null">
-                status
-                =
-                #{status}
-            </if>
-        </where>
+        from (
+        <include refid="queryUserInfo"/>
+        <include refid="inquire"/>) as u
     </select>
 
 </mapper>

@@ -53,7 +53,7 @@ public class ProbInfoServiceImpl implements ProbInfoService {
                 .stream()
                 .map(ToProbInfoVoConverter.CONVERTER::toProbInfoVO)
                 .collect(Collectors.toList());
-        Long count = probInfoRepo.queryTotal(0);
+        Long count = probInfoRepo.queryTotal(query);
         return new GeneralCollectionResult<>(probInfoVos, count);
     }
 
@@ -66,7 +66,7 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         if (probInfos == null) {
             return new GeneralCollectionResult<>(Collections.emptyList(), 0L);
         }
-        Long count = probInfoRepo.queryTotal(query.getStatus());
+        Long count = probInfoRepo.queryTotal(query);
         return new GeneralCollectionResult<>(probInfos, count);
     }
 

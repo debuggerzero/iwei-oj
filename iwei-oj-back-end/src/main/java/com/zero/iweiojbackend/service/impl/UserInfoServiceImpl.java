@@ -19,7 +19,6 @@ import com.zero.iweiojbackend.repo.UserInfoRepo;
 import com.zero.iweiojbackend.service.CosService;
 import com.zero.iweiojbackend.service.PoiService;
 import com.zero.iweiojbackend.service.UserInfoService;
-import com.zero.iweiojbackend.utils.ResultUtils;
 import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
@@ -62,8 +61,8 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Resource(name = "systemRoleRepoImpl")
     private SystemRoleRepo systemRoleRepo;
 
-    public Long queryTotal(Integer status) {
-        return userInfoRepo.queryTotal(status);
+    public Long queryTotal(BaseQuery baseQuery) {
+        return userInfoRepo.queryTotal(baseQuery);
     }
 
     public UserInfoVO login(LoginRequest loginRequest, HttpServletRequest request) {
@@ -118,9 +117,12 @@ public class UserInfoServiceImpl implements UserInfoService {
         Collection<UserInfo> userInfos = userInfoRepo.getAll(query)
                 .stream()
                 .filter(Objects::nonNull)
-                .peek(o -> o.setAvatar(cosService.getImageUrl(o.getAvatar())))
+                .peek(o -> {
+                    o.setAvatar(cosService.getImageUrl(o.getAvatar()));
+                    o.setPassword(null);
+                })
                 .collect(Collectors.toList());
-        return new GeneralCollectionResult<>(userInfos, this.queryTotal(query.getStatus()));
+        return new GeneralCollectionResult<>(userInfos, this.queryTotal(query));
     }
 
     @Override
@@ -135,7 +137,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 .peek(o -> o.setAvatar(cosService.getImageUrl(o.getAvatar())))
                 .map(ToUserInfoVoConverter.CONVERTER::toUserInfoVO)
                 .collect(Collectors.toList());
-        return new GeneralCollectionResult<>(userInfoVos, this.queryTotal(0));
+        return new GeneralCollectionResult<>(userInfoVos, this.queryTotal(query));
     }
 
     public GeneralCollectionResult<UserRole> queryUserRoleList() {

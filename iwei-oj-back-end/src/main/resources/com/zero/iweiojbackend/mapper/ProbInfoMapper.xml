@@ -98,14 +98,7 @@
 
     <select id="queryTotal" resultType="java.lang.Long">
         select count(*)
-        from prob_info
-        <where>
-            <if test="status!=null">
-                status
-                =
-                #{status}
-            </if>
-        </where>
+        from (<include refid="selectProb"/>) as p
     </select>
 
     <resultMap id="getProbInfo" type="com.zero.iweiojbackend.model.po.ProbInfo">
@@ -215,12 +208,19 @@
             </if>
         </where>
         order by id
-        limit #{page.pageNumber}, #{page.pageSize}
+    </sql>
+
+    <sql id="pagination">
+        limit
+        #{page.pageNumber},
+        #{page.pageSize}
     </sql>
 
     <select id="getAll" resultMap="getProbInfo">
         <include refid="selectPrefix"/>
-        from (<include refid="selectProb"/>) as p
+        from (
+        <include refid="selectProb"/>
+        <include refid="pagination"/>) as p
         <include refid="selectPostfix"/>
     </select>
 
@@ -229,7 +229,8 @@
         from prob_info p
         <include refid="selectPostfix"/>
         <where>
-            and p.id = #{id};
+            and p.id =
+            #{id};
         </where>
     </select>
 

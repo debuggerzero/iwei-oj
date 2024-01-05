@@ -6,14 +6,20 @@ spring:
     url:
     username:
     password:
+  redis:
+    host:
+    database:
 
 mybatis-plus:
   mapper-locations: classpath:com/zero/iweiojbackend/mapper/**/*.xml
 
-  cos:
-    secretId:
-    secretKey:
-    reginName:
-    bucketName:
-    url:
-    prefix:
+cos:
+  secretId:
+  secretKey:
+  reginName:
+  bucketName:
+  url:
+  prefix:
+
+codesandbox:
+  type: example

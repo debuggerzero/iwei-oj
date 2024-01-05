@@ -61,8 +61,13 @@
         <include refid="getTagInfo"/>
     </select>
 
-    <select id="getAllByQuery" resultMap="getResult">
-        <include refid="getTagInfo"/>
+    <sql id="pagination">
+        limit
+        #{page.pageNumber},
+        #{page.pageSize}
+    </sql>
+
+    <sql id="condition">
         <where>
             <if test="keyword!=null and keyword!=''">
                 and (tag_info.id like "%"
@@ -79,7 +84,12 @@
                 )
             </if>
         </where>
-        limit #{page.pageNumber}, #{page.pageSize}
+    </sql>
+
+    <select id="getAllByQuery" resultMap="getResult">
+        <include refid="getTagInfo"/>
+        <include refid="condition"/>
+        <include refid="pagination"/>
     </select>
 
     <select id="getById" resultMap="getResult">
@@ -95,7 +105,9 @@
 
     <select id="tagCount" resultType="java.lang.Long">
         select count(*)
-        from tag_info
+        from (
+        <include refid="getTagInfo"/>
+        <include refid="condition"/>) as t
     </select>
 
     <select id="tagRelevancyCount" resultType="java.lang.Long">

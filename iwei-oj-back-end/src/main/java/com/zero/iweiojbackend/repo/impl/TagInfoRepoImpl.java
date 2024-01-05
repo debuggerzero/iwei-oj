@@ -52,8 +52,8 @@ public class TagInfoRepoImpl implements TagInfoRepo {
     }
 
     @Override
-    public Long tagCount() {
-        return tagInfoMapper.tagCount();
+    public Long tagCount(BaseQuery baseQuery) {
+        return tagInfoMapper.tagCount(baseQuery);
     }
 
     @Override

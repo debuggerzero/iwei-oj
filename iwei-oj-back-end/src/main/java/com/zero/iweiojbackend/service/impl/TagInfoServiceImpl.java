@@ -105,7 +105,7 @@ public class TagInfoServiceImpl implements TagInfoService {
         if (Objects.isNull(tagInfos)) {
             return new GeneralCollectionResult<>(Collections.emptyList(), 0L);
         }
-        Long count = tagInfoRepo.tagCount();
+        Long count = tagInfoRepo.tagCount(query);
         return new GeneralCollectionResult<>(tagInfos, count);
     }
 
@@ -116,7 +116,6 @@ public class TagInfoServiceImpl implements TagInfoService {
                         .stream()
                         .map(ToTagInfoVoConverter.CONVERTER::toTagInfoVO)
                         .collect(Collectors.toList());
-        Long count = tagInfoRepo.tagCount();
-        return new GeneralCollectionResult<>(tagInfoVos, count);
+        return new GeneralCollectionResult<>(tagInfoVos, (long) tagInfoVos.size());
     }
 }

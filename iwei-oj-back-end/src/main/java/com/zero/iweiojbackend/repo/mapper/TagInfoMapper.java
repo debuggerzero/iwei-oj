@@ -18,9 +18,10 @@ public interface TagInfoMapper {
 
     /**
      * 标签总数
+     * @param baseQuery 查询器
      * @return 结果
      */
-    Long tagCount();
+    Long tagCount(BaseQuery baseQuery);
 
     /**
      * 标签关联总数

@@ -20,10 +20,10 @@ public interface UserInfoMapper {
 
     /**
      * 查询总记录
-     * @param status 状态
+     * @param baseQuery 状态
      * @return 条数
      */
-    Long queryTotal(Number status);
+    Long queryTotal(BaseQuery baseQuery);
 
     /**
      * 获取用户信息列表

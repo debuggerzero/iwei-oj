@@ -19,10 +19,10 @@ public interface ProbInfoMapper {
 
     /**
      * 查询题目总数
-     * @param status 是否禁用
+     * @param baseQuery 查询器
      * @return 题目总数
      */
-    Long queryTotal(@Param("status") Integer status);
+    Long queryTotal(BaseQuery baseQuery);
 
     /**
      * 查询所有题目

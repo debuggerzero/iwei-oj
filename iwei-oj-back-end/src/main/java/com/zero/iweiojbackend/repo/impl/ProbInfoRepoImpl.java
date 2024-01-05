@@ -55,8 +55,8 @@ public class ProbInfoRepoImpl implements ProbInfoRepo {
     }
 
     @Override
-    public Long queryTotal(Integer status) {
-        return probInfoMapper.queryTotal(status);
+    public Long queryTotal(BaseQuery baseQuery) {
+        return probInfoMapper.queryTotal(baseQuery);
     }
 
     @Override

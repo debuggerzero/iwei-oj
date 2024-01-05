@@ -24,8 +24,8 @@ public class UserInfoRepoImpl implements UserInfoRepo {
     private final UserInfoMapper userInfoMapper;
 
     @Override
-    public Long queryTotal(Number status) {
-        return userInfoMapper.queryTotal(status);
+    public Long queryTotal(BaseQuery baseQuery) {
+        return userInfoMapper.queryTotal(baseQuery);
     }
 
     @Override

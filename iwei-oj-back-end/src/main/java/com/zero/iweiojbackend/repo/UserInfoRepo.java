@@ -1,5 +1,6 @@
 package com.zero.iweiojbackend.repo;
 
+import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.query.UserInfoQuery;
 import com.zero.iweiojbackend.model.po.UserInfo;
 import org.apache.ibatis.annotations.Param;
@@ -15,10 +16,10 @@ public interface UserInfoRepo extends BaseRepo<UserInfo> {
     /**
      * 查询总记录
      *
-     * @param status 状态
+     * @param baseQuery 状态
      * @return 条数
      */
-    Long queryTotal(Number status);
+    Long queryTotal(BaseQuery baseQuery);
 
     /**
      * 通过账号查询用户信息
