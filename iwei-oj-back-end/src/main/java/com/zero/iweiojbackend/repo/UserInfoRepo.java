@@ -14,6 +14,7 @@ public interface UserInfoRepo extends BaseRepo<UserInfo> {
 
     /**
      * 查询总记录
+     *
      * @param status 状态
      * @return 条数
      */
@@ -21,6 +22,7 @@ public interface UserInfoRepo extends BaseRepo<UserInfo> {
 
     /**
      * 通过账号查询用户信息
+     *
      * @param userInfoQuery 用户信息查询器
      * @return 用户信息
      */
@@ -28,7 +30,8 @@ public interface UserInfoRepo extends BaseRepo<UserInfo> {
 
     /**
      * 修改用户密码
-     * @param uid 用户账号
+     *
+     * @param uid      用户账号
      * @param password 密码
      * @return 受影响的行数
      */
@@ -36,24 +39,27 @@ public interface UserInfoRepo extends BaseRepo<UserInfo> {
 
     /**
      * 更新提交次数
+     *
      * @param id 用户 id
      * @return 受影响的行数
      */
-    Integer updateSubmitCnt(@Param("id") Number id);
+    Integer updateSubmitCnt(Number id);
 
     /**
      * 更新通过次数
+     *
      * @param id 用户 id
      * @return 受影响的行数
      */
-    Integer updateAcceptCnt(@Param("id") Number id);
+    Integer updateAcceptCnt(Number id);
 
 
     /**
      * 修改用户角色
+     *
      * @param roleId 用户权限
      * @return 受影响的行数
      */
-    Integer updateUserRole(@Param("roleId") Integer roleId);
+    Integer updateUserRole(Integer roleId);
 
 }

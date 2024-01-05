@@ -71,6 +71,15 @@ public class ProbInfoServiceImpl implements ProbInfoService {
     }
 
     @Override
+    public GeneralCollectionResult<Sample> querySampleList(Integer probId) {
+        if (Objects.isNull(probId)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Collection<Sample> list = sampleRepo.getAllByProId(probId);
+        return new GeneralCollectionResult<>(list, (long) list.size());
+    }
+
+    @Override
     public ProbInfoVO queryOneProbInfo(Integer probId) {
         if (Objects.isNull(probId)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
@@ -143,6 +152,30 @@ public class ProbInfoServiceImpl implements ProbInfoService {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         return i;
+    }
+
+    @Override
+    public Integer updateSubmitCnt(Integer pid) {
+        if (Objects.isNull(pid)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer result = probInfoRepo.updateSubmitCnt(pid);
+        if (result == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        return result;
+    }
+
+    @Override
+    public Integer updateAcceptCnt(Integer pid) {
+        if (Objects.isNull(pid)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer result = probInfoRepo.updateAcceptCnt(pid);
+        if (result == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        return result;
     }
 
     @Override
@@ -233,7 +266,7 @@ public class ProbInfoServiceImpl implements ProbInfoService {
         // 筛选出预处理的 旧 sample 对象 id
         Collection<Sample> primaryOldSample = oldSamples
                 .stream()
-                .peek(o->o.setProId(proId))
+                .peek(o -> o.setProId(proId))
                 .filter(item -> !samples.contains(item))
                 .collect(Collectors.toList());
         // 筛选出预更新与预删除的数据

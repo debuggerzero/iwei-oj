@@ -8,6 +8,7 @@ import com.zero.iweiojbackend.model.dto.user.ModifyPasswordRequest;
 import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.UserInfoVO;
 import com.zero.iweiojbackend.model.vo.UserRole;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,6 +35,12 @@ public interface UserInfoService {
      * @return UserInfoVO
      */
     UserInfoVO login(LoginRequest loginRequest, HttpServletRequest request);
+
+    /**
+     * 退出登录
+     * @param request 请求
+     */
+    void logout(HttpServletRequest request);
 
     /**
      * 获取登录用户信息
@@ -100,6 +107,20 @@ public interface UserInfoService {
      * @return 受影响的行数
      */
     Integer resetPassword(Integer uid);
+
+    /**
+     * 更新提交次数
+     * @param uid 用户 id
+     * @return 受影响的行数
+     */
+    Integer updateSubmitCnt(Integer uid);
+
+    /**
+     * 更新通过次数
+     * @param uid 用户 id
+     * @return 受影响的行数
+     */
+    Integer updateAcceptCnt(Integer uid);
 
     /**
      * 插入一个用户 (管理员)

@@ -1,5 +1,8 @@
 package com.zero.iweiojbackend.controller;
 
+import com.zero.iweiojbackend.exception.AssertionException;
+import com.zero.iweiojbackend.model.common.ErrorCode;
+import com.zero.iweiojbackend.model.dto.user.LoginRequest;
 import com.zero.iweiojbackend.model.po.UserInfo;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.dto.user.UserInfoRequest;
@@ -10,12 +13,14 @@ import com.zero.iweiojbackend.model.vo.UserRole;
 import com.zero.iweiojbackend.service.UserInfoService;
 import com.zero.iweiojbackend.utils.ResultUtils;
 import com.zero.iweiojbackend.model.vo.UserInfoVO;
+import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 
 /**
  * 用户操作
@@ -30,6 +35,40 @@ public class UserInfoController {
 
     @Resource(name = "userInfoServiceImpl")
     private UserInfoService userInfoService;
+
+    /**
+     * 账号密码登录
+     *
+     * @param loginRequest 账号密码
+     * @return 用户信息
+     */
+    @PostMapping("/login/password")
+    public BaseResponse<UserInfoVO> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+        if (Objects.isNull(loginRequest)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        String account = loginRequest.getAccount();
+        String password = loginRequest.getPassword();
+        if (StringUtil.isEmpty(account)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "账号不能为空");
+        }
+        if (StringUtil.isEmpty(password)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "密码不能为空");
+        }
+        loginRequest.setPassword(StringUtil.md5(password));
+        return ResultUtils.success(userInfoService.login(loginRequest, request));
+    }
+
+    /**
+     * 退出登录
+     * @param request 请求
+     * @return BaseResponse<Void>
+     */
+    @GetMapping("/logout")
+    public BaseResponse<Void> logout(HttpServletRequest request) {
+        userInfoService.logout(request);
+        return ResultUtils.success(null);
+    }
 
     /**
      * 获取登录用户
@@ -148,8 +187,8 @@ public class UserInfoController {
      * @param id 用户 Id
      * @return 返回受影响的行数
      */
-    @DeleteMapping("/deleteUserInfoList/{id}")
-    public BaseResponse<Integer> deleteUserInfoList(@PathVariable Integer id) {
+    @DeleteMapping("/deleteUserInfo/{id}")
+    public BaseResponse<Integer> deleteUserInfo(@PathVariable Integer id) {
         return ResultUtils.success(userInfoService.deleteUserInfo(id));
     }
 

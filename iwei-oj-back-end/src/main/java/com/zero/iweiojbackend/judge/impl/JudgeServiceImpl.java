@@ -11,6 +11,7 @@ import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeRequest;
 import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeResponse;
 import com.zero.iweiojbackend.judge.model.JudgeContext;
 import com.zero.iweiojbackend.model.common.ErrorCode;
+import com.zero.iweiojbackend.model.common.JudgeInfoMessageEnum;
 import com.zero.iweiojbackend.model.common.ProblemSubmitStatusEnum;
 import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
 import com.zero.iweiojbackend.model.po.ProblemSubmit;
@@ -19,6 +20,7 @@ import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import com.zero.iweiojbackend.repo.SampleRepo;
 import com.zero.iweiojbackend.service.ProbInfoService;
 import com.zero.iweiojbackend.service.ProblemSubmitService;
+import com.zero.iweiojbackend.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +44,9 @@ public class JudgeServiceImpl implements JudgeService {
 
     @Resource(name = "probInfoServiceImpl")
     private ProbInfoService probInfoService;
+
+    @Resource(name = "userInfoServiceImpl")
+    private UserInfoService userInfoService;
 
     @Resource(name = "sampleRepoImpl")
     private SampleRepo sampleRepo;
@@ -99,15 +104,22 @@ public class JudgeServiceImpl implements JudgeService {
         judgeContext.setJudgeCaseList(judgeCaseList);
         judgeContext.setProbInfo(probInfo);
         judgeContext.setProblemSubmit(problemSubmit);
+        System.out.println(judgeContext);
         JudgeInfo judgeInfo = judgeManager.doJudge(judgeContext);
 
         updateProblemSubmit = new ProblemSubmit();
-        updateProblemSubmit.setId(problemSubmit.getId());
+        updateProblemSubmit.setId(problemSubmitId);
         updateProblemSubmit.setStatus(ProblemSubmitStatusEnum.SUCCEED.getValue());
         updateProblemSubmit.setJudgeInfo(JSONUtil.toJsonStr(judgeInfo));
         update = problemSubmitService.updateById(updateProblemSubmit);
         if (update == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "题目状态更新错误");
+        }
+        probInfoService.updateSubmitCnt(probInfo.getId());
+        userInfoService.updateSubmitCnt(problemSubmit.getCreatePerson().getId());
+        if (judgeInfo.getMessage().equals(JudgeInfoMessageEnum.ACCEPTED.getValue())) {
+            probInfoService.updateAcceptCnt(probInfo.getId());
+            userInfoService.updateAcceptCnt(problemSubmit.getCreatePerson().getId());
         }
         return problemSubmitService.getById(problemSubmitId);
     }

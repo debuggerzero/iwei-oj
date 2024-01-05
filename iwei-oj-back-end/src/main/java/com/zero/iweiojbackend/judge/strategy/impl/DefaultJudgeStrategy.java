@@ -21,6 +21,7 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
 
     /**
      * 执行判题
+     *
      * @param judgeContext 判题上下文
      * @return 判题信息
      */
@@ -28,7 +29,7 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
     public JudgeInfo doJudge(JudgeContext judgeContext) {
 
         JudgeInfo judgeInfo = judgeContext.getJudgeInfo();
-        Long memory = judgeInfo.getMemory();
+        Long memory = judgeInfo.getMemory() == null ? 0 : judgeInfo.getMemory();
         Long time = judgeInfo.getTime();
         List<String> outputList = (List<String>) judgeContext.getOutputList();
         ProbInfoVO probInfo = judgeContext.getProbInfo();
@@ -47,7 +48,7 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
             return judgeInfoResponse;
         }
         // 依次判断每个输出与预期是否相等
-        for (int i = 0; i < judgeCaseList.size(); i ++) {
+        for (int i = 0; i < judgeCaseList.size(); i++) {
             Sample sample = judgeCaseList.get(i);
             if (!sample.getOutput().equals(outputList.get(i))) {
                 judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;

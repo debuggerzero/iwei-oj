@@ -3,6 +3,7 @@ package com.zero.iweiojbackend.controller;
 import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitAddRequest;
 import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitQueryRequest;
 import com.zero.iweiojbackend.model.po.ProbInfo;
+import com.zero.iweiojbackend.model.po.Sample;
 import com.zero.iweiojbackend.model.query.BaseQuery;
 import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
 import com.zero.iweiojbackend.model.common.BaseResponse;
@@ -63,6 +64,17 @@ public class ProblemInfoController {
     }
 
     /**
+     * 根据题目 id 获取用例（管理员）
+     *
+     * @param pid 题目 id
+     * @return 结果集
+     */
+    @GetMapping("/getSampleList/{pid}")
+    public BaseResponse<GeneralCollectionResult<Sample>> querySampleList(@PathVariable("pid") Integer pid) {
+        return ResultUtils.success(probInfoService.querySampleList(pid));
+    }
+
+    /**
      * 获取题目详细信息
      *
      * @param proId 题号
@@ -108,8 +120,9 @@ public class ProblemInfoController {
 
     /**
      * 提交题目
+     *
      * @param problemSubmitAddRequest 添加判题信息
-     * @param request 请求
+     * @param request                 请求
      * @return BaseResponse<Long>
      */
     @PostMapping("/doQuestionSubmit")
@@ -120,9 +133,10 @@ public class ProblemInfoController {
 
     /**
      * 查询历史记录
+     *
      * @param problemSubmitQueryRequest 查询器
-     * @param request 请求
-     * @return BaseResponse<GeneralCollectionResult<ProblemSubmitVO>>
+     * @param request                   请求
+     * @return BaseResponse<GeneralCollectionResult < ProblemSubmitVO>>
      */
     @PostMapping("/getProblemSubmitVO")
     public BaseResponse<GeneralCollectionResult<ProblemSubmitVO>> getProblemSubmitVO(@RequestBody ProblemSubmitQueryRequest problemSubmitQueryRequest, HttpServletRequest request) {

@@ -19,6 +19,7 @@ import com.zero.iweiojbackend.repo.UserInfoRepo;
 import com.zero.iweiojbackend.service.CosService;
 import com.zero.iweiojbackend.service.PoiService;
 import com.zero.iweiojbackend.service.UserInfoService;
+import com.zero.iweiojbackend.utils.ResultUtils;
 import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
@@ -79,6 +80,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfoVO userInfoVO = ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
         request.getSession().setAttribute(USER_LOGIN_STATE, userInfoVO);
         return userInfoVO;
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        UserInfoVO loginUser = this.getLoginUser(request);
+        if (Objects.isNull(loginUser)) {
+            throw new AssertionException(ErrorCode.NOT_LOGIN_ERROR);
+        }
+        Subject subject = SecurityUtils.getSubject();
+        subject.logout();
+        request.getSession().removeAttribute(USER_LOGIN_STATE);
     }
 
     public UserInfoVO getLoginUser(HttpServletRequest request) {
@@ -223,6 +235,30 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         return i;
+    }
+
+    @Override
+    public Integer updateSubmitCnt(Integer uid) {
+        if (Objects.isNull(uid)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer result = userInfoRepo.updateSubmitCnt(uid);
+        if (result == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        return result;
+    }
+
+    @Override
+    public Integer updateAcceptCnt(Integer uid) {
+        if (Objects.isNull(uid)) {
+            throw new AssertionException(ErrorCode.PARAMS_ERROR);
+        }
+        Integer result = userInfoRepo.updateAcceptCnt(uid);
+        if (result == 0) {
+            throw new AssertionException(ErrorCode.OPERATION_ERROR);
+        }
+        return result;
     }
 
     public Integer insertOneUserInfo(UserInfoRequest userInfoRequest, HttpServletRequest request) {
