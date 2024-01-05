@@ -20,7 +20,7 @@
         <sample-form :sample-list="form.samples" />
       </div>
       <div v-if="active === 2" class="step-box">
-        <problem-browse :prob-info="form.probInfo" />
+        <problem-browse :prob-info="form.probInfo" :scrollbar-height="470" />
       </div>
     </el-row>
     <el-row align="middle" type="flex" justify="center">

@@ -24,7 +24,7 @@
             >
               中等
             </el-tag>
-            <el-tag effect="dark" v-else> 困难</el-tag>
+            <el-tag effect="dark" type="danger" v-else> 困难</el-tag>
           </el-col>
         </el-row>
         <el-row align="middle" style="margin-top: 20px">
@@ -43,14 +43,14 @@
           </el-col>
           <el-col :span="12" style="text-align: right">
             <el-text :line-clamp="1"
-              >时 / 空限制: {{ probInfo.timeLimit ?? 0 }} s /
+              >时 / 空限制: {{ probInfo.timeLimit ?? 0 }} ms /
               {{ probInfo.spaceLimit ?? 0 }} MB
             </el-text>
           </el-col>
         </el-row>
       </div>
     </template>
-    <el-scrollbar height="450px">
+    <el-scrollbar :height="scrollbarHeight">
       <md-viewer :value="probInfo.description" />
     </el-scrollbar>
   </el-card>
@@ -59,7 +59,7 @@
 <script setup>
 import { defineProps } from "vue";
 import { randomTagTypeList } from "@/utils/CommonUtil";
-import MdViewer from "@/components/MdViewer.vue";
+import MdViewer from "@/components/markdowm/MdViewer.vue";
 
 defineProps({
   probInfo: {
@@ -75,6 +75,10 @@ defineProps({
       };
     },
   },
+  scrollbarHeight: {
+    type: Number,
+    default: 450,
+  },
 });
 </script>
 
@@ -86,7 +90,5 @@ defineProps({
 }
 
 .box-card {
-  width: 100%;
-  height: 90%;
 }
 </style>

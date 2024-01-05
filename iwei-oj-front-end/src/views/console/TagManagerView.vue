@@ -30,9 +30,9 @@
           style="width: 100%; text-align: center"
           table-layout="auto"
         >
-          <el-table-column prop="id" label="ID" sortable>
-            <template #default="{ row }">
-              <el-text :line-clamp="1"> {{ row.id }}</el-text>
+          <el-table-column prop="id" label="序号" sortable>
+            <template #default="{ $index }">
+              <el-text :line-clamp="1"> {{ $index + 1 }}</el-text>
             </template>
           </el-table-column>
           <el-table-column prop="name" label="标签名">
@@ -70,7 +70,7 @@
             <template #default="{ row }">
               <el-button-group>
                 <el-button
-                  type="info"
+                  type="primary"
                   @click="updateClick({ id: row.id, name: row.name })"
                   >修改
                 </el-button>

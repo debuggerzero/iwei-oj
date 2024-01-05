@@ -1,4 +1,4 @@
-import USER_ROLE_ENUM from "@/constant/accessEnum";
+import { USER_ROLE_ENUM } from "@/constant/accessEnum";
 
 const checkAccess = (loginUser, needAccess = USER_ROLE_ENUM.NO_LOGIN) => {
   const loginUserAccess = loginUser?.role?.name ?? USER_ROLE_ENUM.NO_LOGIN;

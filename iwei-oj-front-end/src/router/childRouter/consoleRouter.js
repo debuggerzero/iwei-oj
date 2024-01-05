@@ -1,4 +1,4 @@
-import USER_ROLE_ENUM from "@/constant/accessEnum";
+import { USER_ROLE_ENUM } from "@/constant/accessEnum";
 import UserManagerView from "@/views/console/UserManagerView.vue";
 import ProblemManagerView from "@/views/console/ProblemManagerView.vue";
 import TagManagerView from "@/views/console/TagManagerView.vue";
@@ -11,6 +11,7 @@ export const consoleRoutes = [
     // component: ProblemEditLayout,
     meta: {
       access: USER_ROLE_ENUM.ADMIN,
+      hideInMenu: false,
     },
   },
   {

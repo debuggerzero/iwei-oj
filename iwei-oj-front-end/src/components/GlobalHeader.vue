@@ -75,8 +75,9 @@ import { ArrowDown, UserFilled } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import checkAccess from "@/access/checkAccess";
 import { userRoutes } from "@/router/childRouter/userRoutes";
-import USER_ROLE_ENUM from "@/constant/accessEnum";
+import { USER_ROLE_ENUM } from "@/constant/accessEnum";
 import UserService from "@/service/UserService";
+import { loginRoutes } from "@/router/childRouter/loginRoutes";
 
 const router = useRouter();
 const route = useRoute();
@@ -94,7 +95,9 @@ const clientVisibleRoutes = computed(() => {
 });
 
 const userVisibleRoutes = computed(() => {
-  return userRoutes.filter((item) => {
+  let resultRouters = [];
+  resultRouters = resultRouters.concat(loginRoutes).concat(userRoutes);
+  return resultRouters.filter((item) => {
     if (item.meta?.hideInMenu) {
       return false;
     }
@@ -125,7 +128,6 @@ const doLogout = async () => {
 };
 
 const doMenuClick = (key) => {
-  console.log(key);
   if (key === "/user/logout") {
     if (doLogout()) {
       store.dispatch("user/getLoginUser");

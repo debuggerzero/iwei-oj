@@ -29,7 +29,7 @@
             <el-text :line-clamp="1">{{ row.output }}</el-text>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作">
+        <el-table-column fixed="right" label="操作" width="200px">
           <template #default="{ row }">
             <el-button-group>
               <el-button type="info" @click="doUpdate(row)">修改</el-button>
@@ -98,7 +98,6 @@ const sample = ref({
 const editOneDialogVisible = ref(false);
 
 const doDelete = (row) => {
-  console.log(row.id);
   for (let i = 0; i < sampleList.value.length; i++) {
     if (sampleList.value[i].id === row.id) {
       sampleList.value.splice(i, 1);

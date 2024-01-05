@@ -30,8 +30,8 @@
           table-layout="auto"
         >
           <el-table-column prop="id" label="ID" sortable>
-            <template #default="{ row }">
-              <el-text :line-clamp="1"> {{ row.id }}</el-text>
+            <template #default="{ $index }">
+              <el-text :line-clamp="1"> {{ $index + 1 }}</el-text>
             </template>
           </el-table-column>
           <el-table-column prop="avatar" label="头像">
@@ -90,17 +90,8 @@
           <el-table-column label="通过率">
             <template #default="{ row }">
               <el-progress
-                :percentage="
-                  (row.acceptCnt / (row.submitCnt === 0 ? 1 : row.submitCnt)) *
-                  100
-                "
-                :color="[
-                  { color: '#f56c6c', percentage: 20 },
-                  { color: '#e6a23c', percentage: 40 },
-                  { color: '#5cb87a', percentage: 60 },
-                  { color: '#1989fa', percentage: 80 },
-                  { color: '#6f7ad3', percentage: 100 },
-                ]"
+                :percentage="percentageCal(row.acceptCnt, row.submitCnt)"
+                :color="colors"
               />
             </template>
           </el-table-column>
@@ -152,7 +143,8 @@ import { Search } from "@element-plus/icons-vue";
 import { onMounted, ref } from "vue";
 import UserService from "@/service/UserService";
 import { useRoute, useRouter } from "vue-router";
-import USER_ROLE_ENUM from "../../constant/accessEnum";
+import { USER_ROLE_ENUM } from "@/constant/accessEnum";
+import { colors, percentageCal } from "@/utils/CommonUtil";
 
 const router = useRouter();
 const route = useRoute();

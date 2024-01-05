@@ -1,16 +1,6 @@
-import LoginForm from "@/components/LoginForm.vue";
-import USER_ROLE_ENUM from "@/constant/accessEnum";
+import { USER_ROLE_ENUM } from "@/constant/accessEnum";
 
 export const userRoutes = [
-  {
-    path: "/user/login",
-    name: "登录",
-    icon: '<i class="iconfont icon-denglu"></i>',
-    component: LoginForm,
-    meta: {
-      access: USER_ROLE_ENUM.NO_LOGIN,
-    },
-  },
   {
     path: "/user/info",
     name: "个人信息",
@@ -18,6 +8,7 @@ export const userRoutes = [
     reward: "/info",
     meta: {
       access: USER_ROLE_ENUM.USER,
+      hideInMenu: false,
     },
   },
   {

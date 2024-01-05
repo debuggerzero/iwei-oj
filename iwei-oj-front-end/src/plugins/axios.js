@@ -16,7 +16,7 @@ axios.interceptors.request.use(
 
 axios.interceptors.response.use(
   function (response) {
-    if (response.data.code !== 0) {
+    if (response.data.code !== 0 && response.data.message !== "未登录") {
       ElMessage.error(response.data.message);
     }
     return response.data;

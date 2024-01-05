@@ -103,17 +103,8 @@
           <el-table-column label="通过率">
             <template #default="{ row }">
               <el-progress
-                :percentage="
-                  (row.acceptCnt / (row.submitCnt === 0 ? 1 : row.submitCnt)) *
-                  100
-                "
-                :color="[
-                  { color: '#f56c6c', percentage: 20 },
-                  { color: '#e6a23c', percentage: 40 },
-                  { color: '#5cb87a', percentage: 60 },
-                  { color: '#1989fa', percentage: 80 },
-                  { color: '#6f7ad3', percentage: 100 },
-                ]"
+                :percentage="percentageCal(row.acceptCnt, row.submitCnt)"
+                :color="colors"
               />
             </template>
           </el-table-column>
@@ -128,7 +119,7 @@
                 >正常
               </el-tag>
               <el-tag effect="dark" class="mx-1" type="danger" v-else round
-                >禁用
+                >废弃
               </el-tag>
             </template>
           </el-table-column>
@@ -199,7 +190,12 @@ import { useRoute, useRouter } from "vue-router";
 import ProblemService from "@/service/ProblemService";
 import ProblemEditLayout from "@/layouts/ProblemEditLayout.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import { formatDate, randomTagTypeList } from "@/utils/CommonUtil";
+import {
+  colors,
+  formatDate,
+  percentageCal,
+  randomTagTypeList,
+} from "@/utils/CommonUtil";
 import ProblemBrowse from "@/views/problem/ProblemBrowse.vue";
 
 const router = useRouter();

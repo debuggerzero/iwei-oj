@@ -29,8 +29,8 @@ const deleteProbInfo = (pid) => {
   return axios.delete(RouterEnum.BACK_END.PROB_DELETE_ID + "/" + pid);
 };
 
-const doProbSubmit = (query) => {
-  return axios.post(RouterEnum.BACK_END.PROB_COMMIT, query);
+const doProbSubmit = (request) => {
+  return axios.post(RouterEnum.BACK_END.PROB_COMMIT, request);
 };
 
 const getProbSubmit = (query) => {

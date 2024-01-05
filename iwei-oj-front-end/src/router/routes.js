@@ -1,7 +1,7 @@
 import LoginView from "@/views/LoginView.vue";
 import BasicLayout from "@/layouts/BasicLayout.vue";
 import { clientRoutes } from "@/router/childRouter/clientRoutes";
-import { userRoutes } from "@/router/childRouter/userRoutes";
+import { loginRoutes } from "@/router/childRouter/loginRoutes";
 
 export const routes = [
   {
@@ -15,9 +15,9 @@ export const routes = [
     children: clientRoutes,
   },
   {
-    path: "/user",
-    name: "用户",
+    path: "/login",
+    name: "登录",
     component: LoginView,
-    children: userRoutes,
+    children: loginRoutes,
   },
 ];

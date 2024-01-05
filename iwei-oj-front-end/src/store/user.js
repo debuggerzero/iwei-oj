@@ -1,4 +1,4 @@
-import USER_ROLE_ENUM from "@/constant/accessEnum";
+import { LOGIN_USER, USER_ROLE_ENUM } from "@/constant/accessEnum";
 import UserService from "@/service/UserService";
 
 export default {
@@ -30,6 +30,7 @@ export default {
   },
   mutations: {
     updateUser(state, payload) {
+      localStorage.setItem(LOGIN_USER, payload);
       state.loginUser = payload;
     },
   },

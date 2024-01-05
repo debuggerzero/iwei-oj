@@ -37,8 +37,12 @@
       </el-row>
       <el-row>
         <el-col :span="8">
-          <el-form-item label="时间限制(秒)：">
-            <el-input-number v-model="probInfo.timeLimit" :min="1" :max="10" />
+          <el-form-item label="时间限制(MS)：">
+            <el-input-number
+              v-model="probInfo.timeLimit"
+              :min="1000"
+              :max="10000"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -71,7 +75,7 @@
 </template>
 
 <script setup>
-import MdEdit from "@/components/MdEdit.vue";
+import MdEdit from "@/components/markdowm/MdEdit.vue";
 import { defineProps, onMounted, ref, toRefs } from "vue";
 import TagService from "@/service/TagService";
 
