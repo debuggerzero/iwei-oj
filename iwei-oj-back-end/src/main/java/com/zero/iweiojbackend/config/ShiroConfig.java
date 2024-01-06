@@ -16,7 +16,6 @@ import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Shiro 框架配置类
@@ -39,9 +38,10 @@ public class ShiroConfig {
         factoryBean.setSecurityManager(manager);
 
         List<SystemResource> systemResoureList = systemResourceRepo.querySystemResourceList();
-        Map<String, String> map = systemResoureList.stream()
-                .collect(Collectors.toMap(SystemResource::getUrl, SystemResource::getIdentity));
-
+        Map<String, String> map = new LinkedHashMap<>();
+        for (SystemResource item : systemResoureList) {
+            map.put(item.getUrl(), item.getIdentity());
+        }
         factoryBean.setFilterChainDefinitionMap(map);
 
         factoryBean.setFilters(new LinkedHashMap<String, Filter>() {{
