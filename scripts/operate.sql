@@ -69,31 +69,78 @@ values (4, 5);
 insert into pro_tag
 values (4, 3);
 
-## system_resource
-insert into prob_submit(language, code, judge_info, status, pro_Id, create_person) values
-('java', 'public class Main() {}', '{}', 0, 1, 1001);
-insert into prob_submit(language, code, judge_info, status, pro_Id, create_person) values
-('c', 'public class Main() {}', '{}', 0, 1, 1001);
-insert into prob_submit(language, code, judge_info, status, pro_Id, create_person) values
-('cpp', 'public class Main() {}', '{}', 0, 1, 1001);
-insert into prob_submit(language, code, judge_info, status, pro_Id, create_person) values
-('python', 'public class Main() {}', '{}', 0, 1, 1001);
-insert into prob_submit(language, code, judge_info, status, pro_Id, create_person) values
-('cpp', 'public class Main() {}', '{}', 0, 2, 1001);
-insert into prob_submit(language, code, judge_info, status, pro_Id, create_person) values
-('python', 'public class Main() {}', '{}', 0, 2, 1001);
+insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+values ('java', 'public class Main() {}', '{}', 0, 1, 1001);
+insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+values ('c', 'public class Main() {}', '{}', 0, 1, 1001);
+insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+values ('cpp', 'public class Main() {}', '{}', 0, 1, 1001);
+insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+values ('python', 'public class Main() {}', '{}', 0, 1, 1001);
+insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+values ('cpp', 'public class Main() {}', '{}', 0, 2, 1001);
+insert into prob_submit(language, code, judge_info, status, pro_Id, create_person)
+values ('python', 'public class Main() {}', '{}', 0, 2, 1001);
 
-select
-    prob_submit.id,
-    prob_submit.language,
-    prob_submit.code,
-    prob_submit.judge_info,
-    prob_submit.status,
-    p.id as pid,
-    p.title as p_title,
-    u.name as create_person,
-    prob_submit.create_date,
-    prob_submit.update_date
-from prob_submit
-left join user_info u on prob_submit.create_person = u.id
-left join prob_info p on p.id = prob_submit.pro_Id
+############
+insert into system_resource(name, url, identity, request_method, create_date, update_date)
+values ('上传图片', '/file/upload/image', 'perms[user,admin]', 'POST', current_time, current_time);
+############
+insert into system_resource(name, url, identity, request_method)
+values ('账号密码登录', '/user/login/password', 'anon', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('退出登录', '/user/logout', 'perms[user, admin]', 'GET');
+insert into system_resource(name, url, identity, request_method)
+values ('获取用户列表', '/user/queryUserInfoList', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('查询排行榜', '/user/queryRanking', 'anon', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('获取用户角色列表', '/user/queryUserRoleList', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('修改用户信息', '/user/modifyInfoByUser', 'perms[user,admin]', 'PUT');
+insert into system_resource(name, url, identity, request_method)
+values ('修改用户信息(管理员)', '/user/modifyInfoByAdmin', 'perms[admin]', 'PUT');
+insert into system_resource(name, url, identity, request_method)
+values ('修改用户密码', '/user/modifyUserPassword', 'perms[user,admin]', 'PUT');
+insert into system_resource(name, url, identity, request_method)
+values ('重置用户密码', '/user/resetPassword/*', 'perms[admin]', 'PUT');
+insert into system_resource(name, url, identity, request_method)
+values ('添加用户', '/user/insertOneUserInfo', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('批量添加用户', '/user/insertUserInfoList', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('删除用户信息', '/user/deleteUserInfo/*', 'perms[admin]', 'DELETE');
+############
+insert into system_resource(name, url, identity, request_method)
+values ('查询问题信息列表', '/problem/getProbInfoList', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('查询信息视图列表', '/problem/getProbInfoVOList', 'anon', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('根据题目 id 获取用例', '/problem/getSampleList/*', 'perms[admin]', 'GET');
+insert into system_resource(name, url, identity, request_method)
+values ('获取题目详细信息', '/problem/one/*', 'perms[user,admin]', 'GET');
+insert into system_resource(name, url, identity, request_method)
+values ('添加题目', '/problem/save', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('通过 id 更新题目信息', '/problem/update', 'perms[admin]', 'PUT');
+insert into system_resource(name, url, identity, request_method)
+values ('通过 id 删除题目信息', '/problem/delete/*', 'perms[admin]', 'DELETE');
+insert into system_resource(name, url, identity, request_method)
+values ('提交题目', '/problem/doQuestionSubmit', 'perms[user,admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('查询历史记录', '/problem/getProblemSubmitVO', 'perms[user,admin]', 'POST');
+####################
+insert into system_resource(name, url, identity, request_method)
+values ('添加标签信息', '/tag/insert', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('通过 id 删除标签', '/tag/deleteTagInfoById/*', 'perms[admin]', 'DELETE');
+insert into system_resource(name, url, identity, request_method)
+values ('更新标签信息通过 id', '/tag/updateTagInfoById', 'perms[admin]', 'PUT');
+insert into system_resource(name, url, identity, request_method)
+values ('通过 id 查询标签详细信息', '/tag/getTagInfoById/*', 'perms[admin]', 'GET');
+insert into system_resource(name, url, identity, request_method)
+values ('通过 id 查询标签详细信息', '/tag/getTagInfoById/*', 'perms[admin]', 'GET');
+insert into system_resource(name, url, identity, request_method)
+values ('查询标签结果集', '/tag/getTagInfoList', 'perms[admin]', 'POST');
+insert into system_resource(name, url, identity, request_method)
+values ('查询标签视图对象', '/tag/getTagInfoVOList', 'anon', 'POST');

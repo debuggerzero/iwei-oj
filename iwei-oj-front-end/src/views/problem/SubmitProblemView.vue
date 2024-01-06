@@ -15,7 +15,13 @@
             />
           </el-tab-pane>
           <el-tab-pane label="提交记录" name="second">
-            <records-table :table-height="700" />
+            <records-table
+              :table-height="700"
+              :submit-info-list="submitInfoList"
+              :base-query="baseQuery"
+              :handle-size-change="handleSizeChange"
+              :handle-current-change="handleCurrentChange"
+            />
           </el-tab-pane>
         </el-tabs>
       </el-col>
@@ -68,12 +74,13 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import ProblemService from "@/service/ProblemService";
 import ProblemBrowse from "@/views/problem/ProblemBrowse.vue";
 import CodeEditor from "@/components/CodeEditor.vue";
 import { ElMessage } from "element-plus";
 import RecordsTable from "@/components/RecordsTable.vue";
+import { useStore } from "vuex";
 
 const activeName = ref("first");
 const form = ref({
@@ -82,6 +89,8 @@ const form = ref({
 });
 
 const route = useRoute();
+const router = useRouter();
+const store = useStore();
 
 const languageOptions = ref(["cpp", "java"]);
 const editorTheme = ref("vs-dark");
@@ -90,9 +99,30 @@ const pid = ref(route.params?.id ?? 1);
 
 const loading = ref(false);
 
-onMounted(() => {
-  doGetOneProblemInfo();
+const submitInfoList = ref({});
+
+const baseQuery = ref({
+  uid: store.state.user.loginUser.id,
+  pid: pid,
+  pageNumber: parseInt(route.query?.pageNumber ?? 1),
+  pageSize: parseInt(route.query?.pageSize ?? 10),
 });
+
+onMounted(() => {
+  doInit();
+});
+
+const doInit = () => {
+  doGetOneProblemInfo();
+  doGetSubmitList(baseQuery);
+};
+
+const doGetSubmitList = async (baseQuery) => {
+  const obj = await ProblemService.getProbSubmit(baseQuery.value);
+  if (obj.code === 0) {
+    submitInfoList.value = obj.data;
+  }
+};
 
 const doGetOneProblemInfo = async () => {
   const obj = await ProblemService.getOneProbInfo(pid.value);
@@ -108,14 +138,37 @@ const doSubmit = async () => {
     language: form.value.language,
     code: form.value.code,
   });
-  if (obj === 0) {
+  if (obj.code === 0) {
     ElMessage.success("提交成功");
+    doInit();
   }
   loading.value = false;
 };
 
 const changeCode = (value) => {
   form.value.code = value;
+};
+
+const handleSizeChange = (val) => {
+  baseQuery.value.pageSize = val;
+  router.push({
+    query: {
+      pageNumber: baseQuery.value.pageNumber,
+      pageSize: val,
+    },
+  });
+  doGetSubmitList(baseQuery);
+};
+
+const handleCurrentChange = (val) => {
+  baseQuery.value.pageNumber = val;
+  router.push({
+    query: {
+      pageNumber: val,
+      pageSize: baseQuery.value.pageSize,
+    },
+  });
+  doGetSubmitList(baseQuery);
 };
 
 const handleTheme = (item) => {

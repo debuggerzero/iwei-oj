@@ -100,73 +100,50 @@
 </template>
 
 <script setup>
-import { onMounted, ref, defineProps, toRefs } from "vue";
-import ProblemService from "@/service/ProblemService";
-import { useRoute, useRouter } from "vue-router";
+import { ref, defineProps, toRefs } from "vue";
 import MdViewer from "@/components/markdowm/MdViewer.vue";
-
-const route = useRoute();
-const router = useRouter();
-
-const baseQuery = ref({
-  pageNumber: parseInt(route.query?.pageNumber ?? 1),
-  pageSize: parseInt(route.query?.pageSize ?? 10),
-});
-
-const submitInfoList = ref({});
 
 const props = defineProps({
   tableHeight: {
     type: Number,
     default: 450,
   },
+  submitInfoList: {
+    type: Array,
+    default: () => {
+      return [];
+    },
+  },
+  baseQuery: {
+    type: Object,
+    default: () => {
+      return {
+        pageNumber: 1,
+        pageSize: 10,
+      };
+    },
+  },
+  handleSizeChange: {
+    type: Function,
+    default: (val) => {
+      console.log(val);
+    },
+  },
+  handleCurrentChange: {
+    type: Function,
+    default: (val) => {
+      console.log(val);
+    },
+  },
 });
 const { tableHeight } = toRefs(props);
 
 const codeDialogVisible = ref(false);
 
-const handleSizeChange = (val) => {
-  baseQuery.value.pageSize = val;
-  router.push({
-    query: {
-      pageNumber: baseQuery.value.pageNumber,
-      pageSize: val,
-    },
-  });
-  doGetSubmitList(baseQuery);
-};
-
-const handleCurrentChange = (val) => {
-  baseQuery.value.pageNumber = val;
-  router.push({
-    query: {
-      pageNumber: val,
-      pageSize: baseQuery.value.pageSize,
-    },
-  });
-  doGetSubmitList(baseQuery);
-};
-
 const mdCode = ref("");
 const readCode = (language, code) => {
   mdCode.value = "```" + language + "\n" + code + "\n" + "```";
   codeDialogVisible.value = true;
-};
-
-onMounted(() => {
-  doInit();
-});
-
-const doInit = () => {
-  doGetSubmitList(baseQuery);
-};
-
-const doGetSubmitList = async (baseQuery) => {
-  const obj = await ProblemService.getProbSubmit(baseQuery.value);
-  if (obj.code === 0) {
-    submitInfoList.value = obj.data;
-    console.log(submitInfoList.value);
-  }
 };
 </script>
 

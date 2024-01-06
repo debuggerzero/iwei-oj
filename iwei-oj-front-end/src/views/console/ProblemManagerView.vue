@@ -268,7 +268,7 @@ const doDelete = (pid) => {
   })
     .then(() => {
       deleteProblemById(pid);
-      router.go(0);
+      doInit();
     })
     .catch(() => {
       ElMessage({

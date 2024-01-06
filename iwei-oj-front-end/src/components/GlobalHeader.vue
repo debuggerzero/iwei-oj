@@ -9,7 +9,7 @@
       >
         <el-menu-item style="opacity: 0.8" disabled>
           <div class="title-bar">
-            <img class="logo" src="@/assets/logo.png" alt="" />
+            <img class="logo" src="../../public/logo.png" alt="" />
             <div class="title">IWEI OJ</div>
           </div>
         </el-menu-item>

@@ -3,13 +3,14 @@ import { ElMessage } from "element-plus";
 
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = "/api";
-axios.defaults.timeout = 5000;
+axios.defaults.timeout = 60000;
 
 axios.interceptors.request.use(
   function (config) {
     return config;
   },
   function (error) {
+    ElMessage.error(error.message);
     return Promise.reject(error);
   }
 );

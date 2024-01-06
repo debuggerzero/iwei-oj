@@ -11,7 +11,7 @@ export const consoleRoutes = [
     // component: ProblemEditLayout,
     meta: {
       access: USER_ROLE_ENUM.ADMIN,
-      hideInMenu: false,
+      hideInMenu: true,
     },
   },
   {

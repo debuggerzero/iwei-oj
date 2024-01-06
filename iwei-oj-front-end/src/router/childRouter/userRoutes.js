@@ -8,7 +8,7 @@ export const userRoutes = [
     reward: "/info",
     meta: {
       access: USER_ROLE_ENUM.USER,
-      hideInMenu: false,
+      hideInMenu: true,
     },
   },
   {
