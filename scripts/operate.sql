@@ -6,7 +6,7 @@ values ('none', '黑名单', 1001, 1001, '无'),
 
 ## user_info
 insert into user_info (name, account, password, email, phone, profile, create_person, update_person, role_id)
-values ('root', '123456', md5(md5('123456')), 'debuggerzero@gmail.com', '123456', 'hhhh', -1, -1, 1003);
+values ('root', 'admin', md5(md5('admin')), 'debuggerzero@gmail.com', '123456', 'hhhh', -1, -1, 1003);
 insert into user_info (name, account, password, email, phone, profile, create_person, update_person, role_id)
 values ('user1', '1234561', md5(md5('123456')), 'debuggerzero@163.com', '1234561', 'hhhh', 1001, 1001, 1002);
 

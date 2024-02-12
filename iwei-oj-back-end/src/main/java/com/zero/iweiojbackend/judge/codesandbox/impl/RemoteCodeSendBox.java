@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 public class RemoteCodeSendBox implements CodeSendBox {
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {
-        String url = "http://47.100.31.141:8082/executeCode";
+        String url = "http://localhost:8082/executeCode";
         String json = JSONUtil.toJsonStr(executeCodeRequest);
         String responseStr = HttpUtil.createPost(url)
                 .body(json)
