@@ -1,7 +1,7 @@
 package com.zero.iweiojbackend.model.vo;
 
 import cn.hutool.json.JSONUtil;
-import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
+import com.zero.iweiojbackend.judge.codesandbox.model.JudgeResult;
 import com.zero.iweiojbackend.model.po.ProblemSubmit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,7 +40,7 @@ public class ProblemSubmitVO {
     /**
      * 判题信息（json 对象）
      */
-    private JudgeInfo judgeInfo;
+    private JudgeResult judgeResult;
 
     /**
      * 判题状态（0 - 待判题、1 - 判题中、2 - 成功、3 - 失败）
@@ -70,7 +70,7 @@ public class ProblemSubmitVO {
         BeanUtils.copyProperties(problemSubmit, problemSubmitVO);
         problemSubmitVO.setCreatePerson(problemSubmit.getCreatePerson().getName());
         String judgeInfoStr = problemSubmit.getJudgeInfo();
-        problemSubmitVO.setJudgeInfo(JSONUtil.toBean(judgeInfoStr, JudgeInfo.class));
+        problemSubmitVO.setJudgeResult(JSONUtil.toBean(judgeInfoStr, JudgeResult.class));
         return problemSubmitVO;
     }
 

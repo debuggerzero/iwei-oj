@@ -3,6 +3,7 @@ package com.zero.iweiojbackend.judge.codesandbox.impl;
 import com.zero.iweiojbackend.judge.codesandbox.CodeSendBox;
 import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeRequest;
 import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeResponse;
+import org.springframework.stereotype.Component;
 
 /**
  * 第三方沙箱
@@ -10,6 +11,7 @@ import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeResponse;
  * @author ZERO
  * @date 2023/12/30
  */
+@Component
 public class ThirdPartyCodeSandBox implements CodeSendBox {
     @Override
     public ExecuteCodeResponse executeCode(ExecuteCodeRequest executeCodeRequest) {

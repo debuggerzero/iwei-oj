@@ -1,9 +1,10 @@
 package com.zero.iweiojbackend.judge.strategy.impl;
 
+import com.zero.iweiojbackend.judge.codesandbox.model.JudgeResult;
 import com.zero.iweiojbackend.judge.strategy.JudgeStrategy;
 import com.zero.iweiojbackend.judge.model.JudgeContext;
-import com.zero.iweiojbackend.model.common.JudgeInfoMessageEnum;
 import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
+import com.zero.iweiojbackend.model.common.JudgeEnum;
 import com.zero.iweiojbackend.model.po.Sample;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import org.springframework.stereotype.Service;
@@ -26,52 +27,60 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
      * @return 判题信息
      */
     @Override
-    public JudgeInfo doJudge(JudgeContext judgeContext) {
+    public JudgeResult doJudge(JudgeContext judgeContext) {
 
-        JudgeInfo judgeInfo = judgeContext.getJudgeInfo();
-        Long memory = judgeInfo.getMemory() == null ? 0 : judgeInfo.getMemory();
-        Long time = judgeInfo.getTime();
-        List<String> outputList = (List<String>) judgeContext.getOutputList();
         ProbInfoVO probInfo = judgeContext.getProbInfo();
+        List<JudgeInfo> judgeInfo = (List<JudgeInfo>) judgeContext.getJudgeInfo();
         List<Sample> judgeCaseList = (List<Sample>) judgeContext.getJudgeCaseList();
 
+        JudgeResult judgeInfoResponse = new JudgeResult();
         // 设置默认的状态为通过
-        JudgeInfoMessageEnum judgeInfoMessageEnum = JudgeInfoMessageEnum.ACCEPTED;
-        JudgeInfo judgeInfoResponse = new JudgeInfo();
-        judgeInfoResponse.setMemory(memory);
+        JudgeEnum judgeEnum = JudgeEnum.ACCEPTED;
+        if (judgeInfo.size() != judgeCaseList.size()) {
+            judgeEnum = JudgeEnum.WRONG_ANSWER;
+            judgeInfoResponse.setMessage(judgeEnum.getMessage());
+            return judgeInfoResponse;
+        }
+        long memory = 0L, time = 0L;
+        for (JudgeInfo item : judgeInfo) {
+            assert judgeEnum != null;
+            if (item.getStatus() > judgeEnum.getValue()) {
+                judgeEnum = JudgeEnum.getEnumByValue(item.getStatus());
+            }
+            memory = Math.max(memory, item.getMemoryUsed());
+            time = Math.max(time, item.getTimeUsed());
+        }
+        long bit = 1024L;
         judgeInfoResponse.setTime(time);
-
-        // 先判断沙箱执行的结果输出数量是否与预期相等
-        if (outputList.size() != judgeCaseList.size()) {
-            judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
-            judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
+        judgeInfoResponse.setMemory(memory / bit / bit);
+        // 判断题目限制
+        Integer needTimeLimit = probInfo.getTimeLimit();
+        Integer spaceLimit = probInfo.getSpaceLimit();
+        // 判断内存是否超出
+        if (memory > spaceLimit * bit * bit) {
+            assert judgeEnum != null;
+            judgeEnum = JudgeEnum.getEnumByValue(Math.max(JudgeEnum.MEMORY_LIMIT_EXCEEDED.getValue(), judgeEnum.getValue()));
+        }
+        // 判断时间是否超出
+        if (time > needTimeLimit) {
+            assert judgeEnum != null;
+            judgeEnum = JudgeEnum.getEnumByValue(Math.max(JudgeEnum.TIME_LIMIT_EXCEEDED.getValue(), judgeEnum.getValue()));
+        }
+        assert judgeEnum != null;
+        if (!judgeEnum.equals(JudgeEnum.ACCEPTED)) {
+            judgeInfoResponse.setMessage(judgeEnum.getMessage());
             return judgeInfoResponse;
         }
         // 依次判断每个输出与预期是否相等
         for (int i = 0; i < judgeCaseList.size(); i++) {
             Sample sample = judgeCaseList.get(i);
-            if (!sample.getOutput().equals(outputList.get(i))) {
-                judgeInfoMessageEnum = JudgeInfoMessageEnum.WRONG_ANSWER;
-                judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
+            if (!sample.getOutput().equals(judgeInfo.get(i).getOutput())) {
+                judgeEnum = JudgeEnum.WRONG_ANSWER;
+                judgeInfoResponse.setMessage(judgeEnum.getMessage());
                 return judgeInfoResponse;
             }
         }
-        // 判断题目限制
-        Integer needTimeLimit = probInfo.getTimeLimit();
-        Integer spaceLimit = probInfo.getSpaceLimit();
-        // 判断内存是否超出
-        if (memory > spaceLimit) {
-            judgeInfoMessageEnum = JudgeInfoMessageEnum.MEMORY_LIMIT_EXCEEDED;
-            judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
-            return judgeInfoResponse;
-        }
-        // 判断时间是否超出
-        if (time > needTimeLimit) {
-            judgeInfoMessageEnum = JudgeInfoMessageEnum.TIME_LIMIT_EXCEEDED;
-            judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
-            return judgeInfoResponse;
-        }
-        judgeInfoResponse.setMessage(judgeInfoMessageEnum.getValue());
+        judgeInfoResponse.setMessage(judgeEnum.getMessage());
         return judgeInfoResponse;
     }
 

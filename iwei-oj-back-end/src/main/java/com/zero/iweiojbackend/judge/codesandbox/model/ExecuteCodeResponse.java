@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,23 +21,18 @@ import java.util.List;
 public class ExecuteCodeResponse {
 
     /**
-     * 接口信息
-     */
-    private String message;
-
-    /**
-     * 输出
-     */
-    private List<String> outputs;
-
-    /**
      * 执行状态
      */
     private Integer status;
 
     /**
+     * 信息
+     */
+    private String message;
+
+    /**
      * 判题信息
      */
-    private JudgeInfo judgeInfo;
+    private Collection<JudgeInfo> judgeInfo;
 
 }

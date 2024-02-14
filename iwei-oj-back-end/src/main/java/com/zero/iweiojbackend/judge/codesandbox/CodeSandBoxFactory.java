@@ -1,9 +1,9 @@
 package com.zero.iweiojbackend.judge.codesandbox;
 
-import com.zero.iweiojbackend.judge.codesandbox.CodeSendBox;
-import com.zero.iweiojbackend.judge.codesandbox.impl.ExampleCodeSendBox;
-import com.zero.iweiojbackend.judge.codesandbox.impl.RemoteCodeSendBox;
-import com.zero.iweiojbackend.judge.codesandbox.impl.ThirdPartyCodeSandBox;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * 代码沙箱工厂类
@@ -11,16 +11,29 @@ import com.zero.iweiojbackend.judge.codesandbox.impl.ThirdPartyCodeSandBox;
  * @author ZERO
  * @date 2023/12/30
  */
+@Component
 public class CodeSandBoxFactory {
 
-    public static CodeSendBox newInstance(String type) {
+    @Resource
+    private CodeSendBox remoteCodeSendBox;
+
+    @Resource
+    private CodeSendBox thirdPartyCodeSandBox;
+
+    @Resource
+    private CodeSendBox exampleCodeSendBox;
+
+    @Value("${codesandbox.type:example}")
+    private String type;
+
+    public CodeSendBox newInstance() {
         switch (type) {
             case "remote":
-                return new RemoteCodeSendBox();
+                return remoteCodeSendBox;
             case "thirdParty":
-                return new ThirdPartyCodeSandBox();
+                return thirdPartyCodeSandBox;
             default:
-                return new ExampleCodeSendBox();
+                return exampleCodeSendBox;
         }
     }
 

@@ -9,11 +9,11 @@ import com.zero.iweiojbackend.judge.codesandbox.CodeSendBox;
 import com.zero.iweiojbackend.judge.codesandbox.CodeSendBoxProxy;
 import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeRequest;
 import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeResponse;
+import com.zero.iweiojbackend.judge.codesandbox.model.JudgeResult;
 import com.zero.iweiojbackend.judge.model.JudgeContext;
 import com.zero.iweiojbackend.model.common.ErrorCode;
-import com.zero.iweiojbackend.model.common.JudgeInfoMessageEnum;
+import com.zero.iweiojbackend.model.common.JudgeEnum;
 import com.zero.iweiojbackend.model.common.ProblemSubmitStatusEnum;
-import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
 import com.zero.iweiojbackend.model.po.ProblemSubmit;
 import com.zero.iweiojbackend.model.po.Sample;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
@@ -21,12 +21,10 @@ import com.zero.iweiojbackend.repo.SampleRepo;
 import com.zero.iweiojbackend.service.ProbInfoService;
 import com.zero.iweiojbackend.service.ProblemSubmitService;
 import com.zero.iweiojbackend.service.UserInfoService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -54,8 +52,8 @@ public class JudgeServiceImpl implements JudgeService {
     @Resource
     private JudgeManager judgeManager;
 
-    @Value("${codesandbox.type:example}")
-    private String type;
+    @Resource
+    private CodeSandBoxFactory codeSandBoxFactory;
 
     @Override
     public ProblemSubmit doJudge(Long problemSubmitId) {
@@ -82,7 +80,7 @@ public class JudgeServiceImpl implements JudgeService {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "题目状态更新错误");
         }
         // 调用沙箱
-        CodeSendBox codeSendBox = CodeSandBoxFactory.newInstance(type);
+        CodeSendBox codeSendBox = codeSandBoxFactory.newInstance();
         codeSendBox = new CodeSendBoxProxy(codeSendBox);
         String language = problemSubmit.getLanguage();
         String code = problemSubmit.getCode();
@@ -94,30 +92,41 @@ public class JudgeServiceImpl implements JudgeService {
                 .language(language)
                 .inputs(inputs)
                 .build();
-        ExecuteCodeResponse executeCodeResponse = codeSendBox.executeCode(executeCodeRequest);
-        List<String> outputs = executeCodeResponse.getOutputs();
-
-        // 5）根据沙箱的执行结果，设置题目的判题状态和信息
-        JudgeContext judgeContext = new JudgeContext();
-        judgeContext.setJudgeInfo(executeCodeResponse.getJudgeInfo());
-        judgeContext.setOutputList(outputs);
-        judgeContext.setJudgeCaseList(judgeCaseList);
-        judgeContext.setProbInfo(probInfo);
-        judgeContext.setProblemSubmit(problemSubmit);
-        System.out.println(judgeContext);
-        JudgeInfo judgeInfo = judgeManager.doJudge(judgeContext);
+        ExecuteCodeResponse executeCodeResponse;
+        try {
+            executeCodeResponse = codeSendBox.executeCode(executeCodeRequest);
+        } catch (Exception e) {
+            executeCodeResponse = new ExecuteCodeResponse();
+            executeCodeResponse.setStatus(JudgeEnum.SYSTEM_ERROR.getValue());
+        }
+        JudgeResult judgeResult = new JudgeResult();
+        if (!executeCodeResponse.getStatus().equals(JudgeEnum.ACCEPTED.getValue())) {
+            judgeResult.setMessage(Objects.requireNonNull(JudgeEnum.getEnumByValue(executeCodeResponse.getStatus())).getMessage());
+        } else {
+            // 5）根据沙箱的执行结果，设置题目的判题状态和信息
+            JudgeContext judgeContext = new JudgeContext();
+            judgeContext.setJudgeInfo(executeCodeResponse.getJudgeInfo());
+            judgeContext.setJudgeCaseList(judgeCaseList);
+            judgeContext.setProbInfo(probInfo);
+            judgeContext.setProblemSubmit(problemSubmit);
+            judgeResult = judgeManager.doJudge(judgeContext);
+        }
 
         updateProblemSubmit = new ProblemSubmit();
         updateProblemSubmit.setId(problemSubmitId);
-        updateProblemSubmit.setStatus(ProblemSubmitStatusEnum.SUCCEED.getValue());
-        updateProblemSubmit.setJudgeInfo(JSONUtil.toJsonStr(judgeInfo));
+        if (executeCodeResponse.getStatus().equals(JudgeEnum.ACCEPTED.getValue())) {
+            updateProblemSubmit.setStatus(ProblemSubmitStatusEnum.SUCCEED.getValue());
+        } else {
+            updateProblemSubmit.setStatus(ProblemSubmitStatusEnum.FAILED.getValue());
+        }
+        updateProblemSubmit.setJudgeInfo(JSONUtil.toJsonStr(judgeResult));
         update = problemSubmitService.updateById(updateProblemSubmit);
         if (update == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "题目状态更新错误");
         }
         probInfoService.updateSubmitCnt(probInfo.getId());
         userInfoService.updateSubmitCnt(problemSubmit.getCreatePerson().getId());
-        if (judgeInfo.getMessage().equals(JudgeInfoMessageEnum.ACCEPTED.getValue())) {
+        if (judgeResult.getMessage().equals(JudgeEnum.ACCEPTED.getMessage())) {
             probInfoService.updateAcceptCnt(probInfo.getId());
             userInfoService.updateAcceptCnt(problemSubmit.getCreatePerson().getId());
         }

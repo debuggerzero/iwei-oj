@@ -1,10 +1,9 @@
 package com.zero.iweiojbackend.judge;
 
+import com.zero.iweiojbackend.judge.codesandbox.model.JudgeResult;
 import com.zero.iweiojbackend.judge.model.JudgeContext;
 import com.zero.iweiojbackend.judge.strategy.JudgeStrategy;
 import com.zero.iweiojbackend.judge.strategy.impl.DefaultJudgeStrategy;
-import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
-import com.zero.iweiojbackend.model.po.ProblemSubmit;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,9 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class JudgeManager {
 
-    public JudgeInfo doJudge(JudgeContext judgeContext) {
-        ProblemSubmit problemSubmit = judgeContext.getProblemSubmit();
-        String language = problemSubmit.getLanguage();
+    public JudgeResult doJudge(JudgeContext judgeContext) {
         JudgeStrategy judgeStrategy = new DefaultJudgeStrategy();
         return judgeStrategy.doJudge(judgeContext);
     }

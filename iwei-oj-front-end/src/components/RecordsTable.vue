@@ -18,14 +18,14 @@
             <el-tag type="info" effect="plain">{{ row.language }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="judgeInfo.time" label="耗时">
+        <el-table-column prop="judgeResult.time" label="耗时">
           <template #default="{ row }">
-            {{ row.judgeInfo?.time ?? 0 }} ms
+            {{ row.judgeResult?.time ?? 0 }} ms
           </template>
         </el-table-column>
-        <el-table-column prop="judgeInfo.memory" label="内存">
+        <el-table-column prop="judgeResult.memory" label="内存">
           <template #default="{ row }">
-            {{ row.judgeInfo?.memory ?? 0 }} MB
+            {{ row.judgeResult?.memory ?? 0 }} MB
           </template>
         </el-table-column>
         <el-table-column label="状态">
@@ -36,21 +36,21 @@
             <el-text type="success" :line-clamp="1" v-else>提交成功</el-text>
           </template>
         </el-table-column>
-        <el-table-column prop="judgeInfo.message" label="信息">
+        <el-table-column prop="judgeResult.message" label="信息">
           <template #default="{ row }">
-            <div v-if="row.judgeInfo.message !== null">
+            <div v-if="row.judgeResult.message !== null">
               <el-tag
                 type="success"
                 effect="dark"
-                v-if="row.judgeInfo.message === 'Accepted'"
+                v-if="row.judgeResult.message === 'Accepted'"
               >
                 <el-text size="small" :line-clamp="1"
-                  >{{ row.judgeInfo?.message }}
+                  >{{ row.judgeResult?.message }}
                 </el-text>
               </el-tag>
               <el-tag type="warning" effect="dark" v-else>
                 <el-text size="small" :line-clamp="1"
-                  >{{ row.judgeInfo?.message }}
+                  >{{ row.judgeResult?.message }}
                 </el-text>
               </el-tag>
             </div>

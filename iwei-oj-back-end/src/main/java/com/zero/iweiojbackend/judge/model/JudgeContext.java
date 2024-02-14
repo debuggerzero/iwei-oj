@@ -7,6 +7,7 @@ import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import lombok.Data;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 判题上下文
@@ -17,9 +18,7 @@ import java.util.Collection;
 @Data
 public class JudgeContext {
 
-    private JudgeInfo judgeInfo;
-
-    private Collection<String> outputList;
+    private Collection<JudgeInfo> judgeInfo;
 
     private Collection<Sample> judgeCaseList;
 

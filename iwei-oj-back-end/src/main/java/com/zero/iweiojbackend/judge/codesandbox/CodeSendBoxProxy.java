@@ -26,7 +26,7 @@ public class CodeSendBoxProxy implements CodeSendBox {
         log.info("代码沙箱请求信息：" + executeCodeRequest.toString());
         ExecuteCodeResponse executeCodeResponse = codeSendBox.executeCode(executeCodeRequest);
         if (Objects.nonNull(executeCodeResponse)) {
-            log.info("代码沙箱响应信息：" + executeCodeResponse.toString());
+            log.info("代码沙箱响应信息：" + executeCodeResponse);
         }
         return executeCodeResponse;
     }

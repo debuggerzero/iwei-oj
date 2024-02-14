@@ -23,3 +23,6 @@ cos:
 
 codesandbox:
   type: example
+
+judge:
+  url: http://localhost:8082/sandbox/judge

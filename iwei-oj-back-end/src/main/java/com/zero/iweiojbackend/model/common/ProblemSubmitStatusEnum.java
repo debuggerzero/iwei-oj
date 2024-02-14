@@ -21,9 +21,9 @@ public enum ProblemSubmitStatusEnum {
 
     RUNNING("判题中", 1),
 
-    SUCCEED("成功", 2),
+    SUCCEED("判题成功", 2),
 
-    FAILED("失败", 3);
+    FAILED("判题失败", 3);
 
     private final String text;
 

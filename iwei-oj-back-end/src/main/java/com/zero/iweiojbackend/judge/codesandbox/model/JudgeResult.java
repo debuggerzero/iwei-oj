@@ -5,33 +5,31 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-
 /**
- * ExecuteCodeRequest
+ * 判题结果
  *
  * @author ZERO
- * @date 2023/12/30
+ * @date 2024/2/14
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ExecuteCodeRequest {
+public class JudgeResult {
 
     /**
-     * 输入用例
+     * 判题信息
      */
-    private Collection<String> inputs;
+    private String message;
 
     /**
-     * 代码
+     * 判题空间
      */
-    private String code;
+    private Long memory;
 
     /**
-     * 编程语言
+     * 判题时间
      */
-    private String language;
+    private Long time;
 
 }

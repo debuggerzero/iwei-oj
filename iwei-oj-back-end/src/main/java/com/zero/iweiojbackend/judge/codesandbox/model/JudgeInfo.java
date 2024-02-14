@@ -18,18 +18,28 @@ import lombok.NoArgsConstructor;
 public class JudgeInfo {
 
     /**
-     * 判题信息
+     * 状态
      */
-    private String message;
+    private Integer status;
 
     /**
      * 消耗内存
      */
-    private Long memory;
+    private Long memoryUsed;
 
     /**
      * 消耗时间
      */
-    private Long time;
+    private Long timeUsed;
+
+    /**
+     * 输出
+     */
+    private String output;
+
+    /**
+     * 错误信息
+     */
+    private String errorMessage;
 
 }

@@ -3,7 +3,7 @@ package com.zero.iweiojbackend.service.impl;
 import com.zero.iweiojbackend.exception.AssertionException;
 import com.zero.iweiojbackend.judge.JudgeService;
 import com.zero.iweiojbackend.model.common.ErrorCode;
-import com.zero.iweiojbackend.model.common.ProblemSubmitLanguageEnum;
+import com.zero.iweiojbackend.model.common.LanguageEnum;
 import com.zero.iweiojbackend.model.common.ProblemSubmitStatusEnum;
 import com.zero.iweiojbackend.model.converter.ToUserInfoConverter;
 import com.zero.iweiojbackend.model.dto.questionsubmit.ProblemSubmitAddRequest;
@@ -18,6 +18,7 @@ import com.zero.iweiojbackend.model.vo.UserInfoVO;
 import com.zero.iweiojbackend.repo.ProblemSubmitRepo;
 import com.zero.iweiojbackend.service.ProbInfoService;
 import com.zero.iweiojbackend.service.ProblemSubmitService;
+import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import static com.zero.iweiojbackend.model.common.UserConstant.USER_ROLE_ADMIN;
  * @date 2023/12/30
  */
 @Service("problemSubmitServiceImpl")
+@Slf4j
 public class ProblemSubmitServiceImpl implements ProblemSubmitService {
 
     @Resource(name = "probInfoServiceImpl")
@@ -61,7 +63,7 @@ public class ProblemSubmitServiceImpl implements ProblemSubmitService {
         }
         // 判断语言类型是否正确
         String language = questionSubmitAddRequest.getLanguage();
-        ProblemSubmitLanguageEnum languageEnum = ProblemSubmitLanguageEnum.getEnumByValue(language);
+        LanguageEnum languageEnum = LanguageEnum.getEnumByValue(language);
         if (languageEnum == null) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR, "编程语言错误");
         }
@@ -78,7 +80,13 @@ public class ProblemSubmitServiceImpl implements ProblemSubmitService {
         Long problemSubmitId = problemSubmit.getId();
         // 判题实现
         CompletableFuture.runAsync(() -> {
-            judgeService.doJudge(problemSubmitId);
+            try {
+                judgeService.doJudge(problemSubmitId);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                problemSubmit.setStatus(ProblemSubmitStatusEnum.FAILED.getValue());
+                updateById(problemSubmit);
+            }
         }, executor);
         return problemSubmitId;
     }

@@ -1,7 +1,7 @@
 package com.zero.iweiojbackend.judge.strategy;
 
+import com.zero.iweiojbackend.judge.codesandbox.model.JudgeResult;
 import com.zero.iweiojbackend.judge.model.JudgeContext;
-import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
 
 /**
  * 判题策略
@@ -16,6 +16,6 @@ public interface JudgeStrategy {
      * @param judgeContext 判题上下文
      * @return 判题信息
      */
-    JudgeInfo doJudge(JudgeContext judgeContext);
+    JudgeResult doJudge(JudgeContext judgeContext);
 
 }
