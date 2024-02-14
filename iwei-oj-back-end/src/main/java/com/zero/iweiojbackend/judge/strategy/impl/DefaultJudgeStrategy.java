@@ -5,6 +5,7 @@ import com.zero.iweiojbackend.judge.strategy.JudgeStrategy;
 import com.zero.iweiojbackend.judge.model.JudgeContext;
 import com.zero.iweiojbackend.judge.codesandbox.model.JudgeInfo;
 import com.zero.iweiojbackend.model.common.JudgeEnum;
+import com.zero.iweiojbackend.model.common.LanguageEnum;
 import com.zero.iweiojbackend.model.po.Sample;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
         ProbInfoVO probInfo = judgeContext.getProbInfo();
         List<JudgeInfo> judgeInfo = (List<JudgeInfo>) judgeContext.getJudgeInfo();
         List<Sample> judgeCaseList = (List<Sample>) judgeContext.getJudgeCaseList();
+        String language = judgeContext.getProblemSubmit().getLanguage();
 
         JudgeResult judgeInfoResponse = new JudgeResult();
         // 设置默认的状态为通过
@@ -52,12 +54,18 @@ public class DefaultJudgeStrategy implements JudgeStrategy {
         }
         long bit = 1024L;
         judgeInfoResponse.setTime(time);
-        judgeInfoResponse.setMemory(memory / bit / bit);
+        judgeInfoResponse.setMemory(memory);
         // 判断题目限制
+        LanguageEnum languageEnum = LanguageEnum.getEnumByValue(language);
         Integer needTimeLimit = probInfo.getTimeLimit();
         Integer spaceLimit = probInfo.getSpaceLimit();
+        if (!LanguageEnum.C.equals(languageEnum) && !LanguageEnum.CPP.equals(languageEnum)) {
+            needTimeLimit *= 2;
+            spaceLimit *= 2;
+        }
+
         // 判断内存是否超出
-        if (memory > spaceLimit * bit * bit) {
+        if (memory > spaceLimit * bit) {
             assert judgeEnum != null;
             judgeEnum = JudgeEnum.getEnumByValue(Math.max(JudgeEnum.MEMORY_LIMIT_EXCEEDED.getValue(), judgeEnum.getValue()));
         }

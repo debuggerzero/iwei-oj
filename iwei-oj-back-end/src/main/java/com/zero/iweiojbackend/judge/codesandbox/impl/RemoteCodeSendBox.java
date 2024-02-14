@@ -9,7 +9,6 @@ import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeRequest;
 import com.zero.iweiojbackend.judge.codesandbox.model.ExecuteCodeResponse;
 import com.zero.iweiojbackend.model.common.ErrorCode;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

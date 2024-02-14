@@ -2,6 +2,7 @@ package com.zero.iweiojbackend.model.vo;
 
 import cn.hutool.json.JSONUtil;
 import com.zero.iweiojbackend.judge.codesandbox.model.JudgeResult;
+import com.zero.iweiojbackend.model.common.ProblemSubmitStatusEnum;
 import com.zero.iweiojbackend.model.po.ProblemSubmit;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,7 +46,7 @@ public class ProblemSubmitVO {
     /**
      * 判题状态（0 - 待判题、1 - 判题中、2 - 成功、3 - 失败）
      */
-    private Integer status;
+    private String status;
 
     /**
      * 题目信息
@@ -68,6 +69,7 @@ public class ProblemSubmitVO {
         }
         ProblemSubmitVO problemSubmitVO = new ProblemSubmitVO();
         BeanUtils.copyProperties(problemSubmit, problemSubmitVO);
+        problemSubmitVO.setStatus(Objects.requireNonNull(ProblemSubmitStatusEnum.getEnumByValue(problemSubmit.getStatus())).getText());
         problemSubmitVO.setCreatePerson(problemSubmit.getCreatePerson().getName());
         String judgeInfoStr = problemSubmit.getJudgeInfo();
         problemSubmitVO.setJudgeResult(JSONUtil.toBean(judgeInfoStr, JudgeResult.class));
