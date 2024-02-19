@@ -15,7 +15,6 @@ import com.zero.iweiojbackend.service.UserInfoService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,11 +37,11 @@ public class TagInfoServiceImpl implements TagInfoService {
     private UserInfoService userInfoService;
 
     @Override
-    public Integer insertTagInfo(TagInfoRequest tagInfoRequest, HttpServletRequest request) {
+    public Integer insertTagInfo(TagInfoRequest tagInfoRequest) {
         if (TagInfoRequest.isNull(tagInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        String uid = userInfoService.getLoginUser(request).getId().toString();
+        String uid = userInfoService.getLoginUser().getId().toString();
         TagInfoVO tagInfoVO = tagInfoRequest.getTagInfoVO();
         TagInfo tagInfo = TagInfo.builder().name(tagInfoVO.getName()).createPerson(uid).updatePerson(uid).build();
         Integer i = tagInfoRepo.save(tagInfo);
@@ -69,11 +68,11 @@ public class TagInfoServiceImpl implements TagInfoService {
     }
 
     @Override
-    public Integer updateTagInfoById(TagInfoRequest tagInfoRequest, HttpServletRequest request) {
+    public Integer updateTagInfoById(TagInfoRequest tagInfoRequest) {
         if (TagInfoRequest.isNull(tagInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
-        String uid = userInfoService.getLoginUser(request).getId().toString();
+        String uid = userInfoService.getLoginUser().getId().toString();
         TagInfoVO tagInfoVO = tagInfoRequest.getTagInfoVO();
         TagInfo tagInfo = TagInfo
                 .builder()

@@ -8,10 +8,7 @@ import com.zero.iweiojbackend.model.dto.user.ModifyPasswordRequest;
 import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.UserInfoVO;
 import com.zero.iweiojbackend.model.vo.UserRole;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * UserInfoService
@@ -33,25 +30,21 @@ public interface UserInfoService {
      * 登录
      *
      * @param loginRequest 登录请求
-     * @param request      请求
      * @return UserInfoVO
      */
-    UserInfoVO login(LoginRequest loginRequest, HttpServletRequest request);
+    UserInfoVO login(LoginRequest loginRequest);
 
     /**
      * 退出登录
-     *
-     * @param request 请求
      */
-    void logout(HttpServletRequest request);
+    void logout();
 
     /**
      * 获取登录用户信息
      *
-     * @param request 请求信息
      * @return UserInfoVO
      */
-    UserInfoVO getLoginUser(HttpServletRequest request);
+    UserInfoVO getLoginUser();
 
     /**
      * 通过 id 查询用户
@@ -89,28 +82,25 @@ public interface UserInfoService {
      * 普通用户修改用户信息
      *
      * @param userInfoRequest 用户信息
-     * @param request         请求
      * @return 受影响行数
      */
-    Integer modifyInfoByUser(UserInfoRequest userInfoRequest, HttpServletRequest request);
+    Integer modifyInfoByUser(UserInfoRequest userInfoRequest);
 
     /**
      * 管理员修改用户信息（管理员）
      *
      * @param userInfoRequest 用户信息
-     * @param request         request
      * @return 受影响行数
      */
-    Integer modifyInfoByAdmin(UserInfoRequest userInfoRequest, HttpServletRequest request);
+    Integer modifyInfoByAdmin(UserInfoRequest userInfoRequest);
 
     /**
      * 修改用户密码
      *
      * @param modifyPasswordRequest 用户密码请求
-     * @param request               request
      * @return 操作成功的条数
      */
-    Integer modifyPasswordByUser(ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request);
+    Integer modifyPasswordByUser(ModifyPasswordRequest modifyPasswordRequest);
 
     /**
      * 重置密码(管理员)
@@ -140,19 +130,17 @@ public interface UserInfoService {
      * 插入一个用户 (管理员)
      *
      * @param insertUserRequest 插入用户信息请求
-     * @param request           请求
      * @return 操作成功的条数
      */
-    Integer insertOneUserInfo(UserInfoRequest insertUserRequest, HttpServletRequest request);
+    Integer insertOneUserInfo(UserInfoRequest insertUserRequest);
 
     /**
      * 插入用户列表（管理员）
      *
      * @param file    文件
-     * @param request request
      * @return 操作成功的条数
      */
-    Integer insertUserInfoList(MultipartFile file, HttpServletRequest request);
+    Integer insertUserInfoList(MultipartFile file);
 
     /**
      * 删除用户信息（管理员）

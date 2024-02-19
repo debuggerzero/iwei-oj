@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Objects;
 
 /**
@@ -43,7 +42,7 @@ public class UserInfoController {
      * @return 用户信息
      */
     @PostMapping("/login/password")
-    public BaseResponse<UserInfoVO> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) {
+    public BaseResponse<UserInfoVO> login(@RequestBody LoginRequest loginRequest) {
         if (Objects.isNull(loginRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
@@ -56,28 +55,31 @@ public class UserInfoController {
             throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "密码不能为空");
         }
         loginRequest.setPassword(StringUtil.md5(password));
-        return ResultUtils.success(userInfoService.login(loginRequest, request));
+        return ResultUtils.success(userInfoService.login(loginRequest));
     }
 
     /**
      * 退出登录
-     * @param request 请求
      * @return BaseResponse<Void>
      */
     @GetMapping("/logout")
-    public BaseResponse<Void> logout(HttpServletRequest request) {
-        userInfoService.logout(request);
+    public BaseResponse<Void> logout() {
+        userInfoService.logout();
         return ResultUtils.success(null);
     }
 
     /**
      * 获取登录用户
-     * @param request 用户 request
      * @return BaseResponse<UserInfoVO></UserInfoVO>
      */
     @GetMapping("/query/one")
-    public BaseResponse<UserInfoVO> getLoginUser(HttpServletRequest request) {
-        return ResultUtils.success(userInfoService.getLoginUser(request));
+    public BaseResponse<UserInfoVO> getLoginUser() {
+        return ResultUtils.success(userInfoService.getLoginUser());
+    }
+
+    @GetMapping("/query/one/{id}")
+    public BaseResponse<UserInfoVO> queryUserInfoById(@PathVariable Integer id) {
+        return ResultUtils.success(userInfoService.queryUserInfoById(id));
     }
 
     /**
@@ -115,36 +117,33 @@ public class UserInfoController {
      * 修改用户信息
      *
      * @param userInfoRequest 用户信息交互
-     * @param request request
      * @return BaseResponse<Integer>
      */
     @PutMapping("/modifyInfoByUser")
-    public BaseResponse<Integer> modifyInfoByUser(@RequestBody UserInfoRequest userInfoRequest, HttpServletRequest request) {
-        return ResultUtils.success(userInfoService.modifyInfoByUser(userInfoRequest, request));
+    public BaseResponse<Integer> modifyInfoByUser(@RequestBody UserInfoRequest userInfoRequest) {
+        return ResultUtils.success(userInfoService.modifyInfoByUser(userInfoRequest));
     }
 
     /**
      * 修改用户信息（管理员）
      *
      * @param userInfoRequest 用户信息交互
-     * @param request request
      * @return BaseResponse<Integer>
      */
     @PutMapping("/modifyInfoByAdmin")
-    public BaseResponse<Integer> modifyInfoByAdmin(@RequestBody UserInfoRequest userInfoRequest, HttpServletRequest request) {
-        return ResultUtils.success(userInfoService.modifyInfoByAdmin(userInfoRequest, request));
+    public BaseResponse<Integer> modifyInfoByAdmin(@RequestBody UserInfoRequest userInfoRequest) {
+        return ResultUtils.success(userInfoService.modifyInfoByAdmin(userInfoRequest));
     }
 
     /**
      * 修改用户密码
      *
      * @param modifyPasswordRequest modifyPasswordCommand
-     * @param request request
      * @return BaseResponse<Integer>
      */
     @PutMapping("/modifyUserPassword")
-    public BaseResponse<Integer> modifyUserPassword(@RequestBody ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request) {
-        return ResultUtils.success(userInfoService.modifyPasswordByUser(modifyPasswordRequest, request));
+    public BaseResponse<Integer> modifyUserPassword(@RequestBody ModifyPasswordRequest modifyPasswordRequest) {
+        return ResultUtils.success(userInfoService.modifyPasswordByUser(modifyPasswordRequest));
     }
 
     /**
@@ -162,12 +161,11 @@ public class UserInfoController {
      * 添加用户信息（管理员）
      *
      * @param userInfoRequest userInfoRequest
-     * @param request request
      * @return 受影响的行数
      */
     @PostMapping("/insertOneUserInfo")
-    public BaseResponse<Integer> insertOneUserInfo(@RequestBody UserInfoRequest userInfoRequest, HttpServletRequest request) {
-        return ResultUtils.success(userInfoService.insertOneUserInfo(userInfoRequest, request));
+    public BaseResponse<Integer> insertOneUserInfo(@RequestBody UserInfoRequest userInfoRequest) {
+        return ResultUtils.success(userInfoService.insertOneUserInfo(userInfoRequest));
     }
 
     /**
@@ -177,8 +175,8 @@ public class UserInfoController {
      * @return 受影响的行数
      */
     @PostMapping("/insertUserInfoList")
-    public BaseResponse<Integer> insertUserInfoList(@RequestPart(value = "file") MultipartFile file, HttpServletRequest request) {
-        return ResultUtils.success(userInfoService.insertUserInfoList(file, request));
+    public BaseResponse<Integer> insertUserInfoList(@RequestPart(value = "file") MultipartFile file) {
+        return ResultUtils.success(userInfoService.insertUserInfoList(file));
     }
 
     /**

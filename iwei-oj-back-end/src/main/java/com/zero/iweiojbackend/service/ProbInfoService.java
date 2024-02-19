@@ -7,8 +7,6 @@ import com.zero.iweiojbackend.model.dto.question.ProblemRequest;
 import com.zero.iweiojbackend.model.vo.GeneralCollectionResult;
 import com.zero.iweiojbackend.model.vo.ProbInfoVO;
 
-import javax.servlet.http.HttpServletRequest;
-
 /**
  * ProbInfoService
  *
@@ -48,18 +46,16 @@ public interface ProbInfoService {
     /**
      * 添加题目（管理员）
      * @param problemRequest 题目信息
-     * @param request request
      * @return 受影响的行数
      */
-    Integer save(ProblemRequest problemRequest, HttpServletRequest request);
+    Integer save(ProblemRequest problemRequest);
 
     /**
      * 通过 id 更新题目信息（管理员）
      * @param problemRequest 题目信息
-     * @param request request
      * @return 受影响的行数
      */
-    Integer updateById(ProblemRequest problemRequest, HttpServletRequest request);
+    Integer updateById(ProblemRequest problemRequest);
 
     /**
      * 更新提交次数

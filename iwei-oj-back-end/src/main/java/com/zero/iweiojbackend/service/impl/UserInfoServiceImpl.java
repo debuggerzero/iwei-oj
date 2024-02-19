@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -65,7 +64,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfoRepo.queryTotal(baseQuery);
     }
 
-    public UserInfoVO login(LoginRequest loginRequest, HttpServletRequest request) {
+    public UserInfoVO login(LoginRequest loginRequest) {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(loginRequest.getAccount(), loginRequest.getPassword());
         try {
@@ -76,32 +75,25 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfo userInfo = (UserInfo) subject.getPrincipal();
         userInfo.setAvatar(cosService.getImageUrl(userInfo.getAvatar()));
         // 将用户信息存入 session
-        UserInfoVO userInfoVO = ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
-        request.getSession().setAttribute(USER_LOGIN_STATE, userInfoVO);
-        return userInfoVO;
+        return ToUserInfoVoConverter.CONVERTER.toUserInfoVO(userInfo);
     }
 
     @Override
-    public void logout(HttpServletRequest request) {
-        UserInfoVO loginUser = this.getLoginUser(request);
+    public void logout() {
+        UserInfoVO loginUser = this.getLoginUser();
         if (Objects.isNull(loginUser)) {
             throw new AssertionException(ErrorCode.NOT_LOGIN_ERROR);
         }
         Subject subject = SecurityUtils.getSubject();
         subject.logout();
-        request.getSession().removeAttribute(USER_LOGIN_STATE);
     }
 
-    public UserInfoVO getLoginUser(HttpServletRequest request) {
-        UserInfoVO currentUser = (UserInfoVO) request.getSession().getAttribute(USER_LOGIN_STATE);
-        if (Objects.isNull(currentUser) || Objects.isNull(currentUser.getId())) {
+    public UserInfoVO getLoginUser() {
+        Subject currentUser = SecurityUtils.getSubject();
+        if (!currentUser.isAuthenticated()) {
             throw new AssertionException(ErrorCode.NOT_LOGIN_ERROR);
         }
-        currentUser = this.queryUserInfoById(currentUser.getId());
-        if (Objects.isNull(currentUser)) {
-            throw new AssertionException(ErrorCode.NOT_LOGIN_ERROR);
-        }
-        return currentUser;
+        return ToUserInfoVoConverter.CONVERTER.toUserInfoVO((UserInfo) currentUser.getPrincipal());
     }
 
     public UserInfoVO queryUserInfoById(Integer id) {
@@ -134,8 +126,11 @@ public class UserInfoServiceImpl implements UserInfoService {
         Collection<UserInfoVO> userInfoVos = userInfoRepo.getAll(query)
                 .stream()
                 .filter(Objects::nonNull)
-                .peek(o -> o.setAvatar(cosService.getImageUrl(o.getAvatar())))
                 .map(ToUserInfoVoConverter.CONVERTER::toUserInfoVO)
+                .peek(o -> {
+                    dataMasking(o);
+                    o.setAvatar(cosService.getImageUrl(o.getAvatar()));
+                })
                 .collect(Collectors.toList());
         return new GeneralCollectionResult<>(userInfoVos, this.queryTotal(query));
     }
@@ -148,13 +143,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         return new GeneralCollectionResult<>(userRoles, systemRoleRepo.queryTotal());
     }
 
-    public Integer modifyInfoByUser(UserInfoRequest userInfoRequest, HttpServletRequest request) {
+    public Integer modifyInfoByUser(UserInfoRequest userInfoRequest) {
         if (UserInfoRequest.isNull(userInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
         // 判断当前登录用户与操作人 id 是否相同，不相同则无法更新
-        UserInfoVO currentUserInfoVO = this.getLoginUser(request);
+        UserInfoVO currentUserInfoVO = this.getLoginUser();
         if (currentUserInfoVO.getId().equals(userInfoVO.getId())) {
             throw new AssertionException(ErrorCode.NO_AUTH_ERROR);
         }
@@ -171,19 +166,18 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         newUserInfo.setAvatar(cosService.getImageUrl(newUserInfo.getAvatar()));
-        // 更新 session 中用户信息
-        request.getSession().setAttribute(USER_LOGIN_STATE, ToUserInfoVoConverter.CONVERTER.toUserInfoVO(newUserInfo));
+        // TODO 更新 shiro 中存储的用户信息
         return result;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer modifyInfoByAdmin(UserInfoRequest userInfoRequest, HttpServletRequest request) {
+    public Integer modifyInfoByAdmin(UserInfoRequest userInfoRequest) {
         if (UserInfoRequest.isNull(userInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
-        UserInfoVO currentUserInfoVO = this.getLoginUser(request);
+        UserInfoVO currentUserInfoVO = this.getLoginUser();
         UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
         userInfo.setStatus(userInfoRequest.getStatus());
         userInfo.setAvatar(cosService.getImageKey(userInfo.getAvatar()));
@@ -205,7 +199,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         return result;
     }
 
-    public Integer modifyPasswordByUser(ModifyPasswordRequest modifyPasswordRequest, HttpServletRequest request) {
+    public Integer modifyPasswordByUser(ModifyPasswordRequest modifyPasswordRequest) {
         String oldPassword = modifyPasswordRequest.getOldPassword();
         String newPassword = modifyPasswordRequest.getNewPassword();
         if (Objects.isNull(oldPassword) || Objects.isNull(newPassword)) {
@@ -214,7 +208,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (oldPassword.equals(newPassword)) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "两次密码相同");
         }
-        UserInfoVO loginUser = this.getLoginUser(request);
+        UserInfoVO loginUser = this.getLoginUser();
         UserInfo userInfo = userInfoRepo.getOne(UserInfoQuery.builder().id(loginUser.getId()).build());
         if (userInfo.getPassword().equals(StringUtil.md5(oldPassword))) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR, "密码错误");
@@ -223,7 +217,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (result == 0) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
-        request.getSession().removeAttribute(USER_LOGIN_STATE);
+        this.logout();
         return result;
     }
 
@@ -263,13 +257,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         return result;
     }
 
-    public Integer insertOneUserInfo(UserInfoRequest userInfoRequest, HttpServletRequest request) {
+    public Integer insertOneUserInfo(UserInfoRequest userInfoRequest) {
         if (UserInfoRequest.isNull(userInfoRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
         UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
         UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
-        UserInfoVO loginUser = this.getLoginUser(request);
+        UserInfoVO loginUser = this.getLoginUser();
         if (Objects.isNull(userInfo.getRole()) || Objects.isNull(userInfo.getRole().getId())) {
             userInfo.setRole(systemRoleRepo.getUserRoleByName(USER_ROLE_USER));
         }
@@ -284,7 +278,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Integer insertUserInfoList(MultipartFile file, HttpServletRequest request) {
+    public Integer insertUserInfoList(MultipartFile file) {
         if (Objects.isNull(file)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
@@ -306,8 +300,8 @@ public class UserInfoServiceImpl implements UserInfoService {
                 .peek(o -> {
                     o.setPassword(StringUtil.md5(StringUtil.md5(INITIAL_PASSWORD)));
                     o.setRole(systemRoleRepo.getUserRoleByName(USER_ROLE_USER));
-                    o.setCreatePerson(this.getLoginUser(request).getId().toString());
-                    o.setUpdatePerson(this.getLoginUser(request).getId().toString());
+                    o.setCreatePerson(this.getLoginUser().getId().toString());
+                    o.setUpdatePerson(this.getLoginUser().getId().toString());
                 })
                 .collect(Collectors.toList());
         Integer result = userInfoRepo.saveAll(userInfos);
@@ -326,5 +320,16 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
         return result;
+    }
+
+    /**
+     * 信息脱敏
+     *
+     * @param userInfoVO 用户信息
+     */
+    private void dataMasking(UserInfoVO userInfoVO) {
+        userInfoVO.setPhone(null);
+        userInfoVO.setEmail(null);
+        userInfoVO.setCreateDate(null);
     }
 }

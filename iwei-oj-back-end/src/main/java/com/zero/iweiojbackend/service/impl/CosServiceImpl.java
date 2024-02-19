@@ -16,9 +16,10 @@ import com.zero.iweiojbackend.service.CosService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.InputStream;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * CosServiceImpl
@@ -31,6 +32,9 @@ import java.util.concurrent.Executors;
 public class CosServiceImpl implements CosService {
 
     private final CosConfig cosConfig;
+
+    @Resource(name = "taskExecutor")
+    private Executor executor;
 
     public COSClient getCosClient() {
         COSCredentials cred = new BasicCOSCredentials(cosConfig.getSecretId(), cosConfig.getSecretKey());
@@ -45,8 +49,7 @@ public class CosServiceImpl implements CosService {
 
     public TransferManager getTransferManager() {
         COSClient cosClient = getCosClient();
-        ExecutorService threadPool = Executors.newFixedThreadPool(32);
-        TransferManager transferManager = new TransferManager(cosClient, threadPool);
+        TransferManager transferManager = new TransferManager(cosClient, (ExecutorService) executor);
         TransferManagerConfiguration transferManagerConfiguration = new TransferManagerConfiguration();
         transferManagerConfiguration.setMultipartUploadThreshold(5 * 1024 * 1024);
         transferManagerConfiguration.setMinimumUploadPartSize(1024 * 1024);
@@ -72,11 +75,9 @@ public class CosServiceImpl implements CosService {
         try {
             UploadResult uploadResult = transferManager.upload(putObjectRequest).waitForUploadResult();
             return uploadResult.getKey();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
-        }
-        finally {
+        } finally {
             shutdownTransferManager(transferManager);
         }
     }
@@ -94,8 +95,7 @@ public class CosServiceImpl implements CosService {
             COSObject cosObject = cosClient.getObject(getObjectRequest);
             COSObjectInputStream objectContent = cosObject.getObjectContent();
             bytes = IOUtils.toByteArray(objectContent);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         } finally {
             shutdownCosClient(cosClient);
@@ -108,8 +108,7 @@ public class CosServiceImpl implements CosService {
         COSClient cosClient = getCosClient();
         try {
             cosClient.deleteObject(cosConfig.getBucketName(), cosConfig.getPrefix() + key);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         } finally {
             shutdownCosClient(cosClient);

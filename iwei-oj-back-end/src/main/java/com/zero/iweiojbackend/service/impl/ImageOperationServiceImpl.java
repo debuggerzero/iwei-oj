@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -94,11 +93,11 @@ public class ImageOperationServiceImpl implements ImageOperationService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ImageInfoVO uploadImage(MultipartFile multipartFile, HttpServletRequest request) {
+    public ImageInfoVO uploadImage(MultipartFile multipartFile) {
         if (Objects.isNull(multipartFile)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR.getCode(), "文件上传失败");
         }
-        UserInfoVO loginUser = userInfoService.getLoginUser(request);
+        UserInfoVO loginUser = userInfoService.getLoginUser();
         Integer userId = loginUser.getId();
         InputStream inputStream;
         long contentLength;

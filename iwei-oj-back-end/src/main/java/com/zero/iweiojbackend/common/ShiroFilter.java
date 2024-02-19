@@ -29,10 +29,9 @@ public class ShiroFilter extends AuthorizationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse servletResponse, Object o) {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
         Subject subject = getSubject(servletRequest, servletResponse);
         // 用户未登录
-        if (Objects.isNull(subject) || Objects.isNull(request.getSession().getAttribute(USER_LOGIN_STATE))) {
+        if (Objects.isNull(subject)) {
             return false;
         }
         String[] rolesArray = (String[]) o;
@@ -49,7 +48,6 @@ public class ShiroFilter extends AuthorizationFilter {
 
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws IOException {
-        HttpServletRequest servletRequest = (HttpServletRequest) request;
         HttpServletResponse servletResponse = (HttpServletResponse) response;
         Subject subject = getSubject(request, servletResponse);
         servletResponse.setCharacterEncoding("UTF-8");
@@ -59,7 +57,7 @@ public class ShiroFilter extends AuthorizationFilter {
         PrintWriter writer = servletResponse.getWriter();
         String jsonString;
         ErrorCode code;
-        if (Objects.isNull(subject) || Objects.isNull(servletRequest.getSession().getAttribute(USER_LOGIN_STATE))) {
+        if (Objects.isNull(subject)) {
             code = ErrorCode.NOT_LOGIN_ERROR;
         } else {
             code = ErrorCode.NO_AUTH_ERROR;

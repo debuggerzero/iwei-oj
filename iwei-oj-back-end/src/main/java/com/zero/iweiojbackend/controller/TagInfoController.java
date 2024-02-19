@@ -11,7 +11,6 @@ import com.zero.iweiojbackend.utils.ResultUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 标签模块
@@ -33,8 +32,8 @@ public class TagInfoController {
      * @return 受影响的行数
      */
     @PostMapping("/insert")
-    public BaseResponse<Integer> insertTagInfo(@RequestBody TagInfoRequest tagInfoRequest, HttpServletRequest request) {
-        return ResultUtils.success(tagInfoService.insertTagInfo(tagInfoRequest, request));
+    public BaseResponse<Integer> insertTagInfo(@RequestBody TagInfoRequest tagInfoRequest) {
+        return ResultUtils.success(tagInfoService.insertTagInfo(tagInfoRequest));
     }
 
     /**
@@ -55,8 +54,8 @@ public class TagInfoController {
      * @return 受影响的行数
      */
     @PutMapping("/updateTagInfoById")
-    public BaseResponse<Integer> updateTagInfoById(@RequestBody TagInfoRequest tagInfoRequest, HttpServletRequest request) {
-        return ResultUtils.success(tagInfoService.updateTagInfoById(tagInfoRequest, request));
+    public BaseResponse<Integer> updateTagInfoById(@RequestBody TagInfoRequest tagInfoRequest) {
+        return ResultUtils.success(tagInfoService.updateTagInfoById(tagInfoRequest));
     }
 
     /**

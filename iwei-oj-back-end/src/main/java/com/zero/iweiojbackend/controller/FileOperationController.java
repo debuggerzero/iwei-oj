@@ -28,12 +28,10 @@ public class FileOperationController {
     /**
      * 上传图片
      * @param file 图片
-     * @param request request
      * @return 图片信息
      */
     @PostMapping("/upload/image")
-    public BaseResponse<ImageInfoVO> uploadImage(@RequestPart(value = "file") MultipartFile file, HttpServletRequest request) {
-
-        return ResultUtils.success(fileOperationService.uploadImage(file, request));
+    public BaseResponse<ImageInfoVO> uploadImage(@RequestPart(value = "file") MultipartFile file) {
+        return ResultUtils.success(fileOperationService.uploadImage(file));
     }
 }

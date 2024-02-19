@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,8 +87,8 @@ public class ProbInfoServiceImpl implements ProbInfoService {
     }
 
     @Override
-    public Integer save(ProblemRequest problemRequest, HttpServletRequest request) {
-        String uid = userInfoService.getLoginUser(request).getId().toString();
+    public Integer save(ProblemRequest problemRequest) {
+        String uid = userInfoService.getLoginUser().getId().toString();
         if (ProblemRequest.isNull(problemRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);
         }
@@ -126,8 +125,8 @@ public class ProbInfoServiceImpl implements ProbInfoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Integer updateById(ProblemRequest problemRequest, HttpServletRequest request) {
-        String uid = userInfoService.getLoginUser(request).getId().toString();
+    public Integer updateById(ProblemRequest problemRequest) {
+        String uid = userInfoService.getLoginUser().getId().toString();
         // 验证参数是否正确
         if (ProblemRequest.isNull(problemRequest)) {
             throw new AssertionException(ErrorCode.PARAMS_ERROR);

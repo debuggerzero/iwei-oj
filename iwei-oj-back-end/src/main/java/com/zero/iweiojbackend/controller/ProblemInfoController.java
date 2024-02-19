@@ -92,8 +92,8 @@ public class ProblemInfoController {
      * @return 受影响的行数
      */
     @PostMapping("/save")
-    public BaseResponse<Integer> save(@RequestBody ProblemRequest problemRequest, HttpServletRequest request) {
-        return ResultUtils.success(probInfoService.save(problemRequest, request));
+    public BaseResponse<Integer> save(@RequestBody ProblemRequest problemRequest) {
+        return ResultUtils.success(probInfoService.save(problemRequest));
     }
 
     /**
@@ -103,8 +103,8 @@ public class ProblemInfoController {
      * @return 受影响的行数
      */
     @PutMapping("/update")
-    public BaseResponse<Integer> updateById(@RequestBody ProblemRequest problemRequest, HttpServletRequest request) {
-        return ResultUtils.success(probInfoService.updateById(problemRequest, request));
+    public BaseResponse<Integer> updateById(@RequestBody ProblemRequest problemRequest) {
+        return ResultUtils.success(probInfoService.updateById(problemRequest));
     }
 
     /**
@@ -122,12 +122,11 @@ public class ProblemInfoController {
      * 提交题目
      *
      * @param problemSubmitAddRequest 添加判题信息
-     * @param request                 请求
      * @return BaseResponse<Long>
      */
     @PostMapping("/doQuestionSubmit")
-    public BaseResponse<Long> doQuestionSubmit(@RequestBody ProblemSubmitAddRequest problemSubmitAddRequest, HttpServletRequest request) {
-        UserInfoVO loginUser = userInfoService.getLoginUser(request);
+    public BaseResponse<Long> doQuestionSubmit(@RequestBody ProblemSubmitAddRequest problemSubmitAddRequest) {
+        UserInfoVO loginUser = userInfoService.getLoginUser();
         return ResultUtils.success(problemSubmitService.doQuestionSubmit(problemSubmitAddRequest, loginUser));
     }
 
@@ -135,12 +134,11 @@ public class ProblemInfoController {
      * 查询历史记录
      *
      * @param problemSubmitQueryRequest 查询器
-     * @param request                   请求
      * @return BaseResponse<GeneralCollectionResult < ProblemSubmitVO>>
      */
     @PostMapping("/getProblemSubmitVO")
-    public BaseResponse<GeneralCollectionResult<ProblemSubmitVO>> getProblemSubmitVO(@RequestBody ProblemSubmitQueryRequest problemSubmitQueryRequest, HttpServletRequest request) {
-        UserInfoVO loginUser = userInfoService.getLoginUser(request);
+    public BaseResponse<GeneralCollectionResult<ProblemSubmitVO>> getProblemSubmitVO(@RequestBody ProblemSubmitQueryRequest problemSubmitQueryRequest) {
+        UserInfoVO loginUser = userInfoService.getLoginUser();
         return ResultUtils.success(problemSubmitService.getProblemSubmitVO(problemSubmitQueryRequest, loginUser));
     }
 
