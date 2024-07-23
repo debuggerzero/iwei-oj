@@ -16,10 +16,8 @@ import com.zero.iweiojbackend.service.CosService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.InputStream;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
 
 /**
  * CosServiceImpl
@@ -32,9 +30,6 @@ import java.util.concurrent.ExecutorService;
 public class CosServiceImpl implements CosService {
 
     private final CosConfig cosConfig;
-
-    @Resource(name = "taskExecutor")
-    private Executor executor;
 
     public COSClient getCosClient() {
         COSCredentials cred = new BasicCOSCredentials(cosConfig.getSecretId(), cosConfig.getSecretKey());
@@ -49,7 +44,15 @@ public class CosServiceImpl implements CosService {
 
     public TransferManager getTransferManager() {
         COSClient cosClient = getCosClient();
-        TransferManager transferManager = new TransferManager(cosClient, (ExecutorService) executor);
+        TransferManager transferManager = new TransferManager(cosClient, new ThreadPoolExecutor(
+                5,
+                10,
+                1,
+                TimeUnit.SECONDS,
+                new LinkedBlockingQueue<>(20),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.AbortPolicy()
+        ));
         TransferManagerConfiguration transferManagerConfiguration = new TransferManagerConfiguration();
         transferManagerConfiguration.setMultipartUploadThreshold(5 * 1024 * 1024);
         transferManagerConfiguration.setMinimumUploadPartSize(1024 * 1024);

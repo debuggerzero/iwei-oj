@@ -21,10 +21,13 @@ import com.zero.iweiojbackend.service.PoiService;
 import com.zero.iweiojbackend.service.UserInfoService;
 import com.zero.iweiojbackend.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,11 +153,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfoVO userInfoVO = userInfoRequest.getUserInfo();
         // 判断当前登录用户与操作人 id 是否相同，不相同则无法更新
         UserInfoVO currentUserInfoVO = this.getLoginUser();
-        if (currentUserInfoVO.getId().equals(userInfoVO.getId())) {
+        if (!currentUserInfoVO.getId().equals(userInfoVO.getId())) {
             throw new AssertionException(ErrorCode.NO_AUTH_ERROR);
         }
         UserInfo userInfo = ToUserInfoConverter.CONVERTER.toUserInfo(userInfoVO);
-        userInfo.setAvatar(cosService.getImageKey(userInfo.getAvatar()));
+        if (ObjectUtils.isNotEmpty(userInfo.getAvatar())) {
+            userInfo.setAvatar(cosService.getImageKey(userInfo.getAvatar()));
+        }
         userInfo.setUpdatePerson(currentUserInfoVO.getId().toString());
         // 更新用户信息
         Integer result = userInfoRepo.updateById(userInfo);
@@ -165,8 +170,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         if (Objects.isNull(newUserInfo)) {
             throw new AssertionException(ErrorCode.OPERATION_ERROR);
         }
-        newUserInfo.setAvatar(cosService.getImageUrl(newUserInfo.getAvatar()));
-        // TODO 更新 shiro 中存储的用户信息
+        setUser(newUserInfo);
         return result;
     }
 
@@ -331,5 +335,17 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfoVO.setPhone(null);
         userInfoVO.setEmail(null);
         userInfoVO.setCreateDate(null);
+    }
+
+    /**
+     * 设置 shiro 用户信息
+     */
+    private void setUser(UserInfo userInfo) {
+        Subject subject = SecurityUtils.getSubject();
+        PrincipalCollection principalCollection = subject.getPrincipals();
+        String realmName = principalCollection.getRealmNames().iterator().next();
+        PrincipalCollection newPrincipalCollection =
+                new SimplePrincipalCollection(userInfo, realmName);
+        subject.runAs(newPrincipalCollection);
     }
 }

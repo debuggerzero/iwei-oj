@@ -60,6 +60,7 @@ public class UserInfoController {
 
     /**
      * 退出登录
+     *
      * @return BaseResponse<Void>
      */
     @GetMapping("/logout")
@@ -70,6 +71,7 @@ public class UserInfoController {
 
     /**
      * 获取登录用户
+     *
      * @return BaseResponse<UserInfoVO></UserInfoVO>
      */
     @GetMapping("/query/one")
@@ -77,6 +79,12 @@ public class UserInfoController {
         return ResultUtils.success(userInfoService.getLoginUser());
     }
 
+    /**
+     * 通过用户 id 获取用户信息
+     *
+     * @param id 用户 id
+     * @return BaseResponse<UserInfoVO>
+     */
     @GetMapping("/query/one/{id}")
     public BaseResponse<UserInfoVO> queryUserInfoById(@PathVariable Integer id) {
         return ResultUtils.success(userInfoService.queryUserInfoById(id));
@@ -85,7 +93,7 @@ public class UserInfoController {
     /**
      * 获取用户列表（管理员）
      *
-     * @return BaseResponse<GeneralCollectionResult<UserRole>>
+     * @return BaseResponse<GeneralCollectionResult < UserRole>>
      */
     @PostMapping("/queryUserInfoList")
     public BaseResponse<GeneralCollectionResult<UserInfo>> queryUserInfoList(@RequestBody BaseQuery baseQuery) {
@@ -96,7 +104,7 @@ public class UserInfoController {
      * 获取排行榜
      *
      * @param baseQuery baseQuery
-     * @return BaseResponse<GeneralCollectionResult<UserRole>>
+     * @return BaseResponse<GeneralCollectionResult < UserRole>>
      */
     @PostMapping("/queryRanking")
     public BaseResponse<GeneralCollectionResult<UserInfoVO>> queryRanking(@RequestBody BaseQuery baseQuery) {
@@ -106,7 +114,7 @@ public class UserInfoController {
     /**
      * 获取用户角色列表（管理员）
      *
-     * @return BaseResponse<GeneralCollectionResult<UserRole>>
+     * @return BaseResponse<GeneralCollectionResult < UserRole>>
      */
     @GetMapping("/queryUserRoleList")
     public BaseResponse<GeneralCollectionResult<UserRole>> queryUserRoleList() {
